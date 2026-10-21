@@ -1,12 +1,24 @@
 # Monroe's Library
 
-A book catalog app made for Monroe, age 4.
+A book-catalog PWA for Monroe (age 4): scan barcodes (camera or photo), track a
+big library haul, earn badges, fill the Star Jar.
 
-Scan a book's barcode with your phone camera (works on iPhone), type the ISBN, or search by title — it finds the cover and details from Open Library and saves the book to your library on that phone.
+Live: https://t3riah.github.io/monroes-library/
+Install (iPhone): open in Safari → Share → Add to Home Screen.
 
-Features: Haul Mode for big library checkouts (30+ books), a Star Jar, 45 badges to earn, favorites, "I Read It!", bedtime dark mode, and export/import so families can share a library between phones.
+## Design system (UI Component Directive, Oct 2026)
 
-## Use it on iPhone
-Open https://t3riah.github.io/monroes-library/ in Safari, tap Share, then Add to Home Screen.
+- `tokens.json` — the single source for color (light + bedtime-dark), type,
+  radius, spacing and shadow. CSS must use these values; no ad-hoc hex.
+- Components in `index.html` follow the shadcn/ui API in vanilla form:
+  Button (`.btn`/`.bigbtn`, variants primary/secondary/orange/ghost/danger,
+  sizes small/default/lg), Card, Badge, Chip, Input (`.field`), Switch
+  (`.pill`), Progress, Sheet, Toast, Alert (`.notice`), Tabs (`.tabbtn`).
+- `components.html` — Storybook-style reference page rendering every
+  component with the shipped CSS.
+- Identity: _her own library branch_ — deep library green, warm cream paper,
+  brass bookplates/stamps, Fraunces serif display type. No generic rainbow.
 
-Books are saved on the phone itself (local storage) — nothing is uploaded.
+## Files
+- `index.html` — the whole app (scanner: ZXing via CDN, storage: localStorage)
+- `tokens.json`, `components.html` — design system
