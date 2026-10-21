@@ -15,7 +15,7 @@
 <title>Monroe's Library</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Nunito:wght@400;700;800&display=swap" rel="stylesheet">
-<script src="https://unpkg.com/@zxing/browser@0.1.5/umd/zxing-browser.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@zxing/browser@0.1.5/umd/zxing-browser.min.js"></script>
 <style>
 :root{
   --bg:#fff9f0; --card:#ffffff; --ink:#25304a; --muted:#6b7690; --line:#f0e3d3;
@@ -237,6 +237,10 @@ html[data-theme="dark"] .notice.warn{background:#4a3d14;color:#ffe9a8}
         <button class="btn primary" id="startCam" type="button">📷 Start Camera</button>
         <button class="btn ghost fix" id="stopCam" type="button" style="flex:none" disabled>Stop</button>
       </div>
+      <div style="height:10px"></div>
+      <button class="btn" id="photoScanBtn" type="button" style="width:100%">📸 Use a Photo Instead</button>
+      <p class="muted" style="font-weight:700;font-size:13.5px;margin:8px 0 0">Take a close, straight-on photo of the barcode — handy if the live camera won't start.</p>
+      <input type="file" id="photoScanInput" accept="image/*" capture="environment" style="display:none">
     </div>
     <div class="card">
       <h2>⌨️ Type the ISBN</h2>
@@ -725,8 +729,12 @@ $("titleSearch").addEventListener("click",function(){
   }).catch(function(){ $("searchResults").innerHTML='<p class="muted" style="font-weight:800">Search didn\'t work — check your internet and try again.</p>'; });
 });
 
-/* ============ camera scanner: BarcodeDetector fast path + ZXing for iPhone Safari ============ */
-var stream=null, zxingReader=null, zxingControls=null, detector=null, detectLoopOn=false, lastCode="", lastCodeAt=0;
+/* ============ camera scanner: BarcodeDetector fast path + ZXing-owned path for iPhone Safari ============ */
+var stream=null, zxingReader=null, zxingControls=null, detector=null, detectLoopOn=false, lastCode="", lastCodeAt=0, scanGen=0, zxingLoading=false;
+function errDetail(err){ if(!err) return "unknown error"; var n=err.name||"Error"; var m=err.message||String(err); return n+": "+m; }
+function scanErrorHTML(err, friendly){
+  return '<div class="notice err">'+esc(friendly||"Barcode scanning couldn\u2019t start on this phone.")+' Typing the ISBN below always works!<br><span style="font-weight:700;font-size:13px">Scanner problem ('+esc(errDetail(err))+') — tell a grown-up exactly what this says if it keeps happening.</span></div>';
+}
 function onCode(raw){
   var code=cleanISBN(raw); var now=Date.now();
   if(!validISBN(code)) return;
@@ -735,32 +743,97 @@ function onCode(raw){
   if(navigator.vibrate) navigator.vibrate(120); beep();
   lookupISBN(code,true);
 }
+function loadZxing(){
+  if(window.ZXingBrowser && window.ZXingBrowser.BrowserMultiFormatReader) return Promise.resolve();
+  if(zxingLoading) return new Promise(function(res,rej){ var t=setInterval(function(){ if(window.ZXingBrowser&&window.ZXingBrowser.BrowserMultiFormatReader){ clearInterval(t); res(); } },200); setTimeout(function(){ clearInterval(t); rej(new Error("ZXing load timed out")); },12000); });
+  zxingLoading=true;
+  return new Promise(function(resolve,reject){
+    var s=document.createElement("script");
+    s.src="https://cdn.jsdelivr.net/npm/@zxing/browser@0.1.5/umd/zxing-browser.min.js";
+    s.onload=function(){ zxingLoading=false; if(window.ZXingBrowser&&window.ZXingBrowser.BrowserMultiFormatReader) resolve(); else reject(new Error("ZXing loaded but BrowserMultiFormatReader missing")); };
+    s.onerror=function(){ zxingLoading=false; reject(new Error("Could not load the barcode reader — check your internet connection")); };
+    document.head.appendChild(s);
+  });
+}
+function makeZxingReader(){
+  var reader=new window.ZXingBrowser.BrowserMultiFormatReader();
+  try{
+    if(window.ZXingBrowser.BarcodeFormat){
+      reader.possibleFormats=[window.ZXingBrowser.BarcodeFormat.EAN_13, window.ZXingBrowser.BarcodeFormat.EAN_8, window.ZXingBrowser.BarcodeFormat.UPC_A, window.ZXingBrowser.BarcodeFormat.UPC_E, window.ZXingBrowser.BarcodeFormat.CODE_128];
+    }
+  }catch(e){}
+  return reader;
+}
 function startCamera(){
-  var video=$("camVideo");
-  if(!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia){
-    setScanStatus('<div class="notice err">This browser can\'t open the camera here. On iPhone, open this page in Safari over the secure (https) link — or type the ISBN below, that always works!</div>'); return;
-  }
-  setScanStatus('<div class="notice ok">📷 Opening the camera… if your phone asks, tap “Allow”.</div>');
-  navigator.mediaDevices.getUserMedia({ video:{ facingMode:{ ideal:"environment" } }, audio:false })
-   .then(function(s){
-     stream=s; video.srcObject=s; video.setAttribute("playsinline","true"); video.muted=true;
-     return video.play();
-   })
-   .then(function(){
-     $("videoBox").classList.add("live"); $("camPlaceholder").style.display="none";
-     $("startCam").disabled=true; $("stopCam").disabled=false;
-     setScanStatus('<div class="notice ok">📷 Camera on! Hold a barcode inside the frame.</div>');
-     if("BarcodeDetector" in window){
+  var gen=++scanGen;
+  /* Path A: native BarcodeDetector (Android / Chrome) */
+  if("BarcodeDetector" in window){
+    var videoA=$("camVideo");
+    if(!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia){
+      setScanStatus(scanErrorHTML(new Error("getUserMedia is not available in this browser"),"This browser can\u2019t open the camera here. On iPhone, open this page in Safari over the secure (https) link.")); return;
+    }
+    setScanStatus('<div class="notice ok">📷 Opening the camera… if your phone asks, tap “Allow”.</div>');
+    navigator.mediaDevices.getUserMedia({ video:{ facingMode:{ ideal:"environment" } }, audio:false })
+     .then(function(s){
+       if(gen!==scanGen){ s.getTracks().forEach(function(t){ t.stop(); }); return; }
+       stream=s; videoA.srcObject=s; videoA.setAttribute("playsinline","true"); videoA.muted=true;
+       return videoA.play();
+     })
+     .then(function(){
+       if(gen!==scanGen) return;
        try{
          detector=new window.BarcodeDetector({ formats:["ean_13","ean_8","upc_a","upc_e","code_128"] });
-         detectLoopOn=true; detectLoop(); return;
-       }catch(e){ detector=null; }
-     }
-     startZXing(video);
-   })
-   .catch(function(err){
-     setScanStatus('<div class="notice err">We couldn\'t use the camera ('+esc(err&&err.name?err.name:"blocked")+'). Check that camera permission is allowed for this site in Settings, or type the ISBN below — that always works!</div>');
-   });
+       }catch(e){ detector=null; startZXingPath(gen); return; }
+       $("videoBox").classList.add("live"); $("camPlaceholder").style.display="none";
+       $("startCam").disabled=true; $("stopCam").disabled=false;
+       setScanStatus('<div class="notice ok">📷 Camera on! Hold a barcode inside the frame.</div>');
+       detectLoopOn=true; detectLoop();
+     })
+     .catch(function(err){
+       if(gen!==scanGen) return;
+       setScanStatus(scanErrorHTML(err,"We couldn\u2019t use the camera. Check that camera permission is allowed for this site in Settings."));
+     });
+    return;
+  }
+  /* Path B: ZXing owns the camera end-to-end (iPhone Safari) */
+  startZXingPath(gen);
+}
+function startZXingPath(gen){
+  var video=$("camVideo");
+  function go(){
+    if(gen!==scanGen) return;
+    try{
+      zxingReader=makeZxingReader();
+      $("videoBox").classList.add("live"); $("camPlaceholder").style.display="none";
+      $("startCam").disabled=true; $("stopCam").disabled=false;
+      setScanStatus('<div class="notice ok">📷 Camera on! Hold a barcode inside the frame.</div>');
+      var cb=function(result,err){
+        if(gen!==scanGen) return;
+        if(result){ try{ onCode(result.getText()); }catch(e){} }
+      };
+      var ret=null;
+      if(typeof zxingReader.decodeFromConstraints==="function"){
+        ret=zxingReader.decodeFromConstraints({ audio:false, video:{ facingMode:"environment" } }, video, cb);
+      } else if(typeof zxingReader.decodeFromVideoDevice==="function"){
+        ret=zxingReader.decodeFromVideoDevice(null, video, cb);
+      } else {
+        throw new Error("No supported ZXing decode method on this reader");
+      }
+      if(ret && typeof ret.then==="function"){
+        ret.then(function(c){ if(gen!==scanGen){ try{ if(c&&c.stop) c.stop(); }catch(e){} return; } zxingControls=c||null; }).catch(function(err){ if(gen!==scanGen) return; setScanStatus(scanErrorHTML(err)); });
+      } else if(ret){ zxingControls=ret; }
+    }catch(e){
+      setScanStatus(scanErrorHTML(e));
+    }
+  }
+  if(window.ZXingBrowser && window.ZXingBrowser.BrowserMultiFormatReader){ go(); return; }
+  setScanStatus('<div class="notice ok">⏳ Loading the barcode reader…</div>');
+  loadZxing().then(function(){ go(); }).catch(function(err){
+    if(gen!==scanGen) return;
+    $("videoBox").classList.remove("live"); $("camPlaceholder").style.display="block";
+    $("startCam").disabled=false; $("stopCam").disabled=true;
+    setScanStatus(scanErrorHTML(err,"The barcode reader couldn\u2019t load."));
+  });
 }
 function detectLoop(){
   if(!detectLoopOn || !detector) return;
@@ -768,38 +841,60 @@ function detectLoop(){
     if(codes&&codes.length) onCode(codes[0].rawValue);
   }).catch(function(){}).then(function(){ if(detectLoopOn) setTimeout(detectLoop,220); });
 }
-function startZXing(video){
-  try{
-    if(!window.ZXingBrowser || !window.ZXingBrowser.BrowserMultiFormatReader){
-      setScanStatus('<div class="notice err">The barcode reader is still loading. Wait a moment and tap Start Camera again — or type the ISBN below.</div>'); stopCamera(); return;
-    }
-    var hints=null;
-    try{
-      hints=new Map();
-      var formats=[ZXingBrowser.BarcodeFormat.EAN_13, ZXingBrowser.BarcodeFormat.EAN_8, ZXingBrowser.BarcodeFormat.UPC_A, ZXingBrowser.BarcodeFormat.UPC_E, ZXingBrowser.BarcodeFormat.CODE_128];
-      hints.set(ZXingBrowser.DecodeHintType.POSSIBLE_FORMATS, formats);
-    }catch(e){ hints=null; }
-    zxingReader=new window.ZXingBrowser.BrowserMultiFormatReader(hints);
-    var promise=zxingReader.decodeFromVideoElementContinuously(video,function(result,err){
-      if(result) onCode(result.getText());
-    });
-    if(promise&&promise.then) promise.then(function(c){ zxingControls=c; }).catch(function(){});
-  }catch(e){
-    setScanStatus('<div class="notice err">Barcode scanning couldn\'t start on this phone. Typing the ISBN below always works!</div>');
-  }
-}
 function stopCamera(){
+  scanGen++;
   detectLoopOn=false; detector=null;
   try{ if(zxingControls&&zxingControls.stop) zxingControls.stop(); }catch(e){}
   try{ if(zxingReader&&zxingReader.reset) zxingReader.reset(); }catch(e){}
   zxingControls=null; zxingReader=null;
   if(stream){ stream.getTracks().forEach(function(t){ t.stop(); }); stream=null; }
-  var video=$("camVideo"); video.srcObject=null;
+  var video=$("camVideo"); try{ video.pause(); }catch(e){} try{ video.srcObject=null; }catch(e){} try{ video.removeAttribute("src"); video.load(); }catch(e){}
   $("videoBox").classList.remove("live"); $("camPlaceholder").style.display="block";
   $("startCam").disabled=false; $("stopCam").disabled=true;
 }
 $("startCam").addEventListener("click",startCamera);
 $("stopCam").addEventListener("click",function(){ stopCamera(); setScanStatus(""); });
+/* ---- photo-of-barcode fallback ---- */
+$("photoScanBtn").addEventListener("click",function(){ $("photoScanInput").click(); });
+$("photoScanInput").addEventListener("change",function(){
+  var file=this.files&&this.files[0]; this.value="";
+  if(!file) return;
+  setScanStatus('<div class="notice ok">🔍 Looking at your photo…</div>');
+  var url=URL.createObjectURL(file);
+  var img=new Image();
+  img.onload=function(){
+    function fail(msg){ URL.revokeObjectURL(url); setScanStatus('<div class="notice err">'+esc(msg||"Couldn\u2019t read that photo — try getting closer, straight-on, good light, or type the ISBN.")+'</div>'); }
+    function tryZxing(){
+      function doDecode(){
+        try{
+          var r=makeZxingReader();
+          var p=r.decodeFromImageElement(img);
+          Promise.resolve(p).then(function(result){
+            URL.revokeObjectURL(url);
+            var text=""; try{ text=result.getText(); }catch(e){}
+            if(text){ if(navigator.vibrate) navigator.vibrate(120); beep(); var c=cleanISBN(text); if(validISBN(c)){ lastCode=c; lastCodeAt=Date.now(); lookupISBN(c,true); setScanStatus(""); } else { setScanStatus('<div class="notice err">That photo showed a code ('+esc(text)+') but it doesn\u2019t look like a book ISBN. Try the barcode on the back cover, or type the ISBN.</div>'); } }
+            else fail();
+          }).catch(function(err){ fail("Couldn\u2019t read that photo — try getting closer, straight-on, good light, or type the ISBN. ("+errDetail(err)+")"); });
+        }catch(e){ fail("Couldn\u2019t read that photo — try getting closer, straight-on, good light, or type the ISBN. ("+errDetail(e)+")"); }
+      }
+      if(window.ZXingBrowser&&window.ZXingBrowser.BrowserMultiFormatReader){ doDecode(); return; }
+      loadZxing().then(doDecode).catch(function(err){ fail("The barcode reader couldn\u2019t load. ("+errDetail(err)+") Typing the ISBN below always works!"); });
+    }
+    if("BarcodeDetector" in window){
+      try{
+        var det=new window.BarcodeDetector({ formats:["ean_13","ean_8","upc_a","upc_e","code_128"] });
+        det.detect(img).then(function(codes){
+          if(codes&&codes.length&&codes[0].rawValue){ var c=cleanISBN(codes[0].rawValue); if(validISBN(c)){ URL.revokeObjectURL(url); if(navigator.vibrate) navigator.vibrate(120); beep(); lastCode=c; lastCodeAt=Date.now(); lookupISBN(c,true); setScanStatus(""); return; } }
+          tryZxing();
+        }).catch(function(){ tryZxing(); });
+        return;
+      }catch(e){ tryZxing(); return; }
+    }
+    tryZxing();
+  };
+  img.onerror=function(){ URL.revokeObjectURL(url); setScanStatus('<div class="notice err">That photo couldn\u2019t be opened. Try another photo, or type the ISBN below — that always works!</div>'); };
+  img.src=url;
+});
 
 /* ============ grown-ups ============ */
 function applySettingsButtons(){
