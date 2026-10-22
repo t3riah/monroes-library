@@ -9,8 +9,8 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="Monroe's Library">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='0.9em' font-size='90'%3E%F0%9F%93%9A%3C/text%3E%3C/svg%3E">
-<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%23205C40'/%3E%3Ctext x='50' y='68' font-size='52' text-anchor='middle'%3E%F0%9F%93%9A%3C/text%3E%3C/svg%3E">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%23205C40'/%3E%3Ctext x='50' y='70' font-size='58' font-family='Georgia,serif' fill='%23F6F0DD' text-anchor='middle'%3EM%3C/text%3E%3C/svg%3E">
+<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%23205C40'/%3E%3Ctext x='50' y='70' font-size='58' font-family='Georgia,serif' fill='%23F6F0DD' text-anchor='middle'%3EM%3C/text%3E%3C/svg%3E">
 <link rel="manifest" href="data:application/manifest+json,%7B%22name%22%3A%22Monroe's%20Library%22%2C%22short_name%22%3A%22Monroe's%20Library%22%2C%22start_url%22%3A%22.%22%2C%22scope%22%3A%22.%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%23F6F0DD%22%2C%22theme_color%22%3A%22%23205C40%22%2C%22icons%22%3A%5B%7B%22src%22%3A%22data%3Aimage%2Fsvg%2Bxml%2C%253Csvg%2520xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%2520viewBox%3D'0%200%20100%20100'%253E%253Crect%2520width%3D'100'%2520height%3D'100'%2520rx%3D'22'%2520fill%3D'%2523205C40'%252F%253E%253Ctext%2520x%3D'50'%2520y%3D'68'%2520font-size%3D'52'%2520text-anchor%3D'middle'%253E%25F0%259F%2593%259A%253C%2Ftext%253E%253C%2Fsvg%253E%22%2C%22sizes%22%3A%22any%22%2C%22type%22%3A%22image%2Fsvg%2Bxml%22%7D%5D%7D">
 <title>Monroe's Library</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -112,7 +112,7 @@ a{color:var(--catalog)}
 .stat b{display:block;font-family:var(--font-display);font-weight:900;font-size:31px;color:var(--primary)}
 html[data-theme="dark"] .stat b{color:var(--gold)}
 .stat span{font-size:12px;font-weight:800;letter-spacing:.07em;text-transform:uppercase;color:var(--muted)}
-/* ---------- Olive / speech: reader's guide ---------- */
+/* ---------- greeting ---------- */
 .owlrow{display:flex;gap:14px;align-items:center}
 .owl{font-size:58px;line-height:1;flex:none;background:var(--brass-soft);width:86px;height:86px;border-radius:50%;
   display:grid;place-items:center;border:2px solid var(--accent);box-shadow:inset 0 0 0 4px var(--card)}
@@ -205,10 +205,7 @@ html[data-theme="dark"] .tabbtn.on{color:var(--gold)}
   background:var(--ink);color:var(--bg);padding:13px 20px;border-radius:999px;font-weight:800;z-index:120;opacity:0;
   pointer-events:none;transition:.3s;max-width:92vw;text-align:center;box-shadow:var(--shadow-raised)}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
-.confetti{position:fixed;inset:0;pointer-events:none;z-index:110;overflow:hidden;display:none}
-.confetti.show{display:block}
-.confetti i{position:absolute;top:-16px;width:11px;height:16px;border-radius:3px;animation:fall 1.8s ease-in forwards}
-@keyframes fall{to{transform:translateY(105vh) rotate(560deg);opacity:.85}}
+}
 .resultitem{display:flex;gap:12px;align-items:center;background:var(--card);border:1px solid var(--line);
   border-radius:var(--radius);padding:10px;margin-bottom:9px;width:100%;text-align:left;box-shadow:var(--shadow-card)}
 .resultitem img{width:46px;height:68px;object-fit:cover;border-radius:6px;background:var(--catalog-soft)}
@@ -228,8 +225,18 @@ html[data-theme="dark"] .tabbtn.on{color:var(--gold)}
   .bookgrid{grid-template-columns:repeat(4,1fr)}
 }
 @media (prefers-reduced-motion: reduce){
-  .scanline{animation:none}.confetti i{animation-duration:.01s}
+  .scanline{animation:none}
 }
+.tabbtn .ic svg{width:24px;height:24px;display:block;margin:0 auto}
+.btn svg{width:19px;height:19px;vertical-align:-4px}
+.bigbtn svg{width:26px;height:26px;vertical-align:-6px}
+.badge .ic svg{width:30px;height:30px}
+.bookcard .marks{display:flex;gap:5px;justify-content:center;height:17px;color:#B98A1C}
+.bookcard .marks svg{width:15px;height:15px}
+.jarstars svg{width:15px;height:15px;color:#B98A1C}
+.coverph svg{width:36px;height:36px;opacity:.45}
+.resultitem .marks{display:inline-flex;gap:5px;color:#B98A1C}
+.resultitem .marks svg{width:15px;height:15px}
 </style>
 </head>
 <body>
@@ -238,9 +245,9 @@ html[data-theme="dark"] .tabbtn.on{color:var(--gold)}
     <div class="logo-badge" aria-hidden="true">M</div>
     <div style="flex:1;min-width:0">
       <h1>Monroe's Library</h1>
-      <p>Hi Monroe! Let's read!</p>
+      <p>Her library catalog</p>
     </div>
-    <div class="stamp fixprint" aria-hidden="true">Her Own<br>Library ★</div>
+    <div class="stamp fixprint" aria-hidden="true">Her Own<br>Library</div>
   </div>
 </header>
 
@@ -249,42 +256,37 @@ html[data-theme="dark"] .tabbtn.on{color:var(--gold)}
   <!-- HOME -->
   <section class="view active" id="view-home">
     <div class="card hero-card">
-      <div class="owlrow">
-        <div class="owl" aria-hidden="true">🦉</div>
-        <div style="flex:1;min-width:200px">
-          <h2>Hi Monroe!</h2>
-          <div class="speech" id="owlMsg">I'm Olive the Owl. Let's find a book!</div>
-        </div>
-      </div>
+      <h2>Hi, Monroe.</h2>
+      <p class="muted" style="font-weight:700;margin:4px 0 0" id="owlMsg">What are we reading today?</p>
     </div>
-    <button class="bigbtn" id="homeScanBtn" type="button">📷 &nbsp;Add a Book</button>
+    <button class="bigbtn" id="homeScanBtn" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="7" width="18" height="13" rx="2"/><circle cx="12" cy="13" r="3.5"/><path d="M8.5 7 10 4h4l1.5 3"/></svg> &nbsp;Add a Book</button>
     <div style="height:14px"></div>
     <div class="statgrid">
-      <div class="stat"><b id="statTotal">0</b><span>📚 My Books</span></div>
-      <div class="stat"><b id="statWeek">0</b><span>🗓️ This Week</span></div>
-      <div class="stat"><b id="statFav">0</b><span>⭐ Favorites</span></div>
-      <div class="stat"><b id="statRead">0</b><span>✅ I Read It</span></div>
+      <div class="stat"><b id="statTotal">0</b><span>My Books</span></div>
+      <div class="stat"><b id="statWeek">0</b><span>This Week</span></div>
+      <div class="stat"><b id="statFav">0</b><span>Favorites</span></div>
+      <div class="stat"><b id="statRead">0</b><span>I Read It</span></div>
     </div>
     <div style="height:14px"></div>
     <div class="card">
       <div class="jarwrap">
         <div class="jar" aria-hidden="true"><div class="jarfill" id="jarFill"></div><div class="jarstars" id="jarStars"></div></div>
         <div style="flex:1;min-width:210px">
-          <h3>⭐ Monroe's Star Jar</h3>
+          <h3>Monroe's Star Jar</h3>
           <p class="muted" style="font-weight:700;margin:4px 0 10px" id="jarText">Add books and watch your jar fill with stars!</p>
-          <h3 id="challengeTitle">🏆 Can Monroe read 100 books?</h3>
+          <h3 id="challengeTitle">Can Monroe read 100 books?</h3>
           <div class="progress orange" style="margin:8px 0 6px"><i id="challengeBar" style="width:0%"></i></div>
           <p class="muted" style="font-weight:800;margin:0" id="challengeText">0 of 100 books</p>
         </div>
       </div>
     </div>
     <div class="card" id="nextBadgeCard">
-      <h3>🎖️ Next Badge</h3>
+      <h3>Next Badge</h3>
       <p style="font-weight:800;margin:6px 0" id="nextBadgeText">Add your first book to earn the First Book badge!</p>
       <div class="progress pink"><i id="nextBadgeBar" style="width:0%"></i></div>
     </div>
     <div class="card">
-      <h3>🆕 Newest Books</h3>
+      <h3>Newest Books</h3>
       <div id="recentList"><p class="muted" style="font-weight:700">No books yet. Tap “Add a Book” to start!</p></div>
     </div>
   </section>
@@ -292,42 +294,42 @@ html[data-theme="dark"] .tabbtn.on{color:var(--gold)}
   <!-- SCAN -->
   <section class="view" id="view-scan">
     <div class="toggleRow">
-      <div><b>🧺 Haul Mode</b><div class="muted" style="font-weight:700;font-size:13.5px">Keep scanning a big library haul — scan, add, scan next!</div></div>
+      <div><b>Haul Mode</b><div class="muted" style="font-weight:700;font-size:13.5px">For a big stack of library books: scan, add, scan the next.</div></div>
       <button class="pill" id="haulToggle" type="button" aria-pressed="false">OFF</button>
     </div>
     <div class="haulbar" id="haulBar">
-      <b>🧺 This Haul: <span id="haulCount">0</span></b>
+      <b>This Haul: <span id="haulCount">0</span></b>
       <span class="muted" style="font-weight:800" id="haulHint">Scanning adds books right away.</span>
-      <button class="btn pink small fix" id="haulDone" type="button" style="flex:none">🎉 Done — See My Haul!</button>
+      <button class="btn pink small fix" id="haulDone" type="button" style="flex:none">Done — See My Haul</button>
     </div>
     <div class="card">
-      <h2>📷 Scan a Barcode</h2>
+      <h2>Scan a Barcode</h2>
       <p class="muted" style="font-weight:700">Tap Start Camera, hold the book's barcode inside the frame. Works on iPhone Safari too!</p>
       <div class="videoBox" id="videoBox">
         <video id="camVideo" playsinline muted autoplay></video>
         <div class="frame"></div><div class="scanline"></div>
-        <p id="camPlaceholder" style="padding:20px;font-weight:800">Camera is off.<br>Tap Start Camera below 👇</p>
+        <p id="camPlaceholder" style="padding:20px;font-weight:800">Camera is off.<br>Tap Start Camera below.</p>
       </div>
       <div id="scanStatus" aria-live="polite"></div>
       <div class="row" style="margin-top:12px">
-        <button class="btn primary" id="startCam" type="button">📷 Start Camera</button>
+        <button class="btn primary" id="startCam" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="7" width="18" height="13" rx="2"/><circle cx="12" cy="13" r="3.5"/><path d="M8.5 7 10 4h4l1.5 3"/></svg> Start Camera</button>
         <button class="btn ghost fix" id="stopCam" type="button" style="flex:none" disabled>Stop</button>
       </div>
       <div style="height:10px"></div>
-      <button class="btn" id="photoScanBtn" type="button" style="width:100%">📸 Use a Photo Instead</button>
+      <button class="btn" id="photoScanBtn" type="button" style="width:100%"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="7" width="18" height="13" rx="2"/><circle cx="12" cy="13" r="3.5"/><path d="M8.5 7 10 4h4l1.5 3"/></svg> Use a Photo Instead</button>
       <p class="muted" style="font-weight:700;font-size:13.5px;margin:8px 0 0">Take a close, straight-on photo of the barcode — handy if the live camera won't start.</p>
       <input type="file" id="photoScanInput" accept="image/*" capture="environment" style="display:none">
     </div>
     <div class="card">
-      <h2>⌨️ Type the ISBN</h2>
+      <h2>Type the ISBN</h2>
       <p class="muted" style="font-weight:700">The ISBN is the number under the barcode, on the back of the book.</p>
       <label class="flabel" for="isbnInput">ISBN number</label>
       <input class="field" id="isbnInput" inputmode="numeric" autocomplete="off" placeholder="e.g. 9780142410375">
       <div style="height:10px"></div>
-      <button class="btn orange" id="isbnLookup" type="button" style="width:100%">🔍 Find This Book</button>
+      <button class="btn orange" id="isbnLookup" type="button" style="width:100%"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg> Find This Book</button>
     </div>
     <div class="card">
-      <h2>🔎 Find by Name</h2>
+      <h2>Find by Name</h2>
       <label class="flabel" for="searchInput">Book name</label>
       <input class="field" id="searchInput" autocomplete="off" placeholder="e.g. The Very Hungry Caterpillar">
       <div style="height:10px"></div>
@@ -342,13 +344,13 @@ html[data-theme="dark"] .tabbtn.on{color:var(--gold)}
 
   <!-- BOOKS -->
   <section class="view" id="view-books">
-    <h2 class="display" style="font-size:28px">📚 My Books <span class="muted" id="booksCount" style="font-size:17px"></span></h2>
-    <input class="field" id="bookSearch" placeholder="🔎 Search my books…" autocomplete="off" style="margin-top:12px">
+    <h2 class="display" style="font-size:28px">My Books <span class="muted" id="booksCount" style="font-size:17px"></span></h2>
+    <input class="field" id="bookSearch" placeholder="Search my books" autocomplete="off" style="margin-top:12px">
     <div class="chips" id="filterChips">
       <button class="chip on" data-filter="all" type="button">All Books</button>
-      <button class="chip" data-filter="week" type="button">🗓️ This Week</button>
-      <button class="chip" data-filter="fav" type="button">⭐ Favorites</button>
-      <button class="chip" data-filter="read" type="button">✅ I Read It</button>
+      <button class="chip" data-filter="week" type="button">This Week</button>
+      <button class="chip" data-filter="fav" type="button">Favorites</button>
+      <button class="chip" data-filter="read" type="button">I Read It</button>
     </div>
     <label class="flabel" for="sortSel">Put in order by…</label>
     <select class="field" id="sortSel">
@@ -359,23 +361,23 @@ html[data-theme="dark"] .tabbtn.on{color:var(--gold)}
     </select>
     <div style="height:14px"></div>
     <div class="bookgrid" id="bookGrid"></div>
-    <p class="muted" id="booksEmpty" style="font-weight:800;text-align:center;padding:26px 0;display:none">No books here yet.<br>Tap “Add a Book” and scan your first one! 📷</p>
+    <p class="muted" id="booksEmpty" style="font-weight:800;text-align:center;padding:26px 0;display:none">No books here yet.<br>Tap “Add a Book” and scan your first one.</p>
     <div class="printonly"><h2>Monroe's Library — book list</h2><p id="printMeta"></p></div>
   </section>
 
   <!-- BADGES -->
   <section class="view" id="view-badges">
-    <h2 class="display" style="font-size:28px">🎖️ Monroe's Badges</h2>
+    <h2 class="display" style="font-size:28px">Monroe's Badges</h2>
     <p class="muted" style="font-weight:800" id="badgeSummary"></p>
     <div id="badgeSections"></div>
   </section>
 
   <!-- GROWN-UPS -->
   <section class="view" id="view-grown">
-    <h2 class="display" style="font-size:28px">⚙️ For Grown-ups</h2>
-    <div class="notice ok">📱 Books are saved on this phone. Each phone keeps its own library — use Export / Import JSON below to share or back up a library between phones.</div>
+    <h2 class="display" style="font-size:28px">For Grown-ups</h2>
+    <div class="notice ok">Books are saved on this phone. Each phone keeps its own library — use Export / Import JSON below to share or back up a library between phones.</div>
     <div class="card">
-      <h3>📲 Put it on your iPhone Home Screen</h3>
+      <h3>Put it on your iPhone Home Screen</h3>
       <ol class="kbdsteps">
         <li>Open this page in Safari on the iPhone.</li>
         <li>Tap the Share button (square with an arrow).</li>
@@ -385,14 +387,14 @@ html[data-theme="dark"] .tabbtn.on{color:var(--gold)}
       <p class="muted" style="font-weight:700">Sharing with family: this same page can live on GitHub Pages — push this single <b>index.html</b> to a public repo (e.g. <b>t3riah/monroes-library</b>), turn on Settings → Pages → Deploy from branch (main / root), and send everyone the link <b>t3riah.github.io/monroes-library/</b>. Replacing the file in the repo updates it for everyone; each phone's books stay on that phone.</p>
     </div>
     <div class="card">
-      <h3>🌙 Bedtime &amp; Voice</h3>
+      <h3>Bedtime and Voice</h3>
       <div class="row">
-        <button class="btn" id="darkToggle" type="button" aria-pressed="false">🌙 Bedtime Dark Mode: OFF</button>
-        <button class="btn" id="voiceToggle" type="button" aria-pressed="true">🔊 Voice Cheers: ON</button>
+        <button class="btn" id="darkToggle" type="button" aria-pressed="false">Bedtime Dark Mode: OFF</button>
+        <button class="btn" id="voiceToggle" type="button" aria-pressed="true">Voice: ON</button>
       </div>
     </div>
     <div class="card">
-      <h3>🏆 Reading Challenge Goal</h3>
+      <h3>Reading Challenge Goal</h3>
       <label class="flabel" for="goalInput">How many books? (100 to start)</label>
       <div class="row">
         <input class="field" id="goalInput" type="number" min="1" max="5000" value="100">
@@ -400,37 +402,37 @@ html[data-theme="dark"] .tabbtn.on{color:var(--gold)}
       </div>
     </div>
     <div class="card">
-      <h3>💾 Share, Back Up &amp; Print</h3>
+      <h3>Share, Back Up and Print</h3>
       <div class="row">
-        <button class="btn" id="exportTxt" type="button">⬇️ List (.txt)</button>
-        <button class="btn" id="exportCsv" type="button">⬇️ Spreadsheet (.csv)</button>
+        <button class="btn" id="exportTxt" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12"/><path d="m7 11 5 5 5-5"/><path d="M4 21h16"/></svg> List (.txt)</button>
+        <button class="btn" id="exportCsv" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12"/><path d="m7 11 5 5 5-5"/><path d="M4 21h16"/></svg> Spreadsheet (.csv)</button>
       </div>
       <div class="row" style="margin-top:10px">
-        <button class="btn" id="exportJson" type="button">⬇️ Backup (.json)</button>
-        <button class="btn" id="importBtn" type="button">⬆️ Import (.json)</button>
+        <button class="btn" id="exportJson" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12"/><path d="m7 11 5 5 5-5"/><path d="M4 21h16"/></svg> Backup (.json)</button>
+        <button class="btn" id="importBtn" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 15V3"/><path d="m7 7 5-5 5 5"/><path d="M4 21h16"/></svg> Import (.json)</button>
       </div>
       <input type="file" id="importFile" accept="application/json,.json" style="display:none">
       <div class="row" style="margin-top:10px">
-        <button class="btn ghost" id="printBtn" type="button">📋 Show Printable List</button>
+        <button class="btn ghost" id="printBtn" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9V3h12v6"/><rect x="3" y="9" width="18" height="8" rx="2"/><path d="M6 14h12v7H6z"/></svg> Show Printable List</button>
       </div>
       <div id="grownStatus" aria-live="polite"></div>
     </div>
     <div class="card">
-      <h3>🧹 Start Over</h3>
+      <h3>Start Over</h3>
       <p class="muted" style="font-weight:700">Removes every book on this phone. Export a backup first if you might want them back!</p>
       <button class="btn danger" id="clearBtn" type="button">Clear Library</button>
     </div>
-    <p class="muted" style="text-align:center;font-weight:800;padding:10px 0">Made with love for Monroe ❤️ · Book info &amp; covers from Open Library</p>
+    <p class="muted" style="text-align:center;font-weight:800;padding:10px 0">For Monroe · Book info and covers from Open Library</p>
   </section>
 </main>
 
 <!-- bottom tabs -->
 <nav class="tabbar noprint"><div class="inner">
-  <button class="tabbtn on" data-view="home" type="button"><span class="ic">🏠</span>Home</button>
-  <button class="tabbtn" data-view="scan" type="button"><span class="ic">📷</span>Add a Book</button>
-  <button class="tabbtn" data-view="books" type="button"><span class="ic">📚</span>My Books</button>
-  <button class="tabbtn" data-view="badges" type="button"><span class="ic">🎖️</span>Badges</button>
-  <button class="tabbtn" data-view="grown" type="button"><span class="ic">⚙️</span>Grown-ups</button>
+  <button class="tabbtn on" data-view="home" type="button"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 10 9-7 9 7v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M9 22v-8h6v8"/></svg></span>Home</button>
+  <button class="tabbtn" data-view="scan" type="button"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="7" width="18" height="13" rx="2"/><circle cx="12" cy="13" r="3.5"/><path d="M8.5 7 10 4h4l1.5 3"/></svg></span>Add a Book</button>
+  <button class="tabbtn" data-view="books" type="button"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg></span>My Books</button>
+  <button class="tabbtn" data-view="badges" type="button"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="6"/><path d="M15.5 12.9 17 22l-5-3-5 3 1.5-9.1"/></svg></span>Badges</button>
+  <button class="tabbtn" data-view="grown" type="button"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h9M19 7h1M4 17h3M13 17h7"/><circle cx="16" cy="7" r="2.5"/><circle cx="10" cy="17" r="2.5"/></svg></span>Grown-ups</button>
 </div></nav>
 
 <!-- book detail -->
@@ -440,11 +442,11 @@ html[data-theme="dark"] .tabbtn.on{color:var(--gold)}
 
 <!-- haul summary -->
 <div class="overlay" id="haulOverlay"><div class="sheet" role="dialog" aria-modal="true">
-  <h2 class="display" style="font-size:30px;text-align:center">🎉 Monroe's Haul!</h2>
+  <h2 class="display" style="font-size:30px;text-align:center">Monroe's Haul</h2>
   <p style="text-align:center;font-weight:800;font-size:19px" id="haulSummaryText"></p>
   <div class="bookgrid" id="haulGrid" style="margin:14px 0"></div>
   <div id="haulBadges"></div>
-  <button class="bigbtn" id="haulClose" type="button">Yay! 🎉</button>
+  <button class="bigbtn" id="haulClose" type="button">Done</button>
 </div></div>
 
 <!-- confirm dialog -->
@@ -457,7 +459,7 @@ html[data-theme="dark"] .tabbtn.on{color:var(--gold)}
   </div>
 </div></div>
 
-<div class="confetti" id="confetti"></div>
+
 <div class="toast" id="toast" role="status"></div>
 
 <script>
@@ -467,69 +469,92 @@ var LS_BOOKS="monroes_library_books_v1", LS_SET="monroes_library_settings_v1";
 var books=[], settings={goal:100,dark:false,voice:true,scans:0};
 try{ var b=localStorage.getItem(LS_BOOKS); if(b) books=JSON.parse(b)||[]; }catch(e){ books=[]; }
 try{ var s=localStorage.getItem(LS_SET); if(s){ var p=JSON.parse(s); if(p) settings=Object.assign(settings,p); } }catch(e){}
-function saveBooks(){ try{ localStorage.setItem(LS_BOOKS, JSON.stringify(books)); }catch(e){ toast("⚠️ This phone's storage is full — try exporting a backup."); } }
+function saveBooks(){ try{ localStorage.setItem(LS_BOOKS, JSON.stringify(books)); }catch(e){ toast("This phone's storage is full. Try exporting a backup."); } }
 function saveSettings(){ try{ localStorage.setItem(LS_SET, JSON.stringify(settings)); }catch(e){} }
 function $(id){ return document.getElementById(id); }
 function esc(t){ return String(t==null?"":t).replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c];}); }
 function todayStr(d){ d=d||new Date(); return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0"); }
 function weekKey(d){ var x=new Date(d); var day=(x.getDay()+6)%7; x.setDate(x.getDate()-day); return todayStr(x); }
 
-/* ============ voice / sound / confetti ============ */
+/* ============ voice / sound ============ */
 var audioCtx=null;
 function beep(){ try{ audioCtx=audioCtx||new (window.AudioContext||window.webkitAudioContext)(); var o=audioCtx.createOscillator(),g=audioCtx.createGain(); o.frequency.value=880; g.gain.value=0.12; o.connect(g); g.connect(audioCtx.destination); o.start(); o.stop(audioCtx.currentTime+0.15);}catch(e){} }
 function speak(text){ if(!settings.voice) return; try{ if("speechSynthesis" in window){ window.speechSynthesis.cancel(); var u=new SpeechSynthesisUtterance(text); u.rate=1.02; window.speechSynthesis.speak(u);} }catch(e){} }
-function cheer(extra){ beep(); if(navigator.vibrate) navigator.vibrate(160); speak(extra||"Great job, Monroe! Book added!"); confetti(); }
-function confetti(){ var c=$("confetti"); c.innerHTML=""; var colors=["#205C40","#A64757","#42618C","#2E7D54","#E2B33C"]; for(var i=0;i<36;i++){ var el=document.createElement("i"); el.style.left=(Math.random()*100)+"%"; el.style.background=colors[i%colors.length]; el.style.animationDelay=(Math.random()*0.4)+"s"; el.style.transform="rotate("+(Math.random()*180)+"deg)"; c.appendChild(el);} c.classList.add("show"); setTimeout(function(){c.classList.remove("show");},2400); }
+function cheer(extra){ beep(); if(navigator.vibrate) navigator.vibrate(160); speak(extra||"Book added."); }
 var toastTimer=null;
 function toast(msg){ var t=$("toast"); t.textContent=msg; t.classList.add("show"); clearTimeout(toastTimer); toastTimer=setTimeout(function(){t.classList.remove("show");},3200); }
 
+/* ============ icons (inline SVG) ============ */
+var IC={
+ home:"<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"m3 10 9-7 9 7v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z\"/><path d=\"M9 22v-8h6v8\"/></svg>",
+ camera:"<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><rect x=\"3\" y=\"7\" width=\"18\" height=\"13\" rx=\"2\"/><circle cx=\"12\" cy=\"13\" r=\"3.5\"/><path d=\"M8.5 7 10 4h4l1.5 3\"/></svg>",
+ book:"<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M4 19.5A2.5 2.5 0 0 1 6.5 17H20\"/><path d=\"M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z\"/></svg>",
+ bookOpen:"<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z\"/><path d=\"M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z\"/></svg>",
+ award:"<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><circle cx=\"12\" cy=\"8\" r=\"6\"/><path d=\"M15.5 12.9 17 22l-5-3-5 3 1.5-9.1\"/></svg>",
+ sliders:"<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M4 7h9M19 7h1M4 17h3M13 17h7\"/><circle cx=\"16\" cy=\"7\" r=\"2.5\"/><circle cx=\"10\" cy=\"17\" r=\"2.5\"/></svg>",
+ search:"<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><circle cx=\"11\" cy=\"11\" r=\"7\"/><path d=\"m21 21-4.3-4.3\"/></svg>",
+ calendar:"<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><rect x=\"3\" y=\"4\" width=\"18\" height=\"18\" rx=\"2\"/><path d=\"M16 2v4M8 2v4M3 10h18\"/></svg>",
+ check:"<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M20 6 9 17l-5-5\"/></svg>",
+ moon:"<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M20 13.5A8.5 8.5 0 1 1 10.5 4a6.8 6.8 0 0 0 9.5 9.5z\"/></svg>",
+ volume:"<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M11 5 6 9H2v6h4l5 4z\"/><path d=\"M15.5 8.5a5 5 0 0 1 0 7\"/></svg>",
+ download:"<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M12 3v12\"/><path d=\"m7 11 5 5 5-5\"/><path d=\"M4 21h16\"/></svg>",
+ upload:"<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M12 15V3\"/><path d=\"m7 7 5-5 5 5\"/><path d=\"M4 21h16\"/></svg>",
+ printer:"<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M6 9V3h12v6\"/><rect x=\"3\" y=\"9\" width=\"18\" height=\"8\" rx=\"2\"/><path d=\"M6 14h12v7H6z\"/></svg>",
+ trash:"<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M3 6h18\"/><path d=\"M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6\"/><path d=\"M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2\"/></svg>",
+ pencil:"<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z\"/></svg>",
+ plus:"<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M12 5v14M5 12h14\"/></svg>",
+ basket:"<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"m5 11 4-7\"/><path d=\"m19 11-4-7\"/><path d=\"M2 11h20\"/><path d=\"m3.5 11 1.6 7.4a2 2 0 0 0 2 1.6h9.8a2 2 0 0 0 2-1.6l1.6-7.4\"/><path d=\"M8.5 15v3M12 15v3M15.5 15v3\"/></svg>",
+ globe:"<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><circle cx=\"12\" cy=\"12\" r=\"10\"/><path d=\"M2 12h20\"/><path d=\"M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z\"/></svg>",
+ star:"<svg viewBox=\"0 0 24 24\" fill=\"currentColor\" stroke=\"none\" aria-hidden=\"true\"><path d=\"M12 2.5l2.95 5.98 6.6.96-4.78 4.66 1.13 6.58L12 17.57l-5.9 3.1 1.13-6.57L2.45 9.44l6.6-.96z\"/></svg>"
+};
+
 /* ============ badges (45) ============ */
 var BADGES=[
- {id:"c1",cat:"📚 Collected",icon:"📖",name:"First Book",metric:"total",need:1,unit:"book"},
- {id:"c5",cat:"📚 Collected",icon:"🌟",name:"5 Books",metric:"total",need:5,unit:"books"},
- {id:"c10",cat:"📚 Collected",icon:"📗",name:"10 Books",metric:"total",need:10,unit:"books"},
- {id:"c25",cat:"📚 Collected",icon:"📘",name:"25 Books",metric:"total",need:25,unit:"books"},
- {id:"c50",cat:"📚 Collected",icon:"🚀",name:"50 Books Explorer",metric:"total",need:50,unit:"books"},
- {id:"c75",cat:"📚 Collected",icon:"🎈",name:"75 Books",metric:"total",need:75,unit:"books"},
- {id:"c100",cat:"📚 Collected",icon:"🏆",name:"100 Book Club",metric:"total",need:100,unit:"books"},
- {id:"c150",cat:"📚 Collected",icon:"🌈",name:"150 Books",metric:"total",need:150,unit:"books"},
- {id:"c200",cat:"📚 Collected",icon:"🦁",name:"200 Books",metric:"total",need:200,unit:"books"},
- {id:"c250",cat:"📚 Collected",icon:"🐳",name:"250 Books",metric:"total",need:250,unit:"books"},
- {id:"c300",cat:"📚 Collected",icon:"🏰",name:"300 Books",metric:"total",need:300,unit:"books"},
- {id:"c400",cat:"📚 Collected",icon:"🚂",name:"400 Books",metric:"total",need:400,unit:"books"},
- {id:"c500",cat:"📚 Collected",icon:"👑",name:"500 Book Champion",metric:"total",need:500,unit:"books"},
- {id:"c750",cat:"📚 Collected",icon:"💎",name:"750 Books",metric:"total",need:750,unit:"books"},
- {id:"c1000",cat:"📚 Collected",icon:"🌟",name:"1000 Book Legend",metric:"total",need:1000,unit:"books"},
- {id:"h5",cat:"🧺 Big Haul Days",icon:"🧺",name:"Haul Day — 5",metric:"maxDay",need:5,unit:"in one day"},
- {id:"h10",cat:"🧺 Big Haul Days",icon:"🎒",name:"Haul Day — 10",metric:"maxDay",need:10,unit:"in one day"},
- {id:"h20",cat:"🧺 Big Haul Days",icon:"🛒",name:"Big Haul — 20",metric:"maxDay",need:20,unit:"in one day"},
- {id:"h30",cat:"🧺 Big Haul Days",icon:"🚚",name:"Mega Haul — 30",metric:"maxDay",need:30,unit:"in one day"},
- {id:"h40",cat:"🧺 Big Haul Days",icon:"🏋️",name:"Super Haul — 40",metric:"maxDay",need:40,unit:"in one day"},
- {id:"h2w",cat:"🧺 Big Haul Days",icon:"✌️",name:"Double Haul Week",metric:"doubleHaul",need:1,unit:"double-haul week"},
- {id:"f1",cat:"⭐ Favorites",icon:"⭐",name:"First Favorite",metric:"favs",need:1,unit:"favorite"},
- {id:"f5",cat:"⭐ Favorites",icon:"🌟",name:"5 Favorites",metric:"favs",need:5,unit:"favorites"},
- {id:"f10",cat:"⭐ Favorites",icon:"💛",name:"10 Favorites",metric:"favs",need:10,unit:"favorites"},
- {id:"f25",cat:"⭐ Favorites",icon:"🏅",name:"25 Favorites",metric:"favs",need:25,unit:"favorites"},
- {id:"f50",cat:"⭐ Favorites",icon:"👑",name:"50 Favorites",metric:"favs",need:50,unit:"favorites"},
- {id:"r1",cat:"✅ Books Read",icon:"📖",name:"First Book Read",metric:"reads",need:1,unit:"read"},
- {id:"r10",cat:"✅ Books Read",icon:"🐛",name:"10 Books Read",metric:"reads",need:10,unit:"read"},
- {id:"r25",cat:"✅ Books Read",icon:"🦋",name:"25 Books Read",metric:"reads",need:25,unit:"read"},
- {id:"r50",cat:"✅ Books Read",icon:"🐢",name:"50 Books Read",metric:"reads",need:50,unit:"read"},
- {id:"r100",cat:"✅ Books Read",icon:"🦉",name:"100 Books Read",metric:"reads",need:100,unit:"read"},
- {id:"s2",cat:"🔥 Reading Streaks",icon:"🔥",name:"2 Days in a Row",metric:"maxStreak",need:2,unit:"days in a row"},
- {id:"s3",cat:"🔥 Reading Streaks",icon:"🔥",name:"3 Days in a Row",metric:"maxStreak",need:3,unit:"days in a row"},
- {id:"s7",cat:"🔥 Reading Streaks",icon:"🗓️",name:"A Whole Week",metric:"maxStreak",need:7,unit:"days in a row"},
- {id:"s4w",cat:"🔥 Reading Streaks",icon:"🌍",name:"4 Library Weeks",metric:"distinctWeeks",need:4,unit:"different weeks"},
- {id:"a5",cat:"🌍 Variety & Scanning",icon:"✍️",name:"5 Authors",metric:"authors",need:5,unit:"authors"},
- {id:"a15",cat:"🌍 Variety & Scanning",icon:"🎨",name:"15 Authors",metric:"authors",need:15,unit:"authors"},
- {id:"a30",cat:"🌍 Variety & Scanning",icon:"🌏",name:"30 Authors",metric:"authors",need:30,unit:"authors"},
- {id:"a50",cat:"🌍 Variety & Scanning",icon:"🧭",name:"50 Authors",metric:"authors",need:50,unit:"authors"},
- {id:"a100",cat:"🌍 Variety & Scanning",icon:"🗺️",name:"100 Authors",metric:"authors",need:100,unit:"authors"},
- {id:"sc10",cat:"🌍 Variety & Scanning",icon:"📷",name:"10 Scans",metric:"scans",need:10,unit:"scans"},
- {id:"sc20",cat:"🌍 Variety & Scanning",icon:"📸",name:"20 Scans",metric:"scans",need:20,unit:"scans"},
- {id:"sc50",cat:"🌍 Variety & Scanning",icon:"🎥",name:"50 Scans",metric:"scans",need:50,unit:"scans"},
- {id:"w20",cat:"🌍 Variety & Scanning",icon:"📅",name:"20-Book Week",metric:"maxWeek",need:20,unit:"in one week"},
- {id:"w50",cat:"🌍 Variety & Scanning",icon:"🎉",name:"50-Book Week",metric:"maxWeek",need:50,unit:"in one week"}
+ {id:"c1",cat:"Collected",icon:"book",name:"First Book",metric:"total",need:1,unit:"book"},
+ {id:"c5",cat:"Collected",icon:"book",name:"5 Books",metric:"total",need:5,unit:"books"},
+ {id:"c10",cat:"Collected",icon:"book",name:"10 Books",metric:"total",need:10,unit:"books"},
+ {id:"c25",cat:"Collected",icon:"book",name:"25 Books",metric:"total",need:25,unit:"books"},
+ {id:"c50",cat:"Collected",icon:"book",name:"50 Books Explorer",metric:"total",need:50,unit:"books"},
+ {id:"c75",cat:"Collected",icon:"book",name:"75 Books",metric:"total",need:75,unit:"books"},
+ {id:"c100",cat:"Collected",icon:"book",name:"100 Book Club",metric:"total",need:100,unit:"books"},
+ {id:"c150",cat:"Collected",icon:"book",name:"150 Books",metric:"total",need:150,unit:"books"},
+ {id:"c200",cat:"Collected",icon:"book",name:"200 Books",metric:"total",need:200,unit:"books"},
+ {id:"c250",cat:"Collected",icon:"book",name:"250 Books",metric:"total",need:250,unit:"books"},
+ {id:"c300",cat:"Collected",icon:"book",name:"300 Books",metric:"total",need:300,unit:"books"},
+ {id:"c400",cat:"Collected",icon:"book",name:"400 Books",metric:"total",need:400,unit:"books"},
+ {id:"c500",cat:"Collected",icon:"book",name:"500 Book Champion",metric:"total",need:500,unit:"books"},
+ {id:"c750",cat:"Collected",icon:"book",name:"750 Books",metric:"total",need:750,unit:"books"},
+ {id:"c1000",cat:"Collected",icon:"book",name:"1000 Book Legend",metric:"total",need:1000,unit:"books"},
+ {id:"h5",cat:"Big Haul Days",icon:"basket",name:"Haul Day — 5",metric:"maxDay",need:5,unit:"in one day"},
+ {id:"h10",cat:"Big Haul Days",icon:"basket",name:"Haul Day — 10",metric:"maxDay",need:10,unit:"in one day"},
+ {id:"h20",cat:"Big Haul Days",icon:"basket",name:"Big Haul — 20",metric:"maxDay",need:20,unit:"in one day"},
+ {id:"h30",cat:"Big Haul Days",icon:"basket",name:"Mega Haul — 30",metric:"maxDay",need:30,unit:"in one day"},
+ {id:"h40",cat:"Big Haul Days",icon:"basket",name:"Super Haul — 40",metric:"maxDay",need:40,unit:"in one day"},
+ {id:"h2w",cat:"Big Haul Days",icon:"basket",name:"Double Haul Week",metric:"doubleHaul",need:1,unit:"double-haul week"},
+ {id:"f1",cat:"Favorites",icon:"star",name:"First Favorite",metric:"favs",need:1,unit:"favorite"},
+ {id:"f5",cat:"Favorites",icon:"star",name:"5 Favorites",metric:"favs",need:5,unit:"favorites"},
+ {id:"f10",cat:"Favorites",icon:"star",name:"10 Favorites",metric:"favs",need:10,unit:"favorites"},
+ {id:"f25",cat:"Favorites",icon:"star",name:"25 Favorites",metric:"favs",need:25,unit:"favorites"},
+ {id:"f50",cat:"Favorites",icon:"star",name:"50 Favorites",metric:"favs",need:50,unit:"favorites"},
+ {id:"r1",cat:"Books Read",icon:"bookOpen",name:"First Book Read",metric:"reads",need:1,unit:"read"},
+ {id:"r10",cat:"Books Read",icon:"bookOpen",name:"10 Books Read",metric:"reads",need:10,unit:"read"},
+ {id:"r25",cat:"Books Read",icon:"bookOpen",name:"25 Books Read",metric:"reads",need:25,unit:"read"},
+ {id:"r50",cat:"Books Read",icon:"bookOpen",name:"50 Books Read",metric:"reads",need:50,unit:"read"},
+ {id:"r100",cat:"Books Read",icon:"bookOpen",name:"100 Books Read",metric:"reads",need:100,unit:"read"},
+ {id:"s2",cat:"Reading Streaks",icon:"calendar",name:"2 Days in a Row",metric:"maxStreak",need:2,unit:"days in a row"},
+ {id:"s3",cat:"Reading Streaks",icon:"calendar",name:"3 Days in a Row",metric:"maxStreak",need:3,unit:"days in a row"},
+ {id:"s7",cat:"Reading Streaks",icon:"calendar",name:"A Whole Week",metric:"maxStreak",need:7,unit:"days in a row"},
+ {id:"s4w",cat:"Reading Streaks",icon:"calendar",name:"4 Library Weeks",metric:"distinctWeeks",need:4,unit:"different weeks"},
+ {id:"a5",cat:"Variety & Scanning",icon:"globe",name:"5 Authors",metric:"authors",need:5,unit:"authors"},
+ {id:"a15",cat:"Variety & Scanning",icon:"globe",name:"15 Authors",metric:"authors",need:15,unit:"authors"},
+ {id:"a30",cat:"Variety & Scanning",icon:"globe",name:"30 Authors",metric:"authors",need:30,unit:"authors"},
+ {id:"a50",cat:"Variety & Scanning",icon:"globe",name:"50 Authors",metric:"authors",need:50,unit:"authors"},
+ {id:"a100",cat:"Variety & Scanning",icon:"globe",name:"100 Authors",metric:"authors",need:100,unit:"authors"},
+ {id:"sc10",cat:"Variety & Scanning",icon:"globe",name:"10 Scans",metric:"scans",need:10,unit:"scans"},
+ {id:"sc20",cat:"Variety & Scanning",icon:"globe",name:"20 Scans",metric:"scans",need:20,unit:"scans"},
+ {id:"sc50",cat:"Variety & Scanning",icon:"globe",name:"50 Scans",metric:"scans",need:50,unit:"scans"},
+ {id:"w20",cat:"Variety & Scanning",icon:"globe",name:"20-Book Week",metric:"maxWeek",need:20,unit:"in one week"},
+ {id:"w50",cat:"Variety & Scanning",icon:"globe",name:"50-Book Week",metric:"maxWeek",need:50,unit:"in one week"}
 ];
 function metrics(){
   var byDay={}, byWeek={}, authors={}, days={}, weeks={};
@@ -567,8 +592,8 @@ $("homeScanBtn").addEventListener("click",function(){ showView("scan"); });
 
 /* ============ rendering ============ */
 function coverHTML(bk,cls){
-  if(bk.cover) return '<img class="'+(cls||"")+'" src="'+esc(bk.cover)+'" alt="Cover of '+esc(bk.title)+'" loading="lazy" onerror="this.outerHTML=\'<div class=&quot;coverph&quot;>📚</div>\'">';
-  return '<div class="coverph">📚</div>';
+  if(bk.cover) return '<img class="'+(cls||"")+'" src="'+esc(bk.cover)+'" alt="Cover of '+esc(bk.title)+'" loading="lazy" onerror="this.outerHTML=\'<div class=&quot;coverph&quot;></div>\'">';
+  return '<div class="coverph">'+IC.book+'</div>';
 }
 function render(){
   var m=metrics();
@@ -579,21 +604,21 @@ function render(){
   /* star jar */
   var pct=Math.min(100, Math.round(m.total/ Math.max(1,settings.goal) *100));
   $("jarFill").style.height=pct+"%";
-  var stars=""; var n=Math.min(30,m.total); for(var i=0;i<n;i++) stars+="⭐";
-  $("jarStars").textContent=stars;
-  $("jarText").textContent= m.total===0 ? "Add books and watch your jar fill with stars!" : "You have "+m.total+" star"+(m.total===1?"":"s")+" in your jar, Monroe!";
-  $("challengeTitle").textContent="🏆 Can Monroe read "+settings.goal+" books?";
+  var stars=""; var n=Math.min(30,m.total); for(var i=0;i<n;i++) stars+=IC.star;
+  $("jarStars").innerHTML=stars;
+  $("jarText").textContent= m.total===0 ? "Add books and the jar fills with stars." : "You have "+m.total+" star"+(m.total===1?"":"s")+" in your jar.";
+  $("challengeTitle").textContent="Can Monroe read "+settings.goal+" books?";
   $("challengeBar").style.width=pct+"%";
-  $("challengeText").textContent=m.total+" of "+settings.goal+" books"+(m.total>=settings.goal?" — YOU DID IT! 🎉":"");
+  $("challengeText").textContent=m.total+" of "+settings.goal+" books"+(m.total>=settings.goal?" — goal reached":"");
   /* next badge */
   var next=null; BADGES.forEach(function(bd){ if(!next && (m[bd.metric]||0)<bd.need) next=bd; });
-  if(next){ var cur=m[next.metric]||0; $("nextBadgeText").textContent=next.icon+" "+next.name+" — "+(next.need-cur)+" more to go!"; $("nextBadgeBar").style.width=Math.round(cur/next.need*100)+"%"; }
-  else { $("nextBadgeText").textContent="🏆 Every badge earned — amazing, Monroe!"; $("nextBadgeBar").style.width="100%"; }
+  if(next){ var cur=m[next.metric]||0; $("nextBadgeText").textContent=next.name+" — "+(next.need-cur)+" more to go."; $("nextBadgeBar").style.width=Math.round(cur/next.need*100)+"%"; }
+  else { $("nextBadgeText").textContent="Every badge earned."; $("nextBadgeBar").style.width="100%"; }
   /* owl message */
-  $("owlMsg").textContent= m.total===0 ? "I'm Olive the Owl. Let's find your first book, Monroe!" : (m.total>=settings.goal ? "You filled the challenge, Monroe! I'm so proud of you!" : "You have "+m.total+" book"+(m.total===1?"":"s")+", Monroe! Let's find more!");
+  $("owlMsg").textContent= m.total===0 ? "Add your first book to get started." : (m.total>=settings.goal ? "Reading goal complete. "+m.total+" books in the library." : "You have "+m.total+" book"+(m.total===1?"":"s")+" in the library.");
   /* recent */
   var rec=books.slice().sort(function(a,b){return (b.addedAt||"").localeCompare(a.addedAt||"");}).slice(0,6);
-  $("recentList").innerHTML= rec.length? rec.map(function(bk){ return '<button class="resultitem" data-open="'+esc(bk.id)+'">'+coverHTML(bk)+'<span style="flex:1"><b>'+esc(bk.title)+'</b><br><span class="muted">'+esc(bk.author||"")+'</span></span><span>'+(bk.favorite?"⭐":"")+(bk.read?" ✅":"")+'</span></button>'; }).join("") : '<p class="muted" style="font-weight:700">No books yet. Tap “Add a Book” to start!</p>';
+  $("recentList").innerHTML= rec.length? rec.map(function(bk){ return '<button class="resultitem" data-open="'+esc(bk.id)+'">'+coverHTML(bk)+'<span style="flex:1"><b>'+esc(bk.title)+'</b><br><span class="muted">'+esc(bk.author||"")+'</span></span><span class="marks">'+(bk.favorite?IC.star:"")+(bk.read?IC.check:"")+'</span></button>'; }).join("") : '<p class="muted" style="font-weight:700">No books yet. Tap “Add a Book” to start!</p>';
   bindOpenButtons($("recentList"));
   renderBooks(); renderBadges(m);
   $("goalInput").value=settings.goal;
@@ -619,7 +644,7 @@ function renderBooks(){
   $("booksCount").textContent="("+list.length+")";
   $("booksEmpty").style.display=list.length?"none":"block";
   $("bookGrid").innerHTML=list.map(function(bk){
-    return '<button class="bookcard" data-open="'+esc(bk.id)+'">'+coverHTML(bk)+'<div class="t">'+esc(bk.title)+'</div><div class="a">'+esc(bk.author||"")+'</div><div>'+(bk.favorite?"⭐":"")+(bk.read?"✅":"")+'</div></button>';
+    return '<button class="bookcard" data-open="'+esc(bk.id)+'">'+coverHTML(bk)+'<div class="t">'+esc(bk.title)+'</div><div class="a">'+esc(bk.author||"")+'</div><div class="marks">'+(bk.favorite?IC.star:"")+(bk.read?IC.check:"")+'</div></button>';
   }).join("");
   bindOpenButtons($("bookGrid"));
   $("printMeta").textContent=books.length+" books · Printed "+new Date().toLocaleDateString();
@@ -630,12 +655,12 @@ $("bookSearch").addEventListener("input",renderBooks);
 $("sortSel").addEventListener("change",renderBooks);
 function renderBadges(m){
   m=m||metrics(); var earned=earnedIds(m); var count=Object.keys(earned).length;
-  $("badgeSummary").textContent="Monroe has earned "+count+" of "+BADGES.length+" badges!";
+  $("badgeSummary").textContent="Monroe has earned "+count+" of "+BADGES.length+" badges.";
   var cats=[]; BADGES.forEach(function(bd){ if(cats.indexOf(bd.cat)<0) cats.push(bd.cat); });
   $("badgeSections").innerHTML=cats.map(function(cat){
     var items=BADGES.filter(function(bd){return bd.cat===cat;}).map(function(bd){
       var cur=m[bd.metric]||0; var got=!!earned[bd.id]; var left=bd.need-cur;
-      return '<div class="badge'+(got?"":" locked")+'"><div class="ic">'+bd.icon+'</div><b>'+esc(bd.name)+'</b><p>'+(got?"Earned! 🎉":left+" more to go! · "+cur+" / "+bd.need+" "+esc(bd.unit))+'</p>'+(got?"":'<div class="progress mini"><i style="width:'+Math.round(cur/bd.need*100)+'%"></i></div>')+'</div>';
+      return '<div class="badge'+(got?"":" locked")+'"><div class="ic">'+(IC[bd.icon]||"")+'</div><b>'+esc(bd.name)+'</b><p>'+(got?"Earned":left+" more to go · "+cur+" / "+bd.need+" "+esc(bd.unit))+'</p>'+(got?"":'<div class="progress mini"><i style="width:'+Math.round(cur/bd.need*100)+'%"></i></div>')+'</div>';
     }).join("");
     return '<h3 class="display" style="margin:16px 0 9px;font-size:20px">'+esc(cat)+'</h3><div class="badgegrid">'+items+'</div>';
   }).join("");
@@ -652,22 +677,22 @@ function openDetail(id){
    +'<p class="muted" style="font-weight:700;margin:3px 0">'+esc([bk.publisher,bk.year].filter(Boolean).join(" · "))+(bk.pages?" · "+esc(bk.pages)+" pages":"")+'</p>'
    +'<p class="muted" style="font-weight:700;margin:3px 0">ISBN: '+esc(bk.isbn||"—")+' · Added '+esc((bk.addedAt||"").slice(0,10))+'</p></div></div>'
    +(bk.description?'<p style="font-weight:600;line-height:1.55">'+esc(bk.description)+'</p>':"")
-   +'<div class="row" style="margin-top:12px"><button class="btn" id="dHear" type="button">🔊 Hear the Title</button>'
-   +'<button class="btn" id="dFav" type="button">'+(bk.favorite?"⭐ Favorite!":"☆ Make Favorite")+'</button></div>'
-   +'<div class="row" style="margin-top:10px"><button class="btn '+(bk.read?"":"primary")+'" id="dRead" type="button">'+(bk.read?"✅ I Read It!":"📖 I Read It!")+'</button>'
-   +'<button class="btn ghost" id="dEdit" type="button">✏️ Edit</button></div>'
+   +'<div class="row" style="margin-top:12px"><button class="btn" id="dHear" type="button">'+IC.volume+' Hear the Title</button>'
+   +'<button class="btn" id="dFav" type="button">'+IC.star+(bk.favorite?" Favorite":" Make Favorite")+'</button></div>'
+   +'<div class="row" style="margin-top:10px"><button class="btn '+(bk.read?"":"primary")+'" id="dRead" type="button">'+(bk.read?IC.check:IC.bookOpen)+(bk.read?" I Read It":" I Read It")+'</button>'
+   +'<button class="btn ghost" id="dEdit" type="button">'+IC.pencil+' Edit</button></div>'
    +'<div id="editZone"></div>'
-   +'<div class="row" style="margin-top:14px"><button class="btn danger" id="dRemove" type="button">🗑️ Remove Book</button>'
+   +'<div class="row" style="margin-top:14px"><button class="btn danger" id="dRemove" type="button">'+IC.trash+' Remove Book</button>'
    +'<button class="btn ghost" id="dClose" type="button">Close</button></div>';
   $("detailOverlay").classList.add("open");
   $("dClose").addEventListener("click",closeDetail);
   $("dHear").addEventListener("click",function(){ var was=settings.voice; settings.voice=true; speak(bk.title+(bk.author?" by "+bk.author:"")); settings.voice=was; });
-  $("dFav").addEventListener("click",function(){ bk.favorite=!bk.favorite; saveBooks(); render(); openDetail(id); toast(bk.favorite?"⭐ Added to Favorites!":"Removed from Favorites"); });
-  $("dRead").addEventListener("click",function(){ bk.read=!bk.read; saveBooks(); render(); openDetail(id); if(bk.read){ cheer("You read it, Monroe! Great job!"); } });
+  $("dFav").addEventListener("click",function(){ bk.favorite=!bk.favorite; saveBooks(); render(); openDetail(id); toast(bk.favorite?"Added to favorites.":"Removed from favorites."); });
+  $("dRead").addEventListener("click",function(){ bk.read=!bk.read; saveBooks(); render(); openDetail(id); if(bk.read){ cheer("Marked as read."); } });
   $("dRemove").addEventListener("click",function(){ askConfirm("Remove this book?","“"+bk.title+"” will be taken out of Monroe's library on this phone.",function(){ books=books.filter(function(x){return x.id!==id;}); saveBooks(); closeDetail(); render(); toast("Book removed."); }); });
   $("dEdit").addEventListener("click",function(){
     $("editZone").innerHTML='<label class="flabel">Book name</label><input class="field" id="eTitle" value="'+esc(bk.title)+'"><label class="flabel">Author</label><input class="field" id="eAuthor" value="'+esc(bk.author||"")+'"><div style="height:10px"></div><button class="btn primary" id="eSave" type="button" style="width:100%">Save Changes</button>';
-    $("eSave").addEventListener("click",function(){ bk.title=$("eTitle").value.trim()||bk.title; bk.author=$("eAuthor").value.trim(); saveBooks(); render(); openDetail(id); toast("Saved! ✅"); });
+    $("eSave").addEventListener("click",function(){ bk.title=$("eTitle").value.trim()||bk.title; bk.author=$("eAuthor").value.trim(); saveBooks(); render(); openDetail(id); toast("Saved."); });
   });
 }
 function closeDetail(){ $("detailOverlay").classList.remove("open"); detailId=null; }
@@ -725,7 +750,7 @@ function addBook(data, viaScan){
   render();
   if(haulMode){ haulBooks.push(bk); $("haulCount").textContent=haulBooks.length; }
   cheer();
-  if(newBadges.length){ setTimeout(function(){ toast("🎖️ Monroe earned a new badge: "+newBadges.map(function(x){return x.name;}).join(", ")+"!"); speak("Monroe earned a new badge! "+newBadges[0].name); },600); }
+  if(newBadges.length){ setTimeout(function(){ toast("New badge earned: "+newBadges.map(function(x){return x.name;}).join(", ")+"."); speak("New badge earned. "+newBadges[0].name); },600); }
   return bk;
 }
 function showConfirm(data){
@@ -737,8 +762,8 @@ function showConfirm(data){
     +'<div style="flex:1;min-width:190px"><h3 style="font-size:22px">'+esc(data.title)+'</h3><p style="font-weight:800;margin:4px 0">'+esc(data.author||"Author not listed")+'</p>'
     +'<p class="muted" style="font-weight:700;margin:2px 0">'+esc([data.publisher,data.year].filter(Boolean).join(" · "))+(data.pages?" · "+esc(data.pages)+" pages":"")+'</p>'
     +(data.isbn?'<p class="muted" style="font-weight:700">ISBN: '+esc(data.isbn)+'</p>':"")+'</div></div>'
-    +(dup?'<div class="notice warn">⚠️ You already have this book in your library! Adding it again would make two copies.</div>':"")
-    +'<div class="row" style="margin-top:12px"><button class="btn primary" id="cfAdd" type="button">➕ Add to Library</button><button class="btn ghost fix" id="cfSkip" type="button" style="flex:none">Skip</button></div>';
+    +(dup?'<div class="notice warn">You already have this book in your library. Adding it again would make two copies.</div>':"")
+    +'<div class="row" style="margin-top:12px"><button class="btn primary" id="cfAdd" type="button">'+IC.plus+' Add to Library</button><button class="btn ghost fix" id="cfSkip" type="button" style="flex:none">Skip</button></div>';
   $("confirmCard").scrollIntoView({behavior:"smooth",block:"center"});
   $("cfSkip").addEventListener("click",function(){ $("confirmCard").style.display="none"; pendingBook=null; });
   $("cfAdd").addEventListener("click",function(){
@@ -749,14 +774,14 @@ function showConfirm(data){
 function finishAdd(data,viaScan){
   addBook(data,viaScan);
   $("confirmCard").style.display="none"; pendingBook=null;
-  if(!haulMode){ toast("✅ Added! Find it in My Books."); }
+  if(!haulMode){ toast("Added. Find it in My Books."); }
 }
 function lookupISBN(isbn,viaScan){
   isbn=cleanISBN(isbn);
   if(!validISBN(isbn)){ setScanStatus('<div class="notice err">That number doesn\'t look like an ISBN yet — check the numbers under the barcode and try again.</div>'); return; }
   var dup=findByISBN(isbn);
-  if(haulMode && dup){ setScanStatus('<div class="notice warn">⚠️ Already in your library — skipped "'+esc(dup.title)+'" so there aren\'t two copies.</div>'); return; }
-  setScanStatus('<div class="notice ok">🔍 Looking up your book…</div>');
+  if(haulMode && dup){ setScanStatus('<div class="notice warn">Already in your library — skipped "'+esc(dup.title)+'" so there are not two copies.</div>'); return; }
+  setScanStatus('<div class="notice ok">Looking up your book…</div>');
   fetchByISBN(isbn).then(function(data){
     setScanStatus("");
     if(haulMode){ finishHaulAdd(data,viaScan); } else { showConfirm(data); }
@@ -766,7 +791,7 @@ function lookupISBN(isbn,viaScan){
 }
 function finishHaulAdd(data,viaScan){
   var bk=addBook(data,viaScan);
-  setScanStatus('<div class="notice ok">✅ Added “'+esc(bk.title)+'” — scan the next one! 🧺 This Haul: '+haulBooks.length+'</div>');
+  setScanStatus('<div class="notice ok">Added “'+esc(bk.title)+'”. Scan the next one. This haul: '+haulBooks.length+'</div>');
 }
 function setScanStatus(html){ $("scanStatus").innerHTML=html; $("grownStatus").innerHTML=""; }
 
@@ -775,7 +800,7 @@ $("haulToggle").addEventListener("click",function(){
   haulMode=!haulMode;
   this.textContent=haulMode?"ON":"OFF"; this.setAttribute("aria-pressed",haulMode?"true":"false"); this.classList.toggle("on",haulMode);
   $("haulBar").classList.toggle("show",haulMode);
-  if(haulMode){ haulBooks=[]; $("haulCount").textContent="0"; toast("🧺 Haul Mode ON — scan, add, scan next!"); speak("Haul mode on! Let's scan lots of books!"); }
+  if(haulMode){ haulBooks=[]; $("haulCount").textContent="0"; toast("Haul Mode on. Scan, add, scan next."); speak("Haul mode on."); }
   else if(haulBooks.length){ showHaulSummary(); }
 });
 $("haulDone").addEventListener("click",function(){
@@ -783,12 +808,12 @@ $("haulDone").addEventListener("click",function(){
 });
 function showHaulSummary(){
   if(!haulBooks.length){ toast("No books in this haul yet."); return; }
-  $("haulSummaryText").textContent="Monroe's Haul — "+haulBooks.length+" book"+(haulBooks.length===1?"":"s")+" today! 🎉";
+  $("haulSummaryText").textContent="Monroe's Haul — "+haulBooks.length+" book"+(haulBooks.length===1?"":"s")+" today.";
   $("haulGrid").innerHTML=haulBooks.map(function(bk){ return '<div class="bookcard">'+coverHTML(bk)+'<div class="t">'+esc(bk.title)+'</div></div>'; }).join("");
   var m=metrics(); var earned=earnedIds(m);
   var haulBadges=BADGES.filter(function(bd){return earned[bd.id]&&(bd.metric==="maxDay"||bd.metric==="maxWeek");});
-  $("haulBadges").innerHTML=haulBadges.length?'<div class="notice ok" style="text-align:center">🎖️ Haul badges earned: '+haulBadges.map(function(x){return esc(x.name);}).join(" · ")+'</div>':"";
-  $("haulOverlay").classList.add("open"); speak("Great haul, Monroe! "+haulBooks.length+" books today!"); haulBooks=[];
+  $("haulBadges").innerHTML=haulBadges.length?'<div class="notice ok" style="text-align:center">Badges earned on this haul: '+haulBadges.map(function(x){return esc(x.name);}).join(" · ")+'</div>':"";
+  $("haulOverlay").classList.add("open"); speak("Haul complete. "+haulBooks.length+" books today."); haulBooks=[];
 }
 $("haulClose").addEventListener("click",function(){ $("haulOverlay").classList.remove("open"); showView("books"); });
 
@@ -797,11 +822,11 @@ $("isbnLookup").addEventListener("click",function(){ lookupISBN($("isbnInput").v
 $("isbnInput").addEventListener("keydown",function(e){ if(e.key==="Enter") lookupISBN(this.value,false); });
 $("titleSearch").addEventListener("click",function(){
   var q=$("searchInput").value.trim(); if(!q) return;
-  $("searchResults").innerHTML='<p class="muted" style="font-weight:800">🔍 Searching…</p>';
+  $("searchResults").innerHTML='<p class="muted" style="font-weight:800">Searching…</p>';
   searchByTitle(q).then(function(list){
     if(!list.length){ $("searchResults").innerHTML='<p class="muted" style="font-weight:800">No books found with that name — try different words.</p>'; return; }
     $("searchResults").innerHTML=list.map(function(d,i){ return '<button class="resultitem" data-idx="'+i+'"><img src="'+esc(d.cover||"")+'" alt="" onerror="this.style.visibility=\'hidden\'"><span style="flex:1"><b>'+esc(d.title)+'</b><br><span class="muted">'+esc(d.author||"")+(d.year?" · "+esc(d.year):"")+'</span></span></button>'; }).join("");
-    $("searchResults").querySelectorAll("[data-idx]").forEach(function(el){ el.addEventListener("click",function(){ var d=list[Number(el.getAttribute("data-idx"))]; if(haulMode){ if(d.isbn&&findByISBN(d.isbn)){ toast("⚠️ Already in your library — skipped."); return; } finishHaulAdd(d,false); } else showConfirm(d); }); });
+    $("searchResults").querySelectorAll("[data-idx]").forEach(function(el){ el.addEventListener("click",function(){ var d=list[Number(el.getAttribute("data-idx"))]; if(haulMode){ if(d.isbn&&findByISBN(d.isbn)){ toast("Already in your library — skipped."); return; } finishHaulAdd(d,false); } else showConfirm(d); }); });
   }).catch(function(){ $("searchResults").innerHTML='<p class="muted" style="font-weight:800">Search didn\'t work — check your internet and try again.</p>'; });
 });
 
@@ -848,7 +873,7 @@ function startCamera(){
     if(!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia){
       setScanStatus(scanErrorHTML(new Error("getUserMedia is not available in this browser"),"This browser can\u2019t open the camera here. On iPhone, open this page in Safari over the secure (https) link.")); return;
     }
-    setScanStatus('<div class="notice ok">📷 Opening the camera… if your phone asks, tap “Allow”.</div>');
+    setScanStatus('<div class="notice ok">Opening the camera. If your phone asks, tap Allow.</div>');
     navigator.mediaDevices.getUserMedia({ video:{ facingMode:{ ideal:"environment" } }, audio:false })
      .then(function(s){
        if(gen!==scanGen){ s.getTracks().forEach(function(t){ t.stop(); }); return; }
@@ -862,7 +887,7 @@ function startCamera(){
        }catch(e){ detector=null; startZXingPath(gen); return; }
        $("videoBox").classList.add("live"); $("camPlaceholder").style.display="none";
        $("startCam").disabled=true; $("stopCam").disabled=false;
-       setScanStatus('<div class="notice ok">📷 Camera on! Hold a barcode inside the frame.</div>');
+       setScanStatus('<div class="notice ok">Camera on. Hold a barcode inside the frame.</div>');
        detectLoopOn=true; detectLoop();
      })
      .catch(function(err){
@@ -882,7 +907,7 @@ function startZXingPath(gen){
       zxingReader=makeZxingReader();
       $("videoBox").classList.add("live"); $("camPlaceholder").style.display="none";
       $("startCam").disabled=true; $("stopCam").disabled=false;
-      setScanStatus('<div class="notice ok">📷 Camera on! Hold a barcode inside the frame.</div>');
+      setScanStatus('<div class="notice ok">Camera on. Hold a barcode inside the frame.</div>');
       var cb=function(result,err){
         if(gen!==scanGen) return;
         if(result){ try{ onCode(result.getText()); }catch(e){} }
@@ -935,7 +960,7 @@ $("photoScanBtn").addEventListener("click",function(){ $("photoScanInput").click
 $("photoScanInput").addEventListener("change",function(){
   var file=this.files&&this.files[0]; this.value="";
   if(!file) return;
-  setScanStatus('<div class="notice ok">🔍 Looking at your photo…</div>');
+  setScanStatus('<div class="notice ok">Reading your photo…</div>');
   var url=URL.createObjectURL(file);
   var img=new Image();
   img.onload=function(){
@@ -975,15 +1000,15 @@ $("photoScanInput").addEventListener("change",function(){
 /* ============ grown-ups ============ */
 function applySettingsButtons(){
   document.documentElement.setAttribute("data-theme", settings.dark?"dark":"light");
-  $("darkToggle").textContent="🌙 Bedtime Dark Mode: "+(settings.dark?"ON":"OFF");
+  $("darkToggle").textContent="Bedtime Dark Mode: "+(settings.dark?"ON":"OFF");
   $("darkToggle").setAttribute("aria-pressed",settings.dark?"true":"false");
-  $("voiceToggle").textContent="🔊 Voice Cheers: "+(settings.voice?"ON":"OFF");
+  $("voiceToggle").textContent="Voice: "+(settings.voice?"ON":"OFF");
   $("voiceToggle").setAttribute("aria-pressed",settings.voice?"true":"false");
   document.querySelector('meta[name="theme-color"]').setAttribute("content", settings.dark?"#121A15":"#205C40");
 }
 $("darkToggle").addEventListener("click",function(){ settings.dark=!settings.dark; saveSettings(); applySettingsButtons(); });
-$("voiceToggle").addEventListener("click",function(){ settings.voice=!settings.voice; saveSettings(); applySettingsButtons(); if(settings.voice) speak("Voice cheers on!"); });
-$("goalSave").addEventListener("click",function(){ var v=parseInt($("goalInput").value,10); if(v>=1&&v<=5000){ settings.goal=v; saveSettings(); render(); toast("🏆 Goal saved: "+v+" books!"); } });
+$("voiceToggle").addEventListener("click",function(){ settings.voice=!settings.voice; saveSettings(); applySettingsButtons(); if(settings.voice) speak("Voice on."); });
+$("goalSave").addEventListener("click",function(){ var v=parseInt($("goalInput").value,10); if(v>=1&&v<=5000){ settings.goal=v; saveSettings(); render(); toast("Goal saved: "+v+" books."); } });
 function download(name,content,type){
   var blob=new Blob([content],{type:type}); var url=URL.createObjectURL(blob);
   var a=document.createElement("a"); a.href=url; a.download=name; document.body.appendChild(a); a.click(); a.remove();
@@ -992,18 +1017,18 @@ function download(name,content,type){
 function grownMsg(html){ $("grownStatus").innerHTML=html; }
 $("exportTxt").addEventListener("click",function(){
   var lines=["Monroe's Library — "+books.length+" books","Exported "+new Date().toLocaleDateString(),""].
-    concat(books.map(function(b,i){ return (i+1)+". "+b.title+(b.author?" — "+b.author:"")+(b.isbn?" (ISBN "+b.isbn+")":"")+(b.favorite?" ⭐":"")+(b.read?" ✅ read":""); }));
-  download("monroes-library.txt",lines.join("\n"),"text/plain"); grownMsg('<div class="notice ok">⬇️ Book list downloaded (.txt).</div>');
+    concat(books.map(function(b,i){ return (i+1)+". "+b.title+(b.author?" — "+b.author:"")+(b.isbn?" (ISBN "+b.isbn+")":"")+(b.favorite?" (favorite)":"")+(b.read?" (read)":""); }));
+  download("monroes-library.txt",lines.join("\n"),"text/plain"); grownMsg('<div class="notice ok">Book list downloaded (.txt).</div>');
 });
 $("exportCsv").addEventListener("click",function(){
   function q(v){ return '"'+String(v==null?"":v).replace(/"/g,'""')+'"'; }
   var rows=[["Title","Author","ISBN","Publisher","Year","Pages","Favorite","Read","Date Added"].join(",")].
     concat(books.map(function(b){ return [q(b.title),q(b.author),q(b.isbn),q(b.publisher),q(b.year),q(b.pages),b.favorite?"Yes":"No",b.read?"Yes":"No",q((b.addedAt||"").slice(0,10))].join(","); }));
-  download("monroes-library.csv",rows.join("\n"),"text/csv"); grownMsg('<div class="notice ok">⬇️ Spreadsheet downloaded (.csv).</div>');
+  download("monroes-library.csv",rows.join("\n"),"text/csv"); grownMsg('<div class="notice ok">Spreadsheet downloaded (.csv).</div>');
 });
 $("exportJson").addEventListener("click",function(){
   download("monroes-library-backup.json",JSON.stringify({app:"monroes-library",version:1,exportedAt:new Date().toISOString(),settings:settings,books:books},null,2),"application/json");
-  grownMsg('<div class="notice ok">⬇️ Backup downloaded (.json). Send it to the other phone and use Import there to share the library.</div>');
+  grownMsg('<div class="notice ok">Backup downloaded (.json). Send it to the other phone and use Import there to share the library.</div>');
 });
 $("importBtn").addEventListener("click",function(){ $("importFile").click(); });
 $("importFile").addEventListener("change",function(){
@@ -1022,13 +1047,13 @@ $("importFile").addEventListener("change",function(){
         added++;
       });
       saveBooks(); render();
-      grownMsg('<div class="notice ok">⬆️ Import done: '+added+' book(s) added'+(skipped?", "+skipped+" skipped (already here or unreadable)":"")+'.</div>');
+      grownMsg('<div class="notice ok">Import done: '+added+' book(s) added'+(skipped?", "+skipped+" skipped (already here or unreadable)":"")+'.</div>');
     }catch(e){ grownMsg('<div class="notice err">That file couldn\'t be read. Pick a Monroe\'s Library backup (.json) file.</div>'); }
     $("importFile").value="";
   };
   reader.readAsText(file);
 });
-$("printBtn").addEventListener("click",function(){ showView("books"); toast("📋 Printable list ready — use your browser's Print (Share → Print on iPhone) to print or save it."); });
+$("printBtn").addEventListener("click",function(){ showView("books"); toast("Printable list ready. Use your browser's Print (Share, then Print on iPhone) to print or save it."); });
 $("clearBtn").addEventListener("click",function(){
   askConfirm("Clear the whole library?","Every book on this phone will be removed. This can't be undone — export a backup first if you want to keep them.",function(){
     books=[]; saveBooks(); render(); grownMsg('<div class="notice ok">Library cleared. Ready for a fresh start!</div>');

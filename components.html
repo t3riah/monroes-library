@@ -97,7 +97,7 @@ a{color:var(--catalog)}
 .stat b{display:block;font-family:var(--font-display);font-weight:900;font-size:31px;color:var(--primary)}
 html[data-theme="dark"] .stat b{color:var(--gold)}
 .stat span{font-size:12px;font-weight:800;letter-spacing:.07em;text-transform:uppercase;color:var(--muted)}
-/* ---------- Olive / speech: reader's guide ---------- */
+/* ---------- greeting ---------- */
 .owlrow{display:flex;gap:14px;align-items:center}
 .owl{font-size:58px;line-height:1;flex:none;background:var(--brass-soft);width:86px;height:86px;border-radius:50%;
   display:grid;place-items:center;border:2px solid var(--accent);box-shadow:inset 0 0 0 4px var(--card)}
@@ -190,10 +190,7 @@ html[data-theme="dark"] .tabbtn.on{color:var(--gold)}
   background:var(--ink);color:var(--bg);padding:13px 20px;border-radius:999px;font-weight:800;z-index:120;opacity:0;
   pointer-events:none;transition:.3s;max-width:92vw;text-align:center;box-shadow:var(--shadow-raised)}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
-.confetti{position:fixed;inset:0;pointer-events:none;z-index:110;overflow:hidden;display:none}
-.confetti.show{display:block}
-.confetti i{position:absolute;top:-16px;width:11px;height:16px;border-radius:3px;animation:fall 1.8s ease-in forwards}
-@keyframes fall{to{transform:translateY(105vh) rotate(560deg);opacity:.85}}
+}
 .resultitem{display:flex;gap:12px;align-items:center;background:var(--card);border:1px solid var(--line);
   border-radius:var(--radius);padding:10px;margin-bottom:9px;width:100%;text-align:left;box-shadow:var(--shadow-card)}
 .resultitem img{width:46px;height:68px;object-fit:cover;border-radius:6px;background:var(--catalog-soft)}
@@ -213,8 +210,16 @@ html[data-theme="dark"] .tabbtn.on{color:var(--gold)}
   .bookgrid{grid-template-columns:repeat(4,1fr)}
 }
 @media (prefers-reduced-motion: reduce){
-  .scanline{animation:none}.confetti i{animation-duration:.01s}
+  .scanline{animation:none}
 }
+.tabbtn .ic svg{width:24px;height:24px;display:block;margin:0 auto}
+.btn svg{width:19px;height:19px;vertical-align:-4px}
+.bigbtn svg{width:26px;height:26px;vertical-align:-6px}
+.badge .ic svg{width:30px;height:30px}
+.bookcard .marks{display:flex;gap:5px;justify-content:center;height:17px;color:#B98A1C}
+.bookcard .marks svg{width:15px;height:15px}
+.jarstars svg{width:15px;height:15px;color:#B98A1C}
+.coverph svg{width:36px;height:36px;opacity:.45}
 </style></head><body>
 <main class="wrap" style="padding-top:22px">
  <h2 class="display" style="font-size:30px">Monroe's Library — Components</h2>
@@ -235,8 +240,8 @@ html[data-theme="dark"] .tabbtn.on{color:var(--gold)}
  </div>
  <div class="card"><h3>Progress + Badge + Stat</h3>
   <div class="progress orange"><i style="width:42%"></i></div><div style="height:12px"></div>
-  <div class="badgegrid"><div class="badge"><span class="ic">📖</span><b>First Book</b><p>Earned</p></div>
-  <div class="badge locked"><span class="ic">🏆</span><b>100 Book Club</b><p>Locked</p></div></div>
+  <div class="badgegrid"><div class="badge"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg></span><b>First Book</b><p>Earned</p></div>
+  <div class="badge locked"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="6"/><path d="M15.5 12.9 17 22l-5-3-5 3 1.5-9.1"/></svg></span><b>100 Book Club</b><p>Locked</p></div></div>
   <div style="height:12px"></div>
   <div class="statgrid"><div class="stat"><b>42</b><span>My Books</span></div><div class="stat"><b>7</b><span>This Week</span></div></div>
  </div>
