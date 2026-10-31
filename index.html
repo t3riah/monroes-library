@@ -166,6 +166,16 @@ label.flabel{display:block;font-weight:800;font-size:13px;letter-spacing:.07em;t
 .bookcard .t{font-weight:800;font-size:14px;line-height:1.25;margin-top:7px;display:-webkit-box;
   -webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 .bookcard .a{font-size:12px;color:var(--muted);font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+/* ---------- Library uniformity: one cover system, equal cards ---------- */
+.bookcard{display:flex;flex-direction:column}
+.bookcard img{display:block}
+.bookcard .t{min-height:calc(1.25em * 2)}
+.bookcard .marks{margin-top:auto;padding-top:4px}
+.shelfcard img{display:block}
+.resultitem .coverph{width:46px;height:68px;flex:none;border-radius:6px}
+.lib-letter{font-size:20px;margin:22px 0 10px}
+.lib-letter:first-child{margin-top:6px}
 /* ---------- Chip (filter tabs) ---------- */
 .chips{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}
 .chip{min-height:44px;padding:8px 16px;border-radius:999px;background:var(--card);border:1px solid var(--line);
@@ -211,7 +221,7 @@ label.flabel{display:block;font-weight:800;font-size:13px;letter-spacing:.07em;t
 .nowbar-text{min-width:0}
 .nowbar-text b{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .nowbar-text span{display:block;font-size:12px;color:var(--muted);font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.nowbar-cover img,.nowbar-cover .coverph{width:46px;height:46px;object-fit:cover;border-radius:8px;flex:none}
+.nowbar-cover img,.nowbar-cover .coverph{width:34px;height:51px;object-fit:cover;border-radius:8px;flex:none}
 .nowbar-btn{flex:none;min-height:40px;padding:6px 12px;border-radius:999px;background:var(--catalog-soft);font-weight:800}
 .nowbar-btn.primary{background:var(--primary);color:#FFFDF4}
 body.has-nowbar{padding-bottom:calc(var(--tab-h) + 62px + var(--sab) + 14px)}
@@ -427,13 +437,13 @@ html[data-theme="dark"] .tabbtn.on{color:var(--gold)}
     </div>
     <label class="flabel" for="sortSel">Put in order by…</label>
     <select class="field" id="sortSel">
-      <option value="newest">Newest first</option>
-      <option value="oldest">Oldest first</option>
       <option value="title">Book name A–Z</option>
       <option value="author">Author A–Z</option>
+      <option value="newest">Newest first</option>
+      <option value="oldest">Oldest first</option>
     </select>
     <div style="height:14px"></div>
-    <div class="bookgrid" id="bookGrid"></div>
+    <div id="bookGrid"></div>
     <p class="muted" id="booksEmpty" style="font-weight:800;text-align:center;padding:26px 0;display:none">No books here yet.<br>Tap “Add a Book” and scan your first one.</p>
     <div class="printonly"><h2>Monroe's Library — book list</h2><p id="printMeta"></p></div>
   </section>
@@ -793,9 +803,21 @@ function renderBooks(){
   });
   $("booksCount").textContent="("+list.length+")";
   $("booksEmpty").style.display=list.length?"none":"block";
-  $("bookGrid").innerHTML=list.map(function(bk){
-    return '<button class="bookcard" data-open="'+esc(bk.id)+'">'+coverHTML(bk)+'<div class="t">'+esc(bk.title)+'</div><div class="a">'+esc(bk.author||"")+'</div><div class="marks">'+(bk.favorite?IC.star:"")+(bk.read?IC.check:"")+'</div></button>';
-  }).join("");
+  /* grouped sections: the visible structure. Title/author sorts group by first
+     letter (A-Z, then #); date sorts group by month added. */
+  var MONTHS=["January","February","March","April","May","June","July","August","September","October","November","December"];
+  var gmap={}, gorder=[];
+  function groupOf(bk){
+    if(sort==="author"){ var a=(bk.author||"").trim(); if(!a) return {key:"#",label:"#"}; var c=a[0].toUpperCase(); return {key:(c>="A"&&c<="Z")?c:"#",label:(c>="A"&&c<="Z")?c:"#"}; }
+    if(sort==="newest"||sort==="oldest"){ var d=(bk.addedAt||"").slice(0,7); if(!/^\d{4}-\d{2}$/.test(d)) return {key:"0000-00",label:"No date"}; return {key:d,label:MONTHS[parseInt(d.slice(5,7),10)-1]+" "+d.slice(0,4)}; }
+    var t=(bk.title||"").trim(); if(!t) return {key:"#",label:"#"}; var c2=t[0].toUpperCase(); return {key:(c2>="A"&&c2<="Z")?c2:"#",label:(c2>="A"&&c2<="Z")?c2:"#"};
+  }
+  list.forEach(function(bk){ var g=groupOf(bk); if(!gmap[g.key]){ gmap[g.key]={label:g.label,items:[]}; gorder.push(g.key); } gmap[g.key].items.push(bk); });
+  if(sort==="title"||sort==="author"){ gorder.sort(function(a,b){ if(a==="#") return 1; if(b==="#") return -1; return a.localeCompare(b); }); }
+  else if(sort==="newest"){ gorder.sort(function(a,b){ return b.localeCompare(a); }); }
+  else { gorder.sort(function(a,b){ return a.localeCompare(b); }); }
+  function cardHTML(bk){ return '<button class="bookcard" data-open="'+esc(bk.id)+'">'+coverHTML(bk)+'<div class="t">'+esc(bk.title)+'</div><div class="a">'+esc(bk.author||"")+'</div><div class="marks">'+(bk.favorite?IC.star:"")+(bk.read?IC.check:"")+'</div></button>'; }
+  $("bookGrid").innerHTML=gorder.map(function(k){ return '<h3 class="lib-letter">'+esc(gmap[k].label)+'</h3><div class="bookgrid">'+gmap[k].items.map(cardHTML).join("")+'</div>'; }).join("");
   bindOpenButtons($("bookGrid"));
   $("printMeta").textContent=books.length+" books · Printed "+new Date().toLocaleDateString();
 }
