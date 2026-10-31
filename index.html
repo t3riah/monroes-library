@@ -331,9 +331,11 @@ html[data-theme="dark"] .tabbtn.on{color:var(--gold)}
       <h2>Type the ISBN</h2>
       <p class="muted" style="font-weight:700">The ISBN is the number under the barcode, on the back of the book.</p>
       <label class="flabel" for="isbnInput">ISBN number</label>
-      <input class="field" id="isbnInput" inputmode="numeric" autocomplete="off" placeholder="e.g. 9780142410375">
+      <input class="field" id="isbnInput" inputmode="numeric" autocomplete="off" placeholder="e.g. 9780399226908">
       <div style="height:10px"></div>
       <button class="btn orange" id="isbnLookup" type="button" style="width:100%"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg> Find This Book</button>
+      <div style="height:10px"></div>
+      <button class="btn ghost" id="manualOpenBtn" type="button" style="width:100%">✏️ Can't find it? Add it by hand</button>
     </div>
     <div class="card">
       <h2>Find by Name</h2>
@@ -346,6 +348,25 @@ html[data-theme="dark"] .tabbtn.on{color:var(--gold)}
     <div class="card" id="confirmCard" style="display:none">
       <h2>Is this your book?</h2>
       <div id="confirmBody"></div>
+    </div>
+    <div class="card" id="manualCard" style="display:none">
+      <h2>✏️ Add a Book by Hand</h2>
+      <p class="muted" style="font-weight:700">No catalog luck? No problem — type what you know and it goes straight on the shelf.</p>
+      <label class="flabel" for="manualTitle">Book name *</label>
+      <input class="field" id="manualTitle" autocomplete="off" placeholder="e.g. The Very Hungry Caterpillar">
+      <label class="flabel" for="manualAuthor">Author</label>
+      <input class="field" id="manualAuthor" autocomplete="off" placeholder="e.g. Eric Carle">
+      <div class="row">
+        <div><label class="flabel" for="manualPublisher">Publisher</label><input class="field" id="manualPublisher" autocomplete="off"></div>
+        <div class="fix" style="flex:0 0 110px"><label class="flabel" for="manualYear">Year</label><input class="field" id="manualYear" inputmode="numeric" autocomplete="off"></div>
+      </div>
+      <label class="flabel" for="manualIsbn">ISBN (if you have it)</label>
+      <input class="field" id="manualIsbn" inputmode="numeric" autocomplete="off" placeholder="Numbers under the barcode">
+      <div style="height:12px"></div>
+      <div class="row">
+        <button class="btn primary" id="manualAdd" type="button">Add to Library</button>
+        <button class="btn ghost fix" id="manualCancel" type="button" style="flex:none">Never mind</button>
+      </div>
     </div>
   </section>
 
@@ -724,28 +745,134 @@ function normalizeDoc(doc){
     pages:doc.number_of_pages_median||"", description:"",
     cover: doc.cover_i? "https://covers.openlibrary.org/b/id/"+doc.cover_i+"-L.jpg" : (isbn?olCover(isbn):"") };
 }
+/* ============ ISBN helpers: check digit, 10<->13 conversion, barcode add-on strip ============ */
+function isbnCheckDigitOk(v){
+  if(/^\d{13}$/.test(v)){ var s=0; for(var i=0;i<12;i++){ s+=Number(v[i])*(i%2?3:1); } return (10-(s%10))%10===Number(v[12]); }
+  if(/^\d{9}[\dX]$/.test(v)){ var t=0; for(var j=0;j<9;j++){ t+=Number(v[j])*(10-j); } t+=(v[9]==="X"?10:Number(v[9])); return t%11===0; }
+  return false;
+}
+function isbn13to10(v){
+  if(!/^\d{13}$/.test(v)||v.slice(0,3)!=="978") return "";
+  var core=v.slice(3,12), t=0; for(var i=0;i<9;i++){ t+=Number(core[i])*(10-i); }
+  var r=(11-(t%11))%11; return core+(r===10?"X":String(r));
+}
+function isbn10to13(v){
+  if(!/^\d{9}[\dX]$/.test(v)) return "";
+  var core="978"+v.slice(0,9), s=0; for(var i=0;i<12;i++){ s+=Number(core[i])*(i%2?3:1); }
+  return core+String((10-(s%10))%10);
+}
+function isbnCandidates(v){
+  var out=[v], conv=(v.length===13?isbn13to10(v):isbn10to13(v));
+  if(conv&&out.indexOf(conv)<0) out.push(conv); return out;
+}
+/* Some barcodes print a 5-digit price add-on after the ISBN (18 digits). The book is the first 13. */
+function stripAddon(v){ if(v.length>13&&/^978|979/.test(v)) return v.slice(0,13); return v; }
+function fetchTimeout(url,ms){
+  /* Never throws synchronously: a sync throw would escape the lookup chain's
+     per-step error classification, so it is converted to a rejected promise. */
+  try{
+    if(typeof AbortController==="undefined") return fetch(url);
+    var c=new AbortController(), t=setTimeout(function(){ c.abort(); }, ms||8000);
+    return fetch(url,{signal:c.signal}).then(function(r){ clearTimeout(t); return r; },
+      function(e){ clearTimeout(t); throw e; });
+  }catch(e){ return Promise.reject(e); }
+}
+function isNetworkErr(e){ return !!e && (e.name==="TypeError" || e.name==="AbortError" || /failed to fetch|network|abort/i.test(e.message||"")); }
+
+/* ============ multi-source book lookup: Open Library (3 ways) then Google Books ============
+   Every step is tried for both ISBN forms. Errors are classified, never lumped together:
+   a step that 404s/comes back empty is "notfound"; a step that cannot reach the network
+   is "offline". Only if every step fails do we give up, and the caller tells the user
+   WHICH failure it was. Google Books is last because it has historically rate-limited
+   (429) in testing; a 429 is reported as "busy", not "not found". */
 function fetchByISBN(isbn){
   isbn=cleanISBN(isbn);
-  return fetch("https://openlibrary.org/isbn/"+encodeURIComponent(isbn)+".json")
-   .then(function(r){ if(!r.ok) throw new Error("notfound"); return r.json(); })
-   .then(function(j){
-     var bk={ isbn:isbn, title:j.title||"Untitled", author:"", publisher:j.publishers?j.publishers[0]:"", year:(j.publish_date||"").replace(/.*?(\d{4}).*/,"$1"), pages:j.number_of_pages||"", description:(typeof j.description==="string"?j.description:(j.description&&j.description.value)||""), cover:olCover(isbn) };
-     var keys=(j.authors||[]).slice(0,3).map(function(a){return a.key;});
-     if(!keys.length) return bk;
-     return Promise.all(keys.map(function(k){ return fetch("https://openlibrary.org"+k+".json").then(function(r){return r.json();}).catch(function(){return null;}); }))
-       .then(function(list){ bk.author=list.filter(Boolean).map(function(a){return a.name;}).filter(Boolean).join(", "); return bk; });
-   })
-   .catch(function(){
-     return fetch("https://openlibrary.org/search.json?isbn="+encodeURIComponent(isbn)+"&limit=1")
-       .then(function(r){return r.json();})
-       .then(function(j){ if(j.docs&&j.docs.length) return normalizeDoc(j.docs[0]); throw new Error("notfound"); });
-   });
+  var forms=isbnCandidates(isbn), sawNetwork=false, sawBusy=false;
+  function olEdition(form){
+    return fetchTimeout("https://openlibrary.org/isbn/"+encodeURIComponent(form)+".json",8000)
+      .then(function(r){ if(!r.ok) throw new Error("notfound"); return r.json(); })
+      .then(function(j){
+        var bk={ isbn:form, title:j.title||"Untitled", author:"", publisher:j.publishers?j.publishers[0]:"", year:(j.publish_date||"").replace(/.*?(\d{4}).*/,"$1"), pages:j.number_of_pages||"", description:(typeof j.description==="string"?j.description:(j.description&&j.description.value)||""), cover:olCover(form), source:"Open Library" };
+        var keys=(j.authors||[]).slice(0,3).map(function(a){ return a.key; });
+        if(!keys.length) return bk;
+        return Promise.all(keys.map(function(k){ return fetchTimeout("https://openlibrary.org"+k+".json",8000).then(function(r){ return r.json(); }).catch(function(){ return null; }); }))
+          .then(function(list){ bk.author=list.filter(Boolean).map(function(a){ return a.name; }).filter(Boolean).join(", "); return bk; });
+      });
+  }
+  function olBooksApi(form){
+    return fetchTimeout("https://openlibrary.org/api/books?bibkeys=ISBN:"+encodeURIComponent(form)+"&format=json&jscmd=data",8000)
+      .then(function(r){ return r.json(); })
+      .then(function(j){
+        var d=j["ISBN:"+form]; if(!d||!d.title) throw new Error("notfound");
+        var cov=(d.cover&&(d.cover.large||d.cover.medium||d.cover.small))||olCover(form);
+        return { isbn:form, title:d.title, author:(d.authors||[]).map(function(a){ return a.name; }).join(", "), publisher:(d.publishers||[]).map(function(p){ return p.name; })[0]||"", year:(d.publish_date||"").replace(/.*?(\d{4}).*/,"$1"), pages:d.number_of_pages||"", description:"", cover:cov, source:"Open Library" };
+      });
+  }
+  function olSearch(form){
+    return fetchTimeout("https://openlibrary.org/search.json?isbn="+encodeURIComponent(form)+"&limit=1",8000)
+      .then(function(r){ return r.json(); })
+      .then(function(j){ if(j.docs&&j.docs.length){ var d=normalizeDoc(j.docs[0]); d.source="Open Library"; return d; } throw new Error("notfound"); });
+  }
+  function googleBooks(form){
+    return fetchTimeout("https://www.googleapis.com/books/v1/volumes?q=isbn:"+encodeURIComponent(form),8000)
+      .then(function(r){ return r.json(); })
+      .then(function(j){
+        if(j.error&&j.error.code===429) throw new Error("ratelimited");
+        if(!j.totalItems||!j.items||!j.items.length) throw new Error("notfound");
+        var vi=j.items[0].volumeInfo||{}, ids=vi.industryIdentifiers||[], id13="", id10="";
+        ids.forEach(function(x){ if(x.type==="ISBN_13") id13=x.identifier; if(x.type==="ISBN_10") id10=x.identifier; });
+        var img=vi.imageLinks||{}, cov=img.large||img.medium||img.small||img.thumbnail||olCover(form);
+        if(cov&&cov.indexOf("zoom=1")>=0) cov=cov.replace("zoom=1","zoom=2");
+        return { isbn:id13||id10||form, title:vi.title||"Untitled", author:(vi.authors||[]).join(", "), publisher:vi.publisher||"", year:(vi.publishedDate||"").slice(0,4), pages:vi.pageCount||"", description:vi.description||"", cover:cov, source:"Google Books" };
+      });
+  }
+  var steps=[];
+  forms.forEach(function(f){
+    steps.push(function(){ return olEdition(f); });
+    steps.push(function(){ return olBooksApi(f); });
+    steps.push(function(){ return olSearch(f); });
+    steps.push(function(){ return googleBooks(f); });
+  });
+  var chain=Promise.resolve(null);
+  steps.forEach(function(step){
+    chain=chain.then(function(found){
+      if(found) return found;
+      return step().then(function(bk){ return bk; }, function(err){
+        if(err&&err.message==="ratelimited") sawBusy=true;
+        else if(isNetworkErr(err)) sawNetwork=true;
+        return null;
+      });
+    });
+  });
+  return chain.then(function(found){
+    if(found) return found;
+    if(sawNetwork) throw new Error("offline");
+    if(sawBusy) throw new Error("ratelimited");
+    throw new Error("notfound");
+  });
 }
+
 function searchByTitle(q){
-  return fetch("https://openlibrary.org/search.json?title="+encodeURIComponent(q)+"&limit=10")
+  return fetchTimeout("https://openlibrary.org/search.json?title="+encodeURIComponent(q)+"&limit=10",8000)
     .then(function(r){return r.json();})
-    .then(function(j){ return (j.docs||[]).filter(function(d){return d.title;}).map(normalizeDoc); });
+    .then(function(j){ return (j.docs||[]).filter(function(d){return d.title;}).map(normalizeDoc); })
+    .then(function(list){
+      if(list.length) return list;
+      return fetchTimeout("https://www.googleapis.com/books/v1/volumes?q=intitle:"+encodeURIComponent(q)+"&maxResults=10",8000)
+        .then(function(r){ return r.json(); })
+        .then(function(j){
+          if(!j.items) return [];
+          return j.items.map(function(it){
+            var vi=it.volumeInfo||{}, ids=vi.industryIdentifiers||[], id13="", id10="";
+            ids.forEach(function(x){ if(x.type==="ISBN_13") id13=x.identifier; if(x.type==="ISBN_10") id10=x.identifier; });
+            var img=vi.imageLinks||{}, cov=img.small||img.thumbnail||"";
+            if(cov&&cov.indexOf("zoom=1")>=0) cov=cov.replace("zoom=1","zoom=2");
+            return { isbn:id13||id10, title:vi.title||"Untitled", author:(vi.authors||[]).join(", "), publisher:vi.publisher||"", year:(vi.publishedDate||"").slice(0,4), pages:vi.pageCount||"", description:vi.description||"", cover:cov, source:"Google Books" };
+          }).filter(function(d){ return d.title; });
+        });
+    });
 }
+
 
 /* ============ add flow ============ */
 var haulMode=false, haulBooks=[], pendingBook=null;
@@ -768,6 +895,7 @@ function showConfirm(data){
   $("confirmBody").innerHTML=
     '<div style="display:flex;gap:14px;flex-wrap:wrap"><img style="width:110px;aspect-ratio:2/3;object-fit:cover;border-radius:12px;background:var(--sky-soft)" src="'+esc(data.cover||"")+'" alt="Cover of '+esc(data.title)+'" onerror="this.style.display=\'none\'">'
     +'<div style="flex:1;min-width:190px"><h3 style="font-size:22px">'+esc(data.title)+'</h3><p style="font-weight:800;margin:4px 0">'+esc(data.author||"Author not listed")+'</p>'
+    +'<p class="muted" style="font-weight:700;margin:2px 0">'+(data.source?("Found in "+esc(data.source)):"")+'</p>'
     +'<p class="muted" style="font-weight:700;margin:2px 0">'+esc([data.publisher,data.year].filter(Boolean).join(" · "))+(data.pages?" · "+esc(data.pages)+" pages":"")+'</p>'
     +(data.isbn?'<p class="muted" style="font-weight:700">ISBN: '+esc(data.isbn)+'</p>':"")+'</div></div>'
     +(dup?'<div class="notice warn">You already have this book in your library. Adding it again would make two copies.</div>':"")
@@ -785,16 +913,24 @@ function finishAdd(data,viaScan){
   if(!haulMode){ toast("Added. Find it in My Books."); }
 }
 function lookupISBN(isbn,viaScan){
-  isbn=cleanISBN(isbn);
+  isbn=stripAddon(cleanISBN(isbn));
   if(!validISBN(isbn)){ setScanStatus('<div class="notice err">That number doesn\'t look like an ISBN yet — check the numbers under the barcode and try again.</div>'); return; }
+  if(!isbnCheckDigitOk(isbn)){ setScanStatus('<div class="notice err">That number doesn\'t add up — the scan probably misread one digit. Scan it again, steady and close, or fix the number in the box and tap Find This Book.</div>'); $("isbnInput").value=isbn; return; }
   var dup=findByISBN(isbn);
+  if(!dup){ var forms=isbnCandidates(isbn); for(var i=0;i<forms.length;i++){ if(forms[i]!==isbn){ dup=findByISBN(forms[i]); if(dup) break; } } }
   if(haulMode && dup){ setScanStatus('<div class="notice warn">Already in your library — skipped "'+esc(dup.title)+'" so there are not two copies.</div>'); return; }
-  setScanStatus('<div class="notice ok">Looking up your book…</div>');
+  setScanStatus('<div class="notice ok">Looking up your book… checking Open Library, then Google Books.</div>');
   fetchByISBN(isbn).then(function(data){
     setScanStatus("");
     if(haulMode){ finishHaulAdd(data,viaScan); } else { showConfirm(data); }
-  }).catch(function(){
-    setScanStatus('<div class="notice err">We couldn\'t find that book. Try typing its name in “Find by Name” below the ISBN box.</div>');
+  }).catch(function(err){
+    if(err&&err.message==="offline"){
+      setScanStatus('<div class="notice err">No connection right now — check Wi-Fi and try again. Nothing was lost: the number is still in the box above.</div>');
+    } else if(err&&err.message==="ratelimited"){
+      setScanStatus('<div class="notice err">Open Library didn\'t have it, and Google Books is busy right now — wait a bit and tap Find This Book again. Or add it by hand below; nothing is ever blocked.</div>'); openManual(isbn);
+    } else {
+      setScanStatus('<div class="notice err">Not in the catalogs we checked (Open Library + Google Books). Good news: you can still add it by hand below — a book is never blocked by a catalog.</div>'); openManual(isbn);
+    }
   });
 }
 function finishHaulAdd(data,viaScan){
@@ -825,6 +961,34 @@ function showHaulSummary(){
 }
 $("haulClose").addEventListener("click",function(){ $("haulOverlay").classList.remove("open"); showView("books"); });
 
+/* ============ manual add: a book is never blocked by a catalog ============ */
+function openManual(isbn){
+  $("manualCard").style.display="block";
+  if(isbn) $("manualIsbn").value=isbn;
+  $("manualCard").scrollIntoView({behavior:"smooth",block:"center"});
+  setTimeout(function(){ $("manualTitle").focus(); },350);
+}
+function closeManual(){
+  $("manualCard").style.display="none";
+  $("manualTitle").value=""; $("manualAuthor").value=""; $("manualPublisher").value=""; $("manualYear").value=""; $("manualIsbn").value="";
+}
+function manualFinish(data){
+  if(haulMode){ finishHaulAdd(data,false); }
+  else { addBook(data,false); toast("Added. Find it in My Books."); }
+  closeManual();
+}
+$("manualOpenBtn").addEventListener("click",function(){ openManual($("isbnInput").value); });
+$("manualCancel").addEventListener("click",function(){ closeManual(); });
+$("manualAdd").addEventListener("click",function(){
+  var title=$("manualTitle").value.trim();
+  if(!title){ toast("Give the book a name first."); $("manualTitle").focus(); return; }
+  var data={ isbn:stripAddon(cleanISBN($("manualIsbn").value)), title:title, author:$("manualAuthor").value.trim(), publisher:$("manualPublisher").value.trim(), year:$("manualYear").value.replace(/[^0-9]/g,"").slice(0,4), pages:"", description:"", cover:"", source:"Typed by hand" };
+  if(data.isbn) data.cover=olCover(data.isbn);
+  var dup=data.isbn?findByISBN(data.isbn):null;
+  if(dup && !haulMode){ askConfirm("Already in your library","This book is already in Monroe's library. Add a second copy anyway?",function(){ manualFinish(data); }); return; }
+  manualFinish(data);
+});
+
 /* manual ISBN + search */
 $("isbnLookup").addEventListener("click",function(){ lookupISBN($("isbnInput").value,false); });
 $("isbnInput").addEventListener("keydown",function(e){ if(e.key==="Enter") lookupISBN(this.value,false); });
@@ -845,7 +1009,7 @@ function scanErrorHTML(err, friendly){
   return '<div class="notice err">'+esc(friendly||"Barcode scanning couldn\u2019t start on this phone.")+' Typing the ISBN below always works!<br><span style="font-weight:700;font-size:13px">Scanner problem ('+esc(errDetail(err))+') — tell a grown-up exactly what this says if it keeps happening.</span></div>';
 }
 function onCode(raw){
-  var code=cleanISBN(raw); var now=Date.now();
+  var code=stripAddon(cleanISBN(raw)); var now=Date.now();
   if(!validISBN(code)) return;
   if(code===lastCode && now-lastCodeAt<3500) return;
   lastCode=code; lastCodeAt=now;
@@ -981,7 +1145,7 @@ $("photoScanInput").addEventListener("change",function(){
           Promise.resolve(p).then(function(result){
             URL.revokeObjectURL(url);
             var text=""; try{ text=result.getText(); }catch(e){}
-            if(text){ if(navigator.vibrate) navigator.vibrate(120); beep(); var c=cleanISBN(text); if(validISBN(c)){ lastCode=c; lastCodeAt=Date.now(); lookupISBN(c,true); setScanStatus(""); } else { setScanStatus('<div class="notice err">That photo showed a code ('+esc(text)+') but it doesn\u2019t look like a book ISBN. Try the barcode on the back cover, or type the ISBN.</div>'); } }
+            if(text){ if(navigator.vibrate) navigator.vibrate(120); beep(); var c=stripAddon(cleanISBN(text)); if(validISBN(c)){ lastCode=c; lastCodeAt=Date.now(); lookupISBN(c,true); setScanStatus(""); } else { setScanStatus('<div class="notice err">That photo showed a code ('+esc(text)+') but it doesn\u2019t look like a book ISBN. Try the barcode on the back cover, or type the ISBN.</div>'); } }
             else fail();
           }).catch(function(err){ fail("Couldn\u2019t read that photo — try getting closer, straight-on, good light, or type the ISBN. ("+errDetail(err)+")"); });
         }catch(e){ fail("Couldn\u2019t read that photo — try getting closer, straight-on, good light, or type the ISBN. ("+errDetail(e)+")"); }
@@ -993,7 +1157,7 @@ $("photoScanInput").addEventListener("change",function(){
       try{
         var det=new window.BarcodeDetector({ formats:["ean_13","ean_8","upc_a","upc_e","code_128"] });
         det.detect(img).then(function(codes){
-          if(codes&&codes.length&&codes[0].rawValue){ var c=cleanISBN(codes[0].rawValue); if(validISBN(c)){ URL.revokeObjectURL(url); if(navigator.vibrate) navigator.vibrate(120); beep(); lastCode=c; lastCodeAt=Date.now(); lookupISBN(c,true); setScanStatus(""); return; } }
+          if(codes&&codes.length&&codes[0].rawValue){ var c=stripAddon(cleanISBN(codes[0].rawValue)); if(validISBN(c)){ URL.revokeObjectURL(url); if(navigator.vibrate) navigator.vibrate(120); beep(); lastCode=c; lastCodeAt=Date.now(); lookupISBN(c,true); setScanStatus(""); return; } }
           tryZxing();
         }).catch(function(){ tryZxing(); });
         return;
