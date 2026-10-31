@@ -190,6 +190,32 @@ label.flabel{display:block;font-weight:800;font-size:13px;letter-spacing:.07em;t
 .badge.locked .ic{background:var(--line);border-color:var(--muted)}
 .badge .mini{height:9px;margin-top:8px}
 .badge .mini>i{background:var(--terracotta)}
+
+/* ---------- Apple Music-style UX: large titles, shelves, Now Reading bar ---------- */
+.pagetitle{font-size:34px;font-weight:900;margin:2px 0 4px}
+.shelf-title{font-size:20px;margin:20px 0 9px}
+.shelf{display:flex;gap:12px;overflow-x:auto;padding:2px 2px 14px;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch}
+.shelfcard{flex:0 0 132px;scroll-snap-align:start;text-align:left;background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:8px;box-shadow:var(--shadow-card)}
+.shelfcard img{width:100%;aspect-ratio:2/3;object-fit:cover;border-radius:8px;background:var(--catalog-soft)}
+.shelfcard .coverph{width:100%;aspect-ratio:2/3;border-radius:8px}
+.shelfcard .t{font-weight:800;font-size:14px;line-height:1.25;margin-top:7px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.shelfcard .a{font-size:12px;color:var(--muted);font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.shelfcard.badge-shelf .ic{font-size:30px;display:grid;place-items:center;width:56px;height:56px;margin:2px auto 6px;border-radius:50%;border:2px solid var(--accent)}
+.hero-now{display:flex;gap:16px;align-items:flex-start}
+.hero-cover{width:128px;flex:none;aspect-ratio:2/3;object-fit:cover;border-radius:10px;box-shadow:var(--shadow-raised)}
+.hero-now .coverph{width:128px;flex:none;aspect-ratio:2/3;border-radius:10px}
+.gearbtn{flex:none;width:44px;height:44px;border-radius:50%;background:rgba(255,255,255,.16);color:#FFFDF4;display:grid;place-items:center}
+.gearbtn svg{width:22px;height:22px}
+.nowbar{position:fixed;left:0;right:0;bottom:calc(var(--tab-h) + var(--sab));z-index:55;display:flex;align-items:center;gap:10px;background:var(--card);border-top:1px solid var(--line);padding:8px 12px;box-shadow:0 -4px 16px rgba(34,51,42,.08)}
+.nowbar-main{display:flex;gap:10px;align-items:center;flex:1;min-width:0;background:none;text-align:left}
+.nowbar-text{min-width:0}
+.nowbar-text b{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.nowbar-text span{display:block;font-size:12px;color:var(--muted);font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.nowbar-cover img,.nowbar-cover .coverph{width:46px;height:46px;object-fit:cover;border-radius:8px;flex:none}
+.nowbar-btn{flex:none;min-height:40px;padding:6px 12px;border-radius:999px;background:var(--catalog-soft);font-weight:800}
+.nowbar-btn.primary{background:var(--primary);color:#FFFDF4}
+body.has-nowbar{padding-bottom:calc(var(--tab-h) + 62px + var(--sab) + 14px)}
+body.has-nowbar .toast{bottom:calc(var(--tab-h) + 62px + var(--sab) + 16px)}
 /* ---------- Tabs (bottom nav, shadcn Tabs style) ---------- */
 .tabbar{position:fixed;left:0;right:0;bottom:0;z-index:60;background:var(--card);
   border-top:1px solid var(--line);padding:6px 6px var(--sab);box-shadow:0 -4px 16px rgba(34,51,42,.06)}
@@ -255,17 +281,17 @@ html[data-theme="dark"] .tabbtn.on{color:var(--gold)}
       <p>Her library catalog</p>
     </div>
     <div class="stamp fixprint" aria-hidden="true">Her Own<br>Library</div>
+    <button class="gearbtn" id="grownBtn" type="button" aria-label="Grown-ups"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h9M19 7h1M4 17h3M13 17h7"/><circle cx="16" cy="7" r="2.5"/><circle cx="10" cy="17" r="2.5"/></svg></button>
   </div>
 </header>
 
 <main class="wrap">
 
-  <!-- HOME -->
+  <!-- READ NOW -->
   <section class="view active" id="view-home">
-    <div class="card hero-card">
-      <h2>Hi, Monroe.</h2>
-      <p class="muted" style="font-weight:700;margin:4px 0 0" id="owlMsg">What are we reading today?</p>
-    </div>
+    <h2 class="pagetitle">Read Now</h2>
+    <p class="muted" style="font-weight:800;margin:0 0 14px" id="owlMsg">Hi Monroe! Here is your library today.</p>
+    <div class="card hero-now-card" id="nowHero"></div>
     <button class="bigbtn" id="homeScanBtn" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="7" width="18" height="13" rx="2"/><circle cx="12" cy="13" r="3.5"/><path d="M8.5 7 10 4h4l1.5 3"/></svg> &nbsp;Add a Book</button>
     <div style="height:14px"></div>
     <div class="statgrid">
@@ -274,6 +300,10 @@ html[data-theme="dark"] .tabbtn.on{color:var(--gold)}
       <div class="stat"><b id="statFav">0</b><span>Favorites</span></div>
       <div class="stat"><b id="statRead">0</b><span>I Read It</span></div>
     </div>
+    <h3 class="shelf-title">Recently Added</h3>
+    <div class="shelf" id="recentShelf"></div>
+    <h3 class="shelf-title">Favorites</h3>
+    <div class="shelf" id="favShelf"></div>
     <div style="height:14px"></div>
     <div class="card">
       <div class="jarwrap">
@@ -292,14 +322,29 @@ html[data-theme="dark"] .tabbtn.on{color:var(--gold)}
       <p style="font-weight:800;margin:6px 0" id="nextBadgeText">Add your first book to earn the First Book badge!</p>
       <div class="progress pink"><i id="nextBadgeBar" style="width:0%"></i></div>
     </div>
-    <div class="card">
-      <h3>Newest Books</h3>
-      <div id="recentList"><p class="muted" style="font-weight:700">No books yet. Tap “Add a Book” to start!</p></div>
-    </div>
+  </section>
+
+  <!-- BROWSE -->
+  <section class="view" id="view-browse">
+    <h2 class="pagetitle">Browse</h2>
+    <p class="muted" style="font-weight:800;margin:0 0 4px">Shelves picked from Monroe's own library.</p>
+    <h3 class="shelf-title">New This Week</h3>
+    <div class="shelf" id="browseWeek"></div>
+    <h3 class="shelf-title">Made for Monroe</h3>
+    <div class="shelf" id="browseFav"></div>
+    <h3 class="shelf-title">Read Again</h3>
+    <div class="shelf" id="browseRead"></div>
+    <h3 class="shelf-title">Badges to Earn</h3>
+    <div class="shelf" id="browseBadges"></div>
   </section>
 
   <!-- SCAN -->
-  <section class="view" id="view-scan">
+  <section class="view" id="view-search">
+    <h2 class="pagetitle">Search</h2>
+    <label class="flabel" for="libSearch">Search Monroe's library</label>
+    <input class="field" id="libSearch" autocomplete="off" placeholder="Title or author…">
+    <div id="libSearchResults" style="margin-top:12px"></div>
+    <h3 class="shelf-title">Add a book</h3>
     <div class="toggleRow">
       <div><b>Haul Mode</b><div class="muted" style="font-weight:700;font-size:13.5px">For a big stack of library books: scan, add, scan the next.</div></div>
       <button class="pill" id="haulToggle" type="button" aria-pressed="false">OFF</button>
@@ -372,7 +417,7 @@ html[data-theme="dark"] .tabbtn.on{color:var(--gold)}
 
   <!-- BOOKS -->
   <section class="view" id="view-books">
-    <h2 class="display" style="font-size:28px">My Books <span class="muted" id="booksCount" style="font-size:17px"></span></h2>
+    <h2 class="pagetitle">Library <span class="muted" id="booksCount" style="font-size:17px"></span></h2>
     <input class="field" id="bookSearch" placeholder="Search my books" autocomplete="off" style="margin-top:12px">
     <div class="chips" id="filterChips">
       <button class="chip on" data-filter="all" type="button">All Books</button>
@@ -395,14 +440,15 @@ html[data-theme="dark"] .tabbtn.on{color:var(--gold)}
 
   <!-- BADGES -->
   <section class="view" id="view-badges">
-    <h2 class="display" style="font-size:28px">Monroe's Badges</h2>
+    <h2 class="pagetitle">Badges</h2>
     <p class="muted" style="font-weight:800" id="badgeSummary"></p>
     <div id="badgeSections"></div>
   </section>
 
   <!-- GROWN-UPS -->
   <section class="view" id="view-grown">
-    <h2 class="display" style="font-size:28px">For Grown-ups</h2>
+    <h2 class="pagetitle">For Grown-ups</h2>
+    <button class="btn ghost" id="grownBack" type="button" style="margin-top:10px">← Back to Read Now</button>
     <div class="notice ok">Books are saved on this phone. Each phone keeps its own library — use Export / Import JSON below to share or back up a library between phones.</div>
     <div class="card">
       <h3>Put it on your iPhone Home Screen</h3>
@@ -454,13 +500,20 @@ html[data-theme="dark"] .tabbtn.on{color:var(--gold)}
   </section>
 </main>
 
+<!-- Now Reading bar (Apple Music Now Playing, for books) -->
+<div class="nowbar" id="nowBar" style="display:none">
+  <button class="nowbar-main" id="nowBarOpen" type="button"><span class="nowbar-cover" id="nowBarCover"></span><span class="nowbar-text"><b id="nowBarTitle"></b><span id="nowBarAuthor"></span></span></button>
+  <button class="nowbar-btn" id="nowBarHear" type="button">Hear</button>
+  <button class="nowbar-btn primary" id="nowBarRead" type="button">I Read It</button>
+</div>
+
 <!-- bottom tabs -->
 <nav class="tabbar noprint"><div class="inner">
-  <button class="tabbtn on" data-view="home" type="button"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 10 9-7 9 7v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M9 22v-8h6v8"/></svg></span>Home</button>
-  <button class="tabbtn" data-view="scan" type="button"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="7" width="18" height="13" rx="2"/><circle cx="12" cy="13" r="3.5"/><path d="M8.5 7 10 4h4l1.5 3"/></svg></span>Add a Book</button>
-  <button class="tabbtn" data-view="books" type="button"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg></span>My Books</button>
+  <button class="tabbtn on" data-view="home" type="button"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg></span>Read Now</button>
+  <button class="tabbtn" data-view="browse" type="button"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg></span>Browse</button>
+  <button class="tabbtn" data-view="search" type="button"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg></span>Search</button>
+  <button class="tabbtn" data-view="books" type="button"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg></span>Library</button>
   <button class="tabbtn" data-view="badges" type="button"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="6"/><path d="M15.5 12.9 17 22l-5-3-5 3 1.5-9.1"/></svg></span>Badges</button>
-  <button class="tabbtn" data-view="grown" type="button"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h9M19 7h1M4 17h3M13 17h7"/><circle cx="16" cy="7" r="2.5"/><circle cx="10" cy="17" r="2.5"/></svg></span>Grown-ups</button>
 </div></nav>
 
 <!-- book detail -->
@@ -494,7 +547,7 @@ html[data-theme="dark"] .tabbtn.on{color:var(--gold)}
 "use strict";
 /* ============ storage ============ */
 var LS_BOOKS="monroes_library_books_v1", LS_SET="monroes_library_settings_v1";
-var books=[], settings={goal:100,dark:false,voice:true,scans:0};
+var books=[], settings={goal:100,dark:false,voice:true,scans:0,currentBook:""};
 try{ var b=localStorage.getItem(LS_BOOKS); if(b) books=JSON.parse(b)||[]; }catch(e){ books=[]; }
 try{ var s=localStorage.getItem(LS_SET); if(s){ var p=JSON.parse(s); if(p) settings=Object.assign(settings,p); } }catch(e){}
 function saveBooks(){ try{ localStorage.setItem(LS_BOOKS, JSON.stringify(books)); }catch(e){ toast("This phone's storage is full. Try exporting a backup."); } }
@@ -535,6 +588,51 @@ var IC={
  globe:"<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><circle cx=\"12\" cy=\"12\" r=\"10\"/><path d=\"M2 12h20\"/><path d=\"M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z\"/></svg>",
  star:"<svg viewBox=\"0 0 24 24\" fill=\"currentColor\" stroke=\"none\" aria-hidden=\"true\"><path d=\"M12 2.5l2.95 5.98 6.6.96-4.78 4.66 1.13 6.58L12 17.57l-5.9 3.1 1.13-6.57L2.45 9.44l6.6-.96z\"/></svg>"
 };
+
+
+/* ============ Now Reading bar + hero + library search (Apple Music-style UX) ============ */
+function updateNowBar(){
+  var sorted=books.slice().sort(function(a,b){return (b.addedAt||"").localeCompare(a.addedAt||"");});
+  var cur=books.find(function(b){return b.id===settings.currentBook;})||sorted[0]||null;
+  if(!cur){ $("nowBar").style.display="none"; document.body.classList.remove("has-nowbar"); return; }
+  settings.currentBook=cur.id;
+  $("nowBar").style.display="flex"; document.body.classList.add("has-nowbar");
+  $("nowBarCover").innerHTML=coverHTML(cur);
+  $("nowBarTitle").textContent=cur.title;
+  $("nowBarAuthor").textContent=cur.author||"";
+  $("nowBarRead").textContent=cur.read?"Read \u2713":"I Read It";
+}
+$("nowBarOpen").addEventListener("click",function(){ if(settings.currentBook) openDetail(settings.currentBook); });
+$("nowBarHear").addEventListener("click",function(){
+  var cur=books.find(function(b){return b.id===settings.currentBook;}); if(!cur) return;
+  var was=settings.voice; settings.voice=true; speak(cur.title+(cur.author?" by "+cur.author:"")); settings.voice=was;
+});
+$("nowBarRead").addEventListener("click",function(){
+  var cur=books.find(function(b){return b.id===settings.currentBook;}); if(!cur) return;
+  cur.read=!cur.read; saveBooks(); render(); if(cur.read) cheer("Marked as read.");
+});
+$("nowHero").addEventListener("click",function(e){
+  var hero=books.find(function(b){return b.id===settings.currentBook;})||books.slice().sort(function(a,b){return (b.addedAt||"").localeCompare(a.addedAt||"");})[0]||null;
+  if(!hero) return;
+  var btn=e.target.closest("[data-hero]");
+  if(!btn){ openDetail(hero.id); return; }
+  if(btn.getAttribute("data-hero")==="hear"){
+    var was=settings.voice; settings.voice=true; speak(hero.title+(hero.author?" by "+hero.author:"")); settings.voice=was;
+  } else {
+    hero.read=!hero.read; saveBooks(); render(); if(hero.read) cheer("Marked as read.");
+  }
+});
+$("browseBadges").addEventListener("click",function(e){
+  if(e.target.closest("[data-badges]")) showView("badges");
+});
+function renderLibSearch(){
+  var q=($("libSearch").value||"").trim().toLowerCase();
+  if(!q){ $("libSearchResults").innerHTML='<p class="muted" style="font-weight:700">Search Monroe\u2019s library by title or author. To find a brand-new book, use the cards below.</p>'; return; }
+  var list=books.filter(function(b){ return (b.title||"").toLowerCase().indexOf(q)>=0 || (b.author||"").toLowerCase().indexOf(q)>=0; });
+  $("libSearchResults").innerHTML=list.length? list.map(function(bk){ return '<button class="resultitem" data-open="'+esc(bk.id)+'">'+coverHTML(bk)+'<span style="flex:1"><b>'+esc(bk.title)+'</b><br><span class="muted">'+esc(bk.author||"")+'</span></span></button>'; }).join("") : '<p class="muted" style="font-weight:700">Nothing in the library matches \u2014 try the catalog search below, or add it by hand.</p>';
+  bindOpenButtons($("libSearchResults"));
+}
+$("libSearch").addEventListener("input",renderLibSearch);
 
 /* ============ badges (45) ============ */
 var BADGES=[
@@ -613,10 +711,12 @@ function showView(name){
   $("view-"+name).classList.add("active");
   document.querySelectorAll(".tabbtn").forEach(function(t){ t.classList.toggle("on", t.getAttribute("data-view")===name); });
   window.scrollTo(0,0);
-  if(name!=="scan") stopCamera();
+  if(name!=="search") stopCamera();
 }
 document.querySelectorAll(".tabbtn").forEach(function(t){ t.addEventListener("click",function(){ showView(t.getAttribute("data-view")); }); });
-$("homeScanBtn").addEventListener("click",function(){ showView("scan"); });
+$("homeScanBtn").addEventListener("click",function(){ showView("search"); });
+$("grownBtn").addEventListener("click",function(){ showView("grown"); });
+$("grownBack").addEventListener("click",function(){ showView("home"); });
 
 /* ============ rendering ============ */
 function coverHTML(bk,cls){
@@ -644,10 +744,32 @@ function render(){
   else { $("nextBadgeText").textContent="Every badge earned."; $("nextBadgeBar").style.width="100%"; }
   /* owl message */
   $("owlMsg").textContent= m.total===0 ? "Add your first book to get started." : (m.total>=settings.goal ? "Reading goal complete. "+m.total+" books in the library." : "You have "+m.total+" book"+(m.total===1?"":"s")+" in the library.");
-  /* recent */
-  var rec=books.slice().sort(function(a,b){return (b.addedAt||"").localeCompare(a.addedAt||"");}).slice(0,6);
-  $("recentList").innerHTML= rec.length? rec.map(function(bk){ return '<button class="resultitem" data-open="'+esc(bk.id)+'">'+coverHTML(bk)+'<span style="flex:1"><b>'+esc(bk.title)+'</b><br><span class="muted">'+esc(bk.author||"")+'</span></span><span class="marks">'+(bk.favorite?IC.star:"")+(bk.read?IC.check:"")+'</span></button>'; }).join("") : '<p class="muted" style="font-weight:700">No books yet. Tap “Add a Book” to start!</p>';
-  bindOpenButtons($("recentList"));
+  /* Read Now shelves + hero + Browse shelves + Now Reading bar */
+  var sorted=books.slice().sort(function(a,b){return (b.addedAt||"").localeCompare(a.addedAt||"");});
+  var rec=sorted.slice(0,8);
+  function shelfCard(bk){ return '<button class="shelfcard" data-open="'+esc(bk.id)+'">'+coverHTML(bk)+'<div class="t">'+esc(bk.title)+'</div><div class="a">'+esc(bk.author||"")+'</div></button>'; }
+  function shelfHTML(list,empty){ return list.length? list.map(shelfCard).join("") : '<p class="muted" style="font-weight:700;padding:6px 2px">'+empty+'</p>'; }
+  $("recentShelf").innerHTML=shelfHTML(rec,"No books yet. Tap \u201cAdd a Book\u201d to start!");
+  var favs=books.filter(function(b){return b.favorite;}).slice(0,8);
+  $("favShelf").innerHTML=shelfHTML(favs,"No favorites yet \u2014 tap a book, then Make Favorite.");
+  bindOpenButtons($("recentShelf")); bindOpenButtons($("favShelf"));
+  var hero=books.find(function(b){return b.id===settings.currentBook;})||sorted[0]||null;
+  if(hero){
+    $("nowHero").innerHTML='<div class="hero-now">'+coverHTML(hero,"hero-cover")+'<div style="flex:1;min-width:0"><p class="muted" style="font-weight:800;letter-spacing:.07em;text-transform:uppercase;font-size:12px">Now Reading</p><h3 style="font-size:24px;margin:4px 0">'+esc(hero.title)+'</h3><p style="font-weight:800;margin:0 0 12px">'+esc(hero.author||"")+'</p><div class="row"><button class="btn primary" data-hero="hear" type="button">Hear It</button><button class="btn" data-hero="read" type="button">'+(hero.read?"Read \u2713":"I Read It")+'</button></div></div></div>';
+  } else {
+    $("nowHero").innerHTML='<div class="hero-now"><div class="coverph hero-cover">'+IC.book+'</div><div style="flex:1;min-width:0"><p class="muted" style="font-weight:800;letter-spacing:.07em;text-transform:uppercase;font-size:12px">Now Reading</p><h3 style="font-size:24px;margin:4px 0">Nothing on the shelf yet</h3><p style="font-weight:700" class="muted">Scan Monroe\u2019s first book and it will live here.</p></div></div>';
+  }
+  var wk2=weekKey(new Date());
+  var weekBooks=books.filter(function(b){ return b.addedAt && weekKey(b.addedAt.slice(0,10))===wk2; }).slice(0,8);
+  $("browseWeek").innerHTML=shelfHTML(weekBooks,"Nothing new this week yet.");
+  $("browseFav").innerHTML=shelfHTML(favs,"No favorites yet.");
+  var readBooks=books.filter(function(b){return b.read;}).slice(0,8);
+  $("browseRead").innerHTML=shelfHTML(readBooks,"No books marked read yet.");
+  var locked=BADGES.filter(function(bd){ return !(earnedIds(m)[bd.id]); }).slice(0,8);
+  $("browseBadges").innerHTML=locked.length? locked.map(function(bd){ var cur=m[bd.metric]||0; return '<button class="shelfcard badge-shelf" data-badges type="button"><span class="ic tone-'+(bd.tone||'gold')+'">'+bd.icon+'</span><div class="t">'+esc(bd.name)+'</div><div class="a">'+cur+' / '+bd.need+' '+esc(bd.unit)+'</div><div class="progress mini"><i style="width:'+Math.round(cur/bd.need*100)+'%"></i></div></button>'; }).join("") : '<p class="muted" style="font-weight:700;padding:6px 2px">Every badge earned.</p>';
+  bindOpenButtons($("browseWeek")); bindOpenButtons($("browseFav")); bindOpenButtons($("browseRead"));
+  updateNowBar();
+  renderLibSearch();
   renderBooks(); renderBadges(m);
   $("goalInput").value=settings.goal;
   applySettingsButtons();
@@ -698,7 +820,7 @@ function renderBadges(m){
 /* ============ book detail ============ */
 var detailId=null;
 function openDetail(id){
-  var bk=books.find(function(x){return x.id===id;}); if(!bk) return; detailId=id;
+  var bk=books.find(function(x){return x.id===id;}); if(!bk) return; detailId=id; settings.currentBook=id; saveSettings(); updateNowBar();
   $("detailBody").innerHTML=
    '<div style="display:flex;gap:14px;flex-wrap:wrap"><img class="detailcover" src="'+esc(bk.cover||"")+'" alt="Cover of '+esc(bk.title)+'" onerror="this.style.display=\'none\'">'
    +'<div style="flex:1;min-width:200px"><h2 class="display" style="font-size:27px">'+esc(bk.title)+'</h2>'
@@ -718,7 +840,7 @@ function openDetail(id){
   $("dHear").addEventListener("click",function(){ var was=settings.voice; settings.voice=true; speak(bk.title+(bk.author?" by "+bk.author:"")); settings.voice=was; });
   $("dFav").addEventListener("click",function(){ bk.favorite=!bk.favorite; saveBooks(); render(); openDetail(id); toast(bk.favorite?"Added to favorites.":"Removed from favorites."); });
   $("dRead").addEventListener("click",function(){ bk.read=!bk.read; saveBooks(); render(); openDetail(id); if(bk.read){ cheer("Marked as read."); } });
-  $("dRemove").addEventListener("click",function(){ askConfirm("Remove this book?","“"+bk.title+"” will be taken out of Monroe's library on this phone.",function(){ books=books.filter(function(x){return x.id!==id;}); saveBooks(); closeDetail(); render(); toast("Book removed."); }); });
+  $("dRemove").addEventListener("click",function(){ askConfirm("Remove this book?","“"+bk.title+"” will be taken out of Monroe's library on this phone.",function(){ books=books.filter(function(x){return x.id!==id;}); if(settings.currentBook===id){ settings.currentBook=""; saveSettings(); } saveBooks(); closeDetail(); render(); toast("Book removed."); }); });
   $("dEdit").addEventListener("click",function(){
     $("editZone").innerHTML='<label class="flabel">Book name</label><input class="field" id="eTitle" value="'+esc(bk.title)+'"><label class="flabel">Author</label><input class="field" id="eAuthor" value="'+esc(bk.author||"")+'"><div style="height:10px"></div><button class="btn primary" id="eSave" type="button" style="width:100%">Save Changes</button>';
     $("eSave").addEventListener("click",function(){ bk.title=$("eTitle").value.trim()||bk.title; bk.author=$("eAuthor").value.trim(); saveBooks(); render(); openDetail(id); toast("Saved."); });
@@ -879,7 +1001,7 @@ var haulMode=false, haulBooks=[], pendingBook=null;
 function addBook(data, viaScan){
   var before=earnedIds(metrics());
   var bk={ id:"b"+Date.now()+"_"+Math.random().toString(36).slice(2,7), isbn:data.isbn||"", title:data.title||"Untitled", author:data.author||"", publisher:data.publisher||"", year:data.year||"", pages:data.pages||"", description:data.description||"", cover:data.cover||"", favorite:false, read:false, addedAt:new Date().toISOString() };
-  books.push(bk); saveBooks();
+  books.push(bk); saveBooks(); settings.currentBook=bk.id; saveSettings();
   if(viaScan){ settings.scans=(settings.scans||0)+1; saveSettings(); }
   var after=earnedIds(metrics()); var newBadges=BADGES.filter(function(bd){ return after[bd.id]&&!before[bd.id]; });
   render();
