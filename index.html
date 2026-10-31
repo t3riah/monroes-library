@@ -175,8 +175,15 @@ label.flabel{display:block;font-weight:800;font-size:13px;letter-spacing:.07em;t
 .badgegrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:11px}
 .badge{border-radius:var(--radius-lg);padding:14px 12px;border:1px solid var(--line);background:var(--card);
   text-align:center;box-shadow:var(--shadow-card)}
-.badge .ic{font-size:34px;display:grid;place-items:center;width:64px;height:64px;margin:0 auto;border-radius:50%;
-  background:var(--brass-soft);border:2px solid var(--accent)}
+.badge .ic{font-size:36px;display:grid;place-items:center;width:68px;height:68px;margin:0 auto;border-radius:50%;
+  background:var(--brass-soft);border:2px solid var(--accent);line-height:1}
+.badge:not(.locked) .ic{box-shadow:0 3px 10px rgba(34,51,42,.16)}
+.badge .ic.tone-rose{background:#FDE2E8;border-color:#E8A0B4}
+.badge .ic.tone-lilac{background:#E9E2F7;border-color:#B7A6E0}
+.badge .ic.tone-sky{background:#DDEBF7;border-color:#8FB6D9}
+.badge .ic.tone-mint{background:#DDF0E2;border-color:#8FC7A3}
+.badge .ic.tone-gold{background:#FDEFC7;border-color:#E3B93C}
+.badge .ic.tone-coral{background:#FDE3D7;border-color:#E8A87C}
 .badge b{display:block;font-family:var(--font-display);font-size:16px;margin:7px 0 2px}
 .badge p{margin:0;font-size:12.5px;color:var(--muted);font-weight:700}
 .badge.locked{opacity:.6;filter:grayscale(.9)}
@@ -510,51 +517,51 @@ var IC={
 
 /* ============ badges (45) ============ */
 var BADGES=[
- {id:"c1",cat:"Collected",icon:"book",name:"First Book",metric:"total",need:1,unit:"book"},
- {id:"c5",cat:"Collected",icon:"book",name:"5 Books",metric:"total",need:5,unit:"books"},
- {id:"c10",cat:"Collected",icon:"book",name:"10 Books",metric:"total",need:10,unit:"books"},
- {id:"c25",cat:"Collected",icon:"book",name:"25 Books",metric:"total",need:25,unit:"books"},
- {id:"c50",cat:"Collected",icon:"book",name:"50 Books Explorer",metric:"total",need:50,unit:"books"},
- {id:"c75",cat:"Collected",icon:"book",name:"75 Books",metric:"total",need:75,unit:"books"},
- {id:"c100",cat:"Collected",icon:"book",name:"100 Book Club",metric:"total",need:100,unit:"books"},
- {id:"c150",cat:"Collected",icon:"book",name:"150 Books",metric:"total",need:150,unit:"books"},
- {id:"c200",cat:"Collected",icon:"book",name:"200 Books",metric:"total",need:200,unit:"books"},
- {id:"c250",cat:"Collected",icon:"book",name:"250 Books",metric:"total",need:250,unit:"books"},
- {id:"c300",cat:"Collected",icon:"book",name:"300 Books",metric:"total",need:300,unit:"books"},
- {id:"c400",cat:"Collected",icon:"book",name:"400 Books",metric:"total",need:400,unit:"books"},
- {id:"c500",cat:"Collected",icon:"book",name:"500 Book Champion",metric:"total",need:500,unit:"books"},
- {id:"c750",cat:"Collected",icon:"book",name:"750 Books",metric:"total",need:750,unit:"books"},
- {id:"c1000",cat:"Collected",icon:"book",name:"1000 Book Legend",metric:"total",need:1000,unit:"books"},
- {id:"h5",cat:"Big Haul Days",icon:"basket",name:"Haul Day — 5",metric:"maxDay",need:5,unit:"in one day"},
- {id:"h10",cat:"Big Haul Days",icon:"basket",name:"Haul Day — 10",metric:"maxDay",need:10,unit:"in one day"},
- {id:"h20",cat:"Big Haul Days",icon:"basket",name:"Big Haul — 20",metric:"maxDay",need:20,unit:"in one day"},
- {id:"h30",cat:"Big Haul Days",icon:"basket",name:"Mega Haul — 30",metric:"maxDay",need:30,unit:"in one day"},
- {id:"h40",cat:"Big Haul Days",icon:"basket",name:"Super Haul — 40",metric:"maxDay",need:40,unit:"in one day"},
- {id:"h2w",cat:"Big Haul Days",icon:"basket",name:"Double Haul Week",metric:"doubleHaul",need:1,unit:"double-haul week"},
- {id:"f1",cat:"Favorites",icon:"star",name:"First Favorite",metric:"favs",need:1,unit:"favorite"},
- {id:"f5",cat:"Favorites",icon:"star",name:"5 Favorites",metric:"favs",need:5,unit:"favorites"},
- {id:"f10",cat:"Favorites",icon:"star",name:"10 Favorites",metric:"favs",need:10,unit:"favorites"},
- {id:"f25",cat:"Favorites",icon:"star",name:"25 Favorites",metric:"favs",need:25,unit:"favorites"},
- {id:"f50",cat:"Favorites",icon:"star",name:"50 Favorites",metric:"favs",need:50,unit:"favorites"},
- {id:"r1",cat:"Books Read",icon:"bookOpen",name:"First Book Read",metric:"reads",need:1,unit:"read"},
- {id:"r10",cat:"Books Read",icon:"bookOpen",name:"10 Books Read",metric:"reads",need:10,unit:"read"},
- {id:"r25",cat:"Books Read",icon:"bookOpen",name:"25 Books Read",metric:"reads",need:25,unit:"read"},
- {id:"r50",cat:"Books Read",icon:"bookOpen",name:"50 Books Read",metric:"reads",need:50,unit:"read"},
- {id:"r100",cat:"Books Read",icon:"bookOpen",name:"100 Books Read",metric:"reads",need:100,unit:"read"},
- {id:"s2",cat:"Reading Streaks",icon:"calendar",name:"2 Days in a Row",metric:"maxStreak",need:2,unit:"days in a row"},
- {id:"s3",cat:"Reading Streaks",icon:"calendar",name:"3 Days in a Row",metric:"maxStreak",need:3,unit:"days in a row"},
- {id:"s7",cat:"Reading Streaks",icon:"calendar",name:"A Whole Week",metric:"maxStreak",need:7,unit:"days in a row"},
- {id:"s4w",cat:"Reading Streaks",icon:"calendar",name:"4 Library Weeks",metric:"distinctWeeks",need:4,unit:"different weeks"},
- {id:"a5",cat:"Variety & Scanning",icon:"globe",name:"5 Authors",metric:"authors",need:5,unit:"authors"},
- {id:"a15",cat:"Variety & Scanning",icon:"globe",name:"15 Authors",metric:"authors",need:15,unit:"authors"},
- {id:"a30",cat:"Variety & Scanning",icon:"globe",name:"30 Authors",metric:"authors",need:30,unit:"authors"},
- {id:"a50",cat:"Variety & Scanning",icon:"globe",name:"50 Authors",metric:"authors",need:50,unit:"authors"},
- {id:"a100",cat:"Variety & Scanning",icon:"globe",name:"100 Authors",metric:"authors",need:100,unit:"authors"},
- {id:"sc10",cat:"Variety & Scanning",icon:"globe",name:"10 Scans",metric:"scans",need:10,unit:"scans"},
- {id:"sc20",cat:"Variety & Scanning",icon:"globe",name:"20 Scans",metric:"scans",need:20,unit:"scans"},
- {id:"sc50",cat:"Variety & Scanning",icon:"globe",name:"50 Scans",metric:"scans",need:50,unit:"scans"},
- {id:"w20",cat:"Variety & Scanning",icon:"globe",name:"20-Book Week",metric:"maxWeek",need:20,unit:"in one week"},
- {id:"w50",cat:"Variety & Scanning",icon:"globe",name:"50-Book Week",metric:"maxWeek",need:50,unit:"in one week"}
+ {id:"c1",cat:"Collected",icon:"🌱",tone:"gold",name:"First Book",metric:"total",need:1,unit:"book"},
+ {id:"c5",cat:"Collected",icon:"🌷",tone:"rose",name:"5 Books",metric:"total",need:5,unit:"books"},
+ {id:"c10",cat:"Collected",icon:"🌸",tone:"rose",name:"10 Books",metric:"total",need:10,unit:"books"},
+ {id:"c25",cat:"Collected",icon:"🦋",tone:"lilac",name:"25 Books",metric:"total",need:25,unit:"books"},
+ {id:"c50",cat:"Collected",icon:"🌻",tone:"gold",name:"50 Books Explorer",metric:"total",need:50,unit:"books"},
+ {id:"c75",cat:"Collected",icon:"🐦",tone:"sky",name:"75 Books",metric:"total",need:75,unit:"books"},
+ {id:"c100",cat:"Collected",icon:"🌈",tone:"coral",name:"100 Book Club",metric:"total",need:100,unit:"books"},
+ {id:"c150",cat:"Collected",icon:"🦄",tone:"lilac",name:"150 Books",metric:"total",need:150,unit:"books"},
+ {id:"c200",cat:"Collected",icon:"🦚",tone:"mint",name:"200 Books",metric:"total",need:200,unit:"books"},
+ {id:"c250",cat:"Collected",icon:"🍓",tone:"rose",name:"250 Books",metric:"total",need:250,unit:"books"},
+ {id:"c300",cat:"Collected",icon:"🌺",tone:"coral",name:"300 Books",metric:"total",need:300,unit:"books"},
+ {id:"c400",cat:"Collected",icon:"🦩",tone:"rose",name:"400 Books",metric:"total",need:400,unit:"books"},
+ {id:"c500",cat:"Collected",icon:"👑",tone:"gold",name:"500 Book Champion",metric:"total",need:500,unit:"books"},
+ {id:"c750",cat:"Collected",icon:"🦉",tone:"mint",name:"750 Books",metric:"total",need:750,unit:"books"},
+ {id:"c1000",cat:"Collected",icon:"🌟",tone:"gold",name:"1000 Book Legend",metric:"total",need:1000,unit:"books"},
+ {id:"h5",cat:"Big Haul Days",icon:"🧺",tone:"gold",name:"Haul Day — 5",metric:"maxDay",need:5,unit:"in one day"},
+ {id:"h10",cat:"Big Haul Days",icon:"🎒",tone:"coral",name:"Haul Day — 10",metric:"maxDay",need:10,unit:"in one day"},
+ {id:"h20",cat:"Big Haul Days",icon:"🛍️",tone:"lilac",name:"Big Haul — 20",metric:"maxDay",need:20,unit:"in one day"},
+ {id:"h30",cat:"Big Haul Days",icon:"🎉",tone:"rose",name:"Mega Haul — 30",metric:"maxDay",need:30,unit:"in one day"},
+ {id:"h40",cat:"Big Haul Days",icon:"🌟",tone:"gold",name:"Super Haul — 40",metric:"maxDay",need:40,unit:"in one day"},
+ {id:"h2w",cat:"Big Haul Days",icon:"🎈",tone:"sky",name:"Double Haul Week",metric:"doubleHaul",need:1,unit:"double-haul week"},
+ {id:"f1",cat:"Favorites",icon:"❤️",tone:"rose",name:"First Favorite",metric:"favs",need:1,unit:"favorite"},
+ {id:"f5",cat:"Favorites",icon:"💖",tone:"rose",name:"5 Favorites",metric:"favs",need:5,unit:"favorites"},
+ {id:"f10",cat:"Favorites",icon:"💕",tone:"coral",name:"10 Favorites",metric:"favs",need:10,unit:"favorites"},
+ {id:"f25",cat:"Favorites",icon:"💗",tone:"lilac",name:"25 Favorites",metric:"favs",need:25,unit:"favorites"},
+ {id:"f50",cat:"Favorites",icon:"💝",tone:"rose",name:"50 Favorites",metric:"favs",need:50,unit:"favorites"},
+ {id:"r1",cat:"Books Read",icon:"🐦",tone:"sky",name:"First Book Read",metric:"reads",need:1,unit:"read"},
+ {id:"r10",cat:"Books Read",icon:"🦜",tone:"mint",name:"10 Books Read",metric:"reads",need:10,unit:"read"},
+ {id:"r25",cat:"Books Read",icon:"🦉",tone:"gold",name:"25 Books Read",metric:"reads",need:25,unit:"read"},
+ {id:"r50",cat:"Books Read",icon:"🕊️",tone:"sky",name:"50 Books Read",metric:"reads",need:50,unit:"read"},
+ {id:"r100",cat:"Books Read",icon:"🦚",tone:"mint",name:"100 Books Read",metric:"reads",need:100,unit:"read"},
+ {id:"s2",cat:"Reading Streaks",icon:"🌼",tone:"gold",name:"2 Days in a Row",metric:"maxStreak",need:2,unit:"days in a row"},
+ {id:"s3",cat:"Reading Streaks",icon:"🌸",tone:"rose",name:"3 Days in a Row",metric:"maxStreak",need:3,unit:"days in a row"},
+ {id:"s7",cat:"Reading Streaks",icon:"☀️",tone:"gold",name:"A Whole Week",metric:"maxStreak",need:7,unit:"days in a row"},
+ {id:"s4w",cat:"Reading Streaks",icon:"🌺",tone:"coral",name:"4 Library Weeks",metric:"distinctWeeks",need:4,unit:"different weeks"},
+ {id:"a5",cat:"Variety & Scanning",icon:"🌍",tone:"mint",name:"5 Authors",metric:"authors",need:5,unit:"authors"},
+ {id:"a15",cat:"Variety & Scanning",icon:"🌎",tone:"sky",name:"15 Authors",metric:"authors",need:15,unit:"authors"},
+ {id:"a30",cat:"Variety & Scanning",icon:"🌏",tone:"coral",name:"30 Authors",metric:"authors",need:30,unit:"authors"},
+ {id:"a50",cat:"Variety & Scanning",icon:"🗺️",tone:"gold",name:"50 Authors",metric:"authors",need:50,unit:"authors"},
+ {id:"a100",cat:"Variety & Scanning",icon:"🧭",tone:"lilac",name:"100 Authors",metric:"authors",need:100,unit:"authors"},
+ {id:"sc10",cat:"Variety & Scanning",icon:"🔍",tone:"sky",name:"10 Scans",metric:"scans",need:10,unit:"scans"},
+ {id:"sc20",cat:"Variety & Scanning",icon:"📸",tone:"coral",name:"20 Scans",metric:"scans",need:20,unit:"scans"},
+ {id:"sc50",cat:"Variety & Scanning",icon:"✨",tone:"lilac",name:"50 Scans",metric:"scans",need:50,unit:"scans"},
+ {id:"w20",cat:"Variety & Scanning",icon:"🌿",tone:"mint",name:"20-Book Week",metric:"maxWeek",need:20,unit:"in one week"},
+ {id:"w50",cat:"Variety & Scanning",icon:"🦋",tone:"lilac",name:"50-Book Week",metric:"maxWeek",need:50,unit:"in one week"}
 ];
 function metrics(){
   var byDay={}, byWeek={}, authors={}, days={}, weeks={};
@@ -612,7 +619,7 @@ function render(){
   $("challengeText").textContent=m.total+" of "+settings.goal+" books"+(m.total>=settings.goal?" — goal reached":"");
   /* next badge */
   var next=null; BADGES.forEach(function(bd){ if(!next && (m[bd.metric]||0)<bd.need) next=bd; });
-  if(next){ var cur=m[next.metric]||0; $("nextBadgeText").textContent=next.name+" — "+(next.need-cur)+" more to go."; $("nextBadgeBar").style.width=Math.round(cur/next.need*100)+"%"; }
+  if(next){ var cur=m[next.metric]||0; $("nextBadgeText").textContent=(next.icon||"")+" "+next.name+" — "+(next.need-cur)+" more to go."; $("nextBadgeBar").style.width=Math.round(cur/next.need*100)+"%"; }
   else { $("nextBadgeText").textContent="Every badge earned."; $("nextBadgeBar").style.width="100%"; }
   /* owl message */
   $("owlMsg").textContent= m.total===0 ? "Add your first book to get started." : (m.total>=settings.goal ? "Reading goal complete. "+m.total+" books in the library." : "You have "+m.total+" book"+(m.total===1?"":"s")+" in the library.");
@@ -653,6 +660,7 @@ function bindOpenButtons(root){ root.querySelectorAll("[data-open]").forEach(fun
 document.querySelectorAll("#filterChips .chip").forEach(function(ch){ ch.addEventListener("click",function(){ document.querySelectorAll("#filterChips .chip").forEach(function(c){c.classList.remove("on");}); ch.classList.add("on"); renderBooks(); }); });
 $("bookSearch").addEventListener("input",renderBooks);
 $("sortSel").addEventListener("change",renderBooks);
+var CAT_ICON={"Collected":"\u{1F338}","Big Haul Days":"\u{1F9FA}","Favorites":"\u2764\uFE0F","Books Read":"\u{1F426}","Reading Streaks":"\u2600\uFE0F","Variety & Scanning":"\u{1F98B}"};
 function renderBadges(m){
   m=m||metrics(); var earned=earnedIds(m); var count=Object.keys(earned).length;
   $("badgeSummary").textContent="Monroe has earned "+count+" of "+BADGES.length+" badges.";
@@ -660,9 +668,9 @@ function renderBadges(m){
   $("badgeSections").innerHTML=cats.map(function(cat){
     var items=BADGES.filter(function(bd){return bd.cat===cat;}).map(function(bd){
       var cur=m[bd.metric]||0; var got=!!earned[bd.id]; var left=bd.need-cur;
-      return '<div class="badge'+(got?"":" locked")+'"><div class="ic">'+(IC[bd.icon]||"")+'</div><b>'+esc(bd.name)+'</b><p>'+(got?"Earned":left+" more to go · "+cur+" / "+bd.need+" "+esc(bd.unit))+'</p>'+(got?"":'<div class="progress mini"><i style="width:'+Math.round(cur/bd.need*100)+'%"></i></div>')+'</div>';
+      return '<div class="badge'+(got?"":" locked")+'"><div class="ic tone-'+(bd.tone||'gold')+'">'+bd.icon+'</div><b>'+esc(bd.name)+'</b><p>'+(got?"Earned":left+" more to go · "+cur+" / "+bd.need+" "+esc(bd.unit))+'</p>'+(got?"":'<div class="progress mini"><i style="width:'+Math.round(cur/bd.need*100)+'%"></i></div>')+'</div>';
     }).join("");
-    return '<h3 class="display" style="margin:16px 0 9px;font-size:20px">'+esc(cat)+'</h3><div class="badgegrid">'+items+'</div>';
+    return '<h3 class="display" style="margin:16px 0 9px;font-size:20px">'+(CAT_ICON[cat]||'')+' '+esc(cat)+'</h3><div class="badgegrid">'+items+'</div>';
   }).join("");
 }
 
@@ -750,7 +758,7 @@ function addBook(data, viaScan){
   render();
   if(haulMode){ haulBooks.push(bk); $("haulCount").textContent=haulBooks.length; }
   cheer();
-  if(newBadges.length){ setTimeout(function(){ toast("New badge earned: "+newBadges.map(function(x){return x.name;}).join(", ")+"."); speak("New badge earned. "+newBadges[0].name); },600); }
+  if(newBadges.length){ setTimeout(function(){ toast("New badge earned: "+newBadges.map(function(x){return (x.icon||"")+" "+x.name;}).join(", ")+"."); speak("New badge earned. "+newBadges[0].name); },600); }
   return bk;
 }
 function showConfirm(data){
@@ -812,7 +820,7 @@ function showHaulSummary(){
   $("haulGrid").innerHTML=haulBooks.map(function(bk){ return '<div class="bookcard">'+coverHTML(bk)+'<div class="t">'+esc(bk.title)+'</div></div>'; }).join("");
   var m=metrics(); var earned=earnedIds(m);
   var haulBadges=BADGES.filter(function(bd){return earned[bd.id]&&(bd.metric==="maxDay"||bd.metric==="maxWeek");});
-  $("haulBadges").innerHTML=haulBadges.length?'<div class="notice ok" style="text-align:center">Badges earned on this haul: '+haulBadges.map(function(x){return esc(x.name);}).join(" · ")+'</div>':"";
+  $("haulBadges").innerHTML=haulBadges.length?'<div class="notice ok" style="text-align:center">Badges earned on this haul: '+haulBadges.map(function(x){return (x.icon||"")+" "+esc(x.name);}).join(" · ")+'</div>':"";
   $("haulOverlay").classList.add("open"); speak("Haul complete. "+haulBooks.length+" books today."); haulBooks=[];
 }
 $("haulClose").addEventListener("click",function(){ $("haulOverlay").classList.remove("open"); showView("books"); });

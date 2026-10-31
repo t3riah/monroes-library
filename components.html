@@ -2,7 +2,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Monroe's Library — Component Reference</title>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,700;9..144,900&family=Nunito:wght@400;700;800&display=swap" rel="stylesheet">
-<style>/* ============================================================
+<style>
+/* ============================================================
    Monroe's Library — design system
    Tokens: tokens.json (repo root). Every value below maps to a
    token; do not introduce hex values that are not in tokens.json.
@@ -160,8 +161,15 @@ label.flabel{display:block;font-weight:800;font-size:13px;letter-spacing:.07em;t
 .badgegrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:11px}
 .badge{border-radius:var(--radius-lg);padding:14px 12px;border:1px solid var(--line);background:var(--card);
   text-align:center;box-shadow:var(--shadow-card)}
-.badge .ic{font-size:34px;display:grid;place-items:center;width:64px;height:64px;margin:0 auto;border-radius:50%;
-  background:var(--brass-soft);border:2px solid var(--accent)}
+.badge .ic{font-size:36px;display:grid;place-items:center;width:68px;height:68px;margin:0 auto;border-radius:50%;
+  background:var(--brass-soft);border:2px solid var(--accent);line-height:1}
+.badge:not(.locked) .ic{box-shadow:0 3px 10px rgba(34,51,42,.16)}
+.badge .ic.tone-rose{background:#FDE2E8;border-color:#E8A0B4}
+.badge .ic.tone-lilac{background:#E9E2F7;border-color:#B7A6E0}
+.badge .ic.tone-sky{background:#DDEBF7;border-color:#8FB6D9}
+.badge .ic.tone-mint{background:#DDF0E2;border-color:#8FC7A3}
+.badge .ic.tone-gold{background:#FDEFC7;border-color:#E3B93C}
+.badge .ic.tone-coral{background:#FDE3D7;border-color:#E8A87C}
 .badge b{display:block;font-family:var(--font-display);font-size:16px;margin:7px 0 2px}
 .badge p{margin:0;font-size:12.5px;color:var(--muted);font-weight:700}
 .badge.locked{opacity:.6;filter:grayscale(.9)}
@@ -220,6 +228,8 @@ html[data-theme="dark"] .tabbtn.on{color:var(--gold)}
 .bookcard .marks svg{width:15px;height:15px}
 .jarstars svg{width:15px;height:15px;color:#B98A1C}
 .coverph svg{width:36px;height:36px;opacity:.45}
+.resultitem .marks{display:inline-flex;gap:5px;color:#B98A1C}
+.resultitem .marks svg{width:15px;height:15px}
 </style></head><body>
 <main class="wrap" style="padding-top:22px">
  <h2 class="display" style="font-size:30px">Monroe's Library — Components</h2>
@@ -241,7 +251,7 @@ html[data-theme="dark"] .tabbtn.on{color:var(--gold)}
  <div class="card"><h3>Progress + Badge + Stat</h3>
   <div class="progress orange"><i style="width:42%"></i></div><div style="height:12px"></div>
   <div class="badgegrid"><div class="badge"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg></span><b>First Book</b><p>Earned</p></div>
-  <div class="badge locked"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="6"/><path d="M15.5 12.9 17 22l-5-3-5 3 1.5-9.1"/></svg></span><b>100 Book Club</b><p>Locked</p></div></div>
+  <div class="badge locked"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="6"/><path d="M15.5 12.9 17 22l-5-3-5 3 1.5-9.1"/></svg></span><b>150 Books</b><p>Locked</p></div></div>
   <div style="height:12px"></div>
   <div class="statgrid"><div class="stat"><b>42</b><span>My Books</span></div><div class="stat"><b>7</b><span>This Week</span></div></div>
  </div>
