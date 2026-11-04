@@ -117,6 +117,28 @@ slots; stripe images show whole art centered with blurred bands;
 broken cover falls back to the centered placeholder; suite 0 failures;
 scanner block unchanged.
 
+## Cover system — every book has an image (Nov 4, 2026)
+- A book with no cover art gets a made cover at first paint: canvas-drawn,
+  on-brand (cream paper, library green frame, brass rule, M medallion),
+  title wrapped and auto-fit, author below, palette picked by title hash
+  so each book looks distinct and stable. No stored data changes; the art
+  is generated from title and author on the device.
+- Real art is still preferred: on load (visible tab only), books without
+  art are checked once (retried after 30 days, or anytime from the
+  Grown-ups Cover check panel) against Open Library by ISBN, then Open
+  Library search, then Google Books. A candidate only counts if it loads
+  and its short side is at least 120px. Found art is saved to the book.
+- Refresh Cover in detail uses the same validated check instead of
+  blindly setting an ISBN URL. New single adds without art try the same
+  check quietly.
+- The Grown-ups Cover check panel shows real/made/total counts, lists
+  every made-cover book, and re-runs the check on tap.
+- If the device has no canvas, or is offline, the book-icon placeholder
+  is the fallback, at full slot size.
+Verified Nov 4 end to end in a real browser: a known-ISBN coverless book
+gained and saved its real Open Library cover; an unfindable book kept a
+made cover; suite 0 failures; scanner block unchanged.
+
 ## UX (Apple Music-inspired, Oct 2026)
 - 5-tab bar: Read Now · Browse · Search · Library · Badges. Grown-ups lives
   behind the gear button in the header (with a Back to Read Now button).

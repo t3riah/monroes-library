@@ -540,6 +540,15 @@ button.stat:active{transform:translateY(1px)}
       <div id="grownStatus" aria-live="polite"></div>
     </div>
     <div class="card">
+      <h3>Cover check</h3>
+      <p class="muted" style="font-weight:700" id="coverCounts"></p>
+      <div id="coverList"></div>
+      <div class="row" style="margin-top:10px">
+        <button class="btn primary" id="coverFindBtn" type="button">Find real covers</button>
+      </div>
+      <div id="coverStatus" aria-live="polite"></div>
+    </div>
+    <div class="card">
       <h3>Start Over</h3>
       <p class="muted" style="font-weight:700">Removes every book on this phone. Export a backup first if you might want them back!</p>
       <button class="btn danger" id="clearBtn" type="button">Clear Library</button>
@@ -752,17 +761,151 @@ function showView(name){
 }
 document.querySelectorAll(".tabbtn").forEach(function(t){ t.addEventListener("click",function(){ showView(t.getAttribute("data-view")); }); });
 $("homeScanBtn").addEventListener("click",function(){ showView("search"); });
-$("grownBtn").addEventListener("click",function(){ showView("grown"); });
+$("grownBtn").addEventListener("click",function(){ showView("grown"); renderCoverPanel(); });
 $("grownBack").addEventListener("click",function(){ showView("home"); });
 
 /* ============ rendering ============ */
 function thumbURL(u){ return /^https:\/\/covers\.openlibrary\.org\/b\/[^/]+\/[^/]+-L\.jpg$/.test(u||"") ? u.replace(/-L\.jpg$/,"-M.jpg") : (u||""); }
+var genCache={};
+function hashStr(s){ var h=0; for(var i=0;i<s.length;i++){ h=(h*31+s.charCodeAt(i))|0; } return Math.abs(h); }
+function genCoverURL(bk){
+  var key=bk.id+'|'+(bk.title||'')+'|'+(bk.author||'');
+  if(genCache[key]) return genCache[key];
+  var url='';
+  try{
+    var cv=document.createElement('canvas'); cv.width=400; cv.height=600;
+    var ctx=cv.getContext('2d'); if(!ctx) return '';
+    var palettes=[
+      {bg:'#FFF9EF',frame:'#205C40',band:'#205C40',ink:'#205C40',accent:'#C89B3C'},
+      {bg:'#FFF9EF',frame:'#8A4B2A',band:'#8A4B2A',ink:'#24382C',accent:'#C89B3C'},
+      {bg:'#FFF9EF',frame:'#2E4057',band:'#2E4057',ink:'#24382C',accent:'#C89B3C'}
+    ];
+    var p=palettes[hashStr(bk.title||'book')%palettes.length];
+    ctx.fillStyle=p.bg; ctx.fillRect(0,0,400,600);
+    ctx.strokeStyle='rgba(176,126,43,0.08)'; ctx.lineWidth=1;
+    for(var y=28;y<600;y+=28){ ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(400,y); ctx.stroke(); }
+    ctx.strokeStyle=p.frame; ctx.lineWidth=10; ctx.strokeRect(18,18,364,564);
+    ctx.lineWidth=2; ctx.strokeRect(34,34,332,532);
+    ctx.fillStyle=p.band; ctx.beginPath(); ctx.arc(200,118,52,0,Math.PI*2); ctx.fill();
+    ctx.fillStyle=p.bg; ctx.font='700 62px Georgia, serif'; ctx.textAlign='center'; ctx.textBaseline='middle';
+    ctx.fillText('M',200,120);
+    ctx.fillStyle=p.accent; ctx.fillRect(150,202,100,4);
+    var words=[];
+    (bk.title||'Untitled').split(/\s+/).forEach(function(w){
+      if(!w) return;
+      ctx.font='700 46px Georgia, serif';
+      if(ctx.measureText(w).width<=300){ words.push(w); return; }
+      var chunk='';
+      for(var ci=0;ci<w.length;ci++){
+        var t=chunk+w[ci];
+        if(ctx.measureText(t).width>300 && chunk){ words.push(chunk); chunk=w[ci]; } else chunk=t;
+      }
+      if(chunk) words.push(chunk);
+    });
+    var size=46, lines=[];
+    function wrap(fs){
+      ctx.font='700 '+fs+'px Georgia, serif';
+      var ls=[], cur='';
+      words.forEach(function(w){
+        var t=cur?cur+' '+w:w;
+        if(ctx.measureText(t).width>300 && cur){ ls.push(cur); cur=w; } else cur=t;
+      });
+      if(cur) ls.push(cur);
+      return ls;
+    }
+    while(size>26){ lines=wrap(size); if(lines.length<=4) break; size-=2; }
+    lines=wrap(size);
+    ctx.fillStyle=p.ink; ctx.textAlign='center'; ctx.textBaseline='alphabetic';
+    var lh=size*1.2, startY=300-((lines.length-1)*lh)/2;
+    lines.forEach(function(ln,i){ ctx.fillText(ln,200,startY+i*lh); });
+    if(bk.author){
+      ctx.font='700 24px Georgia, serif'; ctx.fillStyle=p.band;
+      var au=bk.author.length>30?bk.author.slice(0,29)+'...':bk.author;
+      ctx.fillText(au,200,520);
+    }
+    url=cv.toDataURL('image/png');
+  }catch(e){ url=''; }
+  if(url) genCache[key]=url;
+  return url;
+}
 function coverHTML(bk,cls,full){
   if(bk.cover){
-    var u=full? bk.cover : thumbURL(bk.cover);
+    var u=full?bk.cover:thumbURL(bk.cover);
     return '<span class="coverslot '+(cls||"")+'"><img class="coverbg" src="'+esc(u)+'" alt="" aria-hidden="true" loading="lazy"><img class="coverfg" src="'+esc(u)+'" alt="Cover of '+esc(bk.title)+'" loading="lazy" onerror="this.parentNode.classList.add(\'nocover\')"><div class="coverph">'+IC.book+'</div></span>';
   }
+  var g=genCoverURL(bk);
+  if(g) return '<span class="coverslot '+(cls||"")+'"><img class="coverbg" src="'+g+'" alt="" aria-hidden="true"><img class="coverfg" src="'+g+'" alt="Cover of '+esc(bk.title)+'"></span>';
   return '<div class="coverph '+(cls||"")+'">'+IC.book+'</div>';
+}
+
+function imgOK(url,timeout){
+  return new Promise(function(res){
+    var im=new Image(), done=false;
+    var t=setTimeout(function(){ if(!done){ done=true; res(null); } },timeout||8000);
+    im.onload=function(){ if(done) return; done=true; clearTimeout(t); res(Math.min(im.naturalWidth||0,im.naturalHeight||0)>=120?url:null); };
+    im.onerror=function(){ if(!done){ done=true; clearTimeout(t); res(null); } };
+    im.src=url;
+  });
+}
+function fetchJSON(url,timeout){
+  return new Promise(function(res){
+    var ctl=null, timer=null;
+    try{ ctl=new AbortController(); }catch(e){}
+    if(ctl) timer=setTimeout(function(){ try{ ctl.abort(); }catch(e){} },timeout||8000);
+    fetch(url,ctl?{signal:ctl.signal}:{}).then(function(r){ return r.ok?r.json():null; }).then(function(j){ if(timer) clearTimeout(timer); res(j); }).catch(function(){ if(timer) clearTimeout(timer); res(null); });
+  });
+}
+async function resolveCover(bk){
+  if(bk.isbn){
+    var direct=await imgOK("https://covers.openlibrary.org/b/isbn/"+encodeURIComponent(bk.isbn)+"-L.jpg");
+    if(direct) return direct;
+  }
+  var cands=[];
+  try{
+    var q="https://openlibrary.org/search.json?limit=5&title="+encodeURIComponent(bk.title||"")+(bk.author?"&author="+encodeURIComponent(bk.author):"");
+    var sj=await fetchJSON(q);
+    if(sj&&sj.docs) sj.docs.forEach(function(d){ if(d.cover_i) cands.push("https://covers.openlibrary.org/b/id/"+d.cover_i+"-L.jpg"); });
+  }catch(e){}
+  var seen={}, list=[];
+  cands.forEach(function(u){ if(u&&!seen[u]){ seen[u]=1; list.push(u); } });
+  for(var i=0;i<Math.min(list.length,5);i++){ var ok=await imgOK(list[i]); if(ok) return ok; }
+  try{
+    var gq=bk.isbn?"isbn:"+bk.isbn:"intitle:"+encodeURIComponent(bk.title||"")+(bk.author?"+inauthor:"+encodeURIComponent(bk.author):"");
+    var gj=await fetchJSON("https://www.googleapis.com/books/v1/volumes?q="+gq+"&maxResults=5");
+    var glist=[];
+    if(gj&&gj.items) gj.items.forEach(function(it){ var l=it.volumeInfo&&it.volumeInfo.imageLinks; if(l&&l.thumbnail) glist.push(l.thumbnail.replace(/^http:/,"https:")); });
+    for(var j=0;j<Math.min(glist.length,5);j++){ var gok=await imgOK(glist[j]); if(gok) return gok; }
+  }catch(e){}
+  return null;
+}
+var coverAutoRunning=false;
+async function autoCoverCheck(){
+  if(coverAutoRunning) return;
+  if(typeof document!=='undefined'&&document.visibilityState!=='visible') return;
+  var missing=books.filter(function(b){ return !b.cover; });
+  if(!missing.length) return;
+  var tried=settings.coverTried||{};
+  var now=Date.now();
+  var todo=missing.filter(function(b){ return !tried[b.id]||(now-tried[b.id]>30*24*3600*1000); });
+  if(!todo.length) return;
+  coverAutoRunning=true;
+  var found=0;
+  for(var i=0;i<todo.length;i++){
+    try{ var url=await resolveCover(todo[i]); if(url){ todo[i].cover=url; found++; } }catch(e){}
+    tried[todo[i].id]=Date.now();
+  }
+  settings.coverTried=tried; saveSettings();
+  if(found){ saveBooks(); render(); toast("Found a real cover for "+found+" book"+(found>1?"s":"")+"."); }
+  coverAutoRunning=false;
+  renderCoverPanel();
+}
+function renderCoverPanel(){
+  var cc=$("coverCounts"), cl=$("coverList");
+  if(!cc||!cl) return;
+  var real=books.filter(function(b){ return !!b.cover; }).length;
+  var gen=books.filter(function(b){ return !b.cover; });
+  cc.textContent=real+" with a real cover · "+gen.length+" with a made cover · "+books.length+" total";
+  cl.innerHTML=gen.length?gen.map(function(b){ return '<p style="font-weight:700;margin:6px 0">'+esc(b.title)+(b.author?' <span class="muted">by '+esc(b.author)+'</span>':'')+' <span class="muted">— made cover</span></p>'; }).join(''):'<p style="font-weight:700">Every book has a real cover.</p>';
 }
 function render(){
   var m=metrics();
@@ -890,10 +1033,12 @@ function openDetail(id){
   $("dClose").addEventListener("click",closeDetail);
   $("dHear").addEventListener("click",function(){ var was=settings.voice; settings.voice=true; speak(bk.title+(bk.author?" by "+bk.author:"")); settings.voice=was; });
   $("dFav").addEventListener("click",function(){ bk.favorite=!bk.favorite; saveBooks(); render(); openDetail(id); toast(bk.favorite?"Added to favorites.":"Removed from favorites."); });
-  $("dCover").addEventListener("click",function(){
-    if(!bk.isbn){ toast("No ISBN on this book, so there is no cover to fetch."); return; }
-    bk.cover="https://covers.openlibrary.org/b/isbn/"+encodeURIComponent(bk.isbn)+"-L.jpg";
-    saveBooks(); render(); openDetail(id); toast("Cover refreshed — if nothing shows, Open Library has no cover for this ISBN.");
+    $("dCover").addEventListener("click",function(){
+    var btn=$("dCover"); btn.textContent="Searching..."; btn.disabled=true;
+    resolveCover(bk).then(function(url){
+      if(url){ bk.cover=url; saveBooks(); render(); openDetail(id); toast("Found a real cover."); }
+      else { render(); openDetail(id); toast("No cover found for this book yet — it keeps its made cover."); }
+    });
   });
   $("dRemove").addEventListener("click",function(){ askConfirm("Remove this book?","“"+bk.title+"” will be taken out of Monroe's library on this phone.",function(){ books=books.filter(function(x){return x.id!==id;}); if(settings.currentBook===id){ settings.currentBook=""; saveSettings(); } saveBooks(); closeDetail(); render(); toast("Book removed."); }); });
   $("dEdit").addEventListener("click",function(){
@@ -1062,6 +1207,7 @@ function addBook(data, viaScan){
   if(viaScan){ settings.scans=(settings.scans||0)+1; saveSettings(); }
   var after=earnedIds(metrics()); var newBadges=BADGES.filter(function(bd){ return after[bd.id]&&!before[bd.id]; });
   render();
+  if(!data.cover&&!haulMode){ resolveCover(bk).then(function(url){ if(url){ bk.cover=url; saveBooks(); render(); toast("Found a real cover for "+bk.title+"."); } }); }
   if(haulMode){ haulBooks.push(bk); $("haulCount").textContent=haulBooks.length; }
   cheer();
   if(newBadges.length){ setTimeout(function(){ toast("New badge earned: "+newBadges.map(function(x){return (x.icon||"")+" "+x.name;}).join(", ")+"."); speak("New badge earned. "+newBadges[0].name); },600); }
@@ -1452,6 +1598,25 @@ $("wantAdd").addEventListener("click",function(){
 /* init */
 applySettingsButtons();
 render();
+$("coverFindBtn").addEventListener("click",function(){
+  var btn=$("coverFindBtn"); if(btn.disabled) return; btn.disabled=true; btn.textContent="Searching...";
+  var gen=books.filter(function(b){ return !b.cover; });
+  var st=$("coverStatus");
+  (async function(){
+    var found=0;
+    for(var i=0;i<gen.length;i++){
+      if(st) st.innerHTML='<p class="muted" style="font-weight:700">Checking '+(i+1)+' of '+gen.length+'...</p>';
+      try{ var url=await resolveCover(gen[i]); if(url){ gen[i].cover=url; found++; } }catch(e){}
+      var tried=settings.coverTried||{}; tried[gen[i].id]=Date.now(); settings.coverTried=tried;
+    }
+    saveSettings();
+    if(found) saveBooks();
+    render(); renderCoverPanel();
+    if(st) st.innerHTML='<p class="muted" style="font-weight:700">'+(found?('Found real covers for '+found+' book'+(found>1?'s':'')+'.'):'No real covers found — made covers stay.')+'</p>';
+    btn.disabled=false; btn.textContent="Find real covers";
+  })();
+});
+setTimeout(autoCoverCheck,2000);
 </script>
 </body>
 </html>
