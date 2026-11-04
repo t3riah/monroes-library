@@ -188,6 +188,21 @@ check; crop decode to the viewfinder region remains open as item 5.
   Stickers) plus suite 0 failures and scanner block unchanged.
   components.html style re-synced wholesale.
 
+## Thumbnail quality: fallback chain (Nov 4, 2026, Louie-directed)
+- Thumbnails are now part of the cover quality system. A grid, shelf,
+  hero, bar, or result thumbnail no longer drops straight to the
+  placeholder on one failure.
+- Fallback chain, in order: thumbnail (-M) -> full cover (-L or
+  stored URL) -> generated cover (title + author canvas) ->
+  placeholder only if all three fail.
+- The same 120px short-side gate the resolver uses now applies at
+  render time: a thumbnail that loads as a blank or tiny image
+  (short side under 120px) is treated as failed and falls back.
+- Verified Nov 4 with forced -M failures: thumbnail blocked, full
+  cover shown; 404 cover and 1x1 cover both fall back to generated
+  covers; zero placeholders; suite 0 failures, scanner block
+  unchanged.
+
 ## Author dedupe by default (Nov 4, 2026, Louie-approved)
 - An author field that is an exact repeat ("Ryan T. Higgins, Ryan T.
   Higgins") collapses to one name. Real multi-author lists

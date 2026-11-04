@@ -883,10 +883,28 @@ function genCoverURL(bk){
   if(url) genCache[key]=url;
   return url;
 }
+function coverFallback(img){
+  var slot=img.parentNode; if(!slot) return;
+  var full=img.getAttribute('data-full')||'';
+  if(full && img.getAttribute('data-stage')!=='full' && img.src!==full){
+    img.setAttribute('data-stage','full');
+    var bg=slot.querySelector('.coverbg'); if(bg) bg.src=full;
+    img.src=full; return;
+  }
+  var g=genCoverURL({id:'',title:img.getAttribute('data-t')||'',author:img.getAttribute('data-a')||''});
+  if(g){
+    var bg2=slot.querySelector('.coverbg'); if(bg2) bg2.src=g;
+    img.onerror=null; img.onload=null; img.src=g; slot.classList.remove('nocover'); return;
+  }
+  slot.classList.add('nocover');
+}
+function coverLoaded(img){
+  if(img.naturalWidth && Math.min(img.naturalWidth,img.naturalHeight)<120) coverFallback(img);
+}
 function coverHTML(bk,cls,full){
   if(bk.cover){
     var u=full?bk.cover:thumbURL(bk.cover);
-    return '<span class="coverslot '+(cls||"")+'"><img class="coverbg" src="'+esc(u)+'" alt="" aria-hidden="true" loading="lazy"><img class="coverfg" src="'+esc(u)+'" alt="Cover of '+esc(bk.title)+'" loading="lazy" onerror="this.parentNode.classList.add(\'nocover\')"><div class="coverph">'+IC.book+'</div></span>';
+    return '<span class="coverslot '+(cls||"")+'"><img class="coverbg" src="'+esc(u)+'" alt="" aria-hidden="true" loading="lazy"><img class="coverfg" src="'+esc(u)+'" data-full="'+esc(bk.cover)+'" data-t="'+esc(bk.title||"")+'" data-a="'+esc(bk.author||"")+'" alt="Cover of '+esc(bk.title)+'" loading="lazy" onerror="coverFallback(this)" onload="coverLoaded(this)"><div class="coverph">'+IC.book+'</div></span>';
   }
   var g=genCoverURL(bk);
   if(g) return '<span class="coverslot '+(cls||"")+'"><img class="coverbg" src="'+g+'" alt="" aria-hidden="true"><img class="coverfg" src="'+g+'" alt="Cover of '+esc(bk.title)+'"></span>';
