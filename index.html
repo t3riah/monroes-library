@@ -280,6 +280,15 @@ html[data-theme="dark"] .tabbtn.on{color:var(--gold)}
 .coverph svg{width:36px;height:36px;opacity:.45}
 .resultitem .marks{display:inline-flex;gap:5px;color:#B98A1C}
 .resultitem .marks svg{width:15px;height:15px}
+/* ---------- Rebuild Nov 2026: focus, tappable stats, streak, want list ---------- */
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+button.stat{cursor:pointer;font:inherit;text-align:center}
+button.stat:active{transform:translateY(1px)}
+.pickcard{background:var(--leaf-soft);border:1px solid var(--line)}
+.wantcard{display:flex;gap:10px;align-items:center;background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:10px 12px;margin:0 0 8px}
+.wantcard .wt{flex:1;min-width:0}
+.wantcard .wt b{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.wantcard .wt span{font-size:12px;color:var(--muted);font-weight:700}
 </style>
 </head>
 <body>
@@ -305,10 +314,15 @@ html[data-theme="dark"] .tabbtn.on{color:var(--gold)}
     <button class="bigbtn" id="homeScanBtn" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="7" width="18" height="13" rx="2"/><circle cx="12" cy="13" r="3.5"/><path d="M8.5 7 10 4h4l1.5 3"/></svg> &nbsp;Add a Book</button>
     <div style="height:14px"></div>
     <div class="statgrid">
-      <div class="stat"><b id="statTotal">0</b><span>My Books</span></div>
-      <div class="stat"><b id="statWeek">0</b><span>This Week</span></div>
-      <div class="stat"><b id="statFav">0</b><span>Favorites</span></div>
-      <div class="stat"><b id="statRead">0</b><span>I Read It</span></div>
+      <button class="stat" data-stat="all" type="button" aria-label="Show all books"><b id="statTotal">0</b><span>My Books</span></button>
+      <button class="stat" data-stat="week" type="button" aria-label="Show books added this week"><b id="statWeek">0</b><span>This Week</span></button>
+      <button class="stat" data-stat="fav" type="button" aria-label="Show favorites"><b id="statFav">0</b><span>Favorites</span></button>
+      <button class="stat" data-stat="authors" type="button" aria-label="Show books grouped by author"><b id="statAuthors">0</b><span>Authors</span></button>
+    </div>
+    <div class="card pickcard" style="margin-top:14px">
+      <h3 style="margin-bottom:4px">Can't pick? Let the library choose.</h3>
+      <p class="muted" style="font-weight:700;margin:0 0 12px">Picks any book from the library.</p>
+      <button class="btn primary" id="pickBtn" type="button" style="width:100%">Pick a Book for Me</button>
     </div>
     <h3 class="shelf-title">Recently Added</h3>
     <div class="shelf" id="recentShelf"></div>
@@ -342,10 +356,11 @@ html[data-theme="dark"] .tabbtn.on{color:var(--gold)}
     <div class="shelf" id="browseWeek"></div>
     <h3 class="shelf-title">Made for Monroe</h3>
     <div class="shelf" id="browseFav"></div>
-    <h3 class="shelf-title">Read Again</h3>
-    <div class="shelf" id="browseRead"></div>
     <h3 class="shelf-title">Badges to Earn</h3>
     <div class="shelf" id="browseBadges"></div>
+    <h3 class="shelf-title">Want to Read</h3>
+    <p class="muted" style="font-weight:800;margin:0 0 8px">Books for the next library trip. When one gets scanned in, it leaves this list by itself.</p>
+    <div id="browseWant"></div>
   </section>
 
   <!-- SCAN -->
@@ -423,6 +438,17 @@ html[data-theme="dark"] .tabbtn.on{color:var(--gold)}
         <button class="btn ghost fix" id="manualCancel" type="button" style="flex:none">Never mind</button>
       </div>
     </div>
+    <div class="card">
+      <h2>Books I Want</h2>
+      <p class="muted" style="font-weight:700">For the next library trip: books Monroe wants but doesn't have yet. When one gets scanned in, it leaves this list by itself.</p>
+      <label class="flabel" for="wantTitle">Book name *</label>
+      <input class="field" id="wantTitle" autocomplete="off" placeholder="e.g. Dragons Love Tacos">
+      <label class="flabel" for="wantAuthor">Author</label>
+      <input class="field" id="wantAuthor" autocomplete="off" placeholder="e.g. Adam Rubin">
+      <div style="height:12px"></div>
+      <button class="btn primary" id="wantAdd" type="button" style="width:100%">Add to Want List</button>
+      <div id="wantList" style="margin-top:14px"></div>
+    </div>
   </section>
 
   <!-- BOOKS -->
@@ -433,7 +459,6 @@ html[data-theme="dark"] .tabbtn.on{color:var(--gold)}
       <button class="chip on" data-filter="all" type="button">All Books</button>
       <button class="chip" data-filter="week" type="button">This Week</button>
       <button class="chip" data-filter="fav" type="button">Favorites</button>
-      <button class="chip" data-filter="read" type="button">I Read It</button>
     </div>
     <label class="flabel" for="sortSel">Put in order by…</label>
     <select class="field" id="sortSel">
@@ -514,7 +539,6 @@ html[data-theme="dark"] .tabbtn.on{color:var(--gold)}
 <div class="nowbar" id="nowBar" style="display:none">
   <button class="nowbar-main" id="nowBarOpen" type="button"><span class="nowbar-cover" id="nowBarCover"></span><span class="nowbar-text"><b id="nowBarTitle"></b><span id="nowBarAuthor"></span></span></button>
   <button class="nowbar-btn" id="nowBarHear" type="button">Hear</button>
-  <button class="nowbar-btn primary" id="nowBarRead" type="button">I Read It</button>
 </div>
 
 <!-- bottom tabs -->
@@ -557,11 +581,17 @@ html[data-theme="dark"] .tabbtn.on{color:var(--gold)}
 "use strict";
 /* ============ storage ============ */
 var LS_BOOKS="monroes_library_books_v1", LS_SET="monroes_library_settings_v1";
+var LS_WANT="monroes_library_want_v1";
 var books=[], settings={goal:100,dark:false,voice:true,scans:0,currentBook:""};
 try{ var b=localStorage.getItem(LS_BOOKS); if(b) books=JSON.parse(b)||[]; }catch(e){ books=[]; }
 try{ var s=localStorage.getItem(LS_SET); if(s){ var p=JSON.parse(s); if(p) settings=Object.assign(settings,p); } }catch(e){}
+var want=[];
+try{ var w=localStorage.getItem(LS_WANT); if(w) want=JSON.parse(w)||[]; }catch(e){ want=[]; }
 function saveBooks(){ try{ localStorage.setItem(LS_BOOKS, JSON.stringify(books)); }catch(e){ toast("This phone's storage is full. Try exporting a backup."); } }
 function saveSettings(){ try{ localStorage.setItem(LS_SET, JSON.stringify(settings)); }catch(e){} }
+function saveWant(){ try{ localStorage.setItem(LS_WANT, JSON.stringify(want)); }catch(e){} }
+function normTitle(t){ return String(t||"").toLowerCase().replace(/[^a-z0-9]/g,""); }
+
 function $(id){ return document.getElementById(id); }
 function esc(t){ return String(t==null?"":t).replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c];}); }
 function todayStr(d){ d=d||new Date(); return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0"); }
@@ -610,16 +640,11 @@ function updateNowBar(){
   $("nowBarCover").innerHTML=coverHTML(cur);
   $("nowBarTitle").textContent=cur.title;
   $("nowBarAuthor").textContent=cur.author||"";
-  $("nowBarRead").textContent=cur.read?"Read \u2713":"I Read It";
 }
 $("nowBarOpen").addEventListener("click",function(){ if(settings.currentBook) openDetail(settings.currentBook); });
 $("nowBarHear").addEventListener("click",function(){
   var cur=books.find(function(b){return b.id===settings.currentBook;}); if(!cur) return;
   var was=settings.voice; settings.voice=true; speak(cur.title+(cur.author?" by "+cur.author:"")); settings.voice=was;
-});
-$("nowBarRead").addEventListener("click",function(){
-  var cur=books.find(function(b){return b.id===settings.currentBook;}); if(!cur) return;
-  cur.read=!cur.read; saveBooks(); render(); if(cur.read) cheer("Marked as read.");
 });
 $("nowHero").addEventListener("click",function(e){
   var hero=books.find(function(b){return b.id===settings.currentBook;})||books.slice().sort(function(a,b){return (b.addedAt||"").localeCompare(a.addedAt||"");})[0]||null;
@@ -629,7 +654,7 @@ $("nowHero").addEventListener("click",function(e){
   if(btn.getAttribute("data-hero")==="hear"){
     var was=settings.voice; settings.voice=true; speak(hero.title+(hero.author?" by "+hero.author:"")); settings.voice=was;
   } else {
-    hero.read=!hero.read; saveBooks(); render(); if(hero.read) cheer("Marked as read.");
+    hero.favorite=!hero.favorite; saveBooks(); render(); toast(hero.favorite?"Added to favorites.":"Removed from favorites.");
   }
 });
 $("browseBadges").addEventListener("click",function(e){
@@ -672,15 +697,7 @@ var BADGES=[
  {id:"f10",cat:"Favorites",icon:"💕",tone:"coral",name:"10 Favorites",metric:"favs",need:10,unit:"favorites"},
  {id:"f25",cat:"Favorites",icon:"💗",tone:"lilac",name:"25 Favorites",metric:"favs",need:25,unit:"favorites"},
  {id:"f50",cat:"Favorites",icon:"💝",tone:"rose",name:"50 Favorites",metric:"favs",need:50,unit:"favorites"},
- {id:"r1",cat:"Books Read",icon:"🐦",tone:"sky",name:"First Book Read",metric:"reads",need:1,unit:"read"},
- {id:"r10",cat:"Books Read",icon:"🦜",tone:"mint",name:"10 Books Read",metric:"reads",need:10,unit:"read"},
- {id:"r25",cat:"Books Read",icon:"🦉",tone:"gold",name:"25 Books Read",metric:"reads",need:25,unit:"read"},
- {id:"r50",cat:"Books Read",icon:"🕊️",tone:"sky",name:"50 Books Read",metric:"reads",need:50,unit:"read"},
- {id:"r100",cat:"Books Read",icon:"🦚",tone:"mint",name:"100 Books Read",metric:"reads",need:100,unit:"read"},
- {id:"s2",cat:"Reading Streaks",icon:"🌼",tone:"gold",name:"2 Days in a Row",metric:"maxStreak",need:2,unit:"days in a row"},
- {id:"s3",cat:"Reading Streaks",icon:"🌸",tone:"rose",name:"3 Days in a Row",metric:"maxStreak",need:3,unit:"days in a row"},
- {id:"s7",cat:"Reading Streaks",icon:"☀️",tone:"gold",name:"A Whole Week",metric:"maxStreak",need:7,unit:"days in a row"},
- {id:"s4w",cat:"Reading Streaks",icon:"🌺",tone:"coral",name:"4 Library Weeks",metric:"distinctWeeks",need:4,unit:"different weeks"},
+ {id:"s4w",cat:"Library Weeks",icon:"🌺",tone:"coral",name:"4 Library Weeks",metric:"distinctWeeks",need:4,unit:"different weeks"},
  {id:"a5",cat:"Variety & Scanning",icon:"🌍",tone:"mint",name:"5 Authors",metric:"authors",need:5,unit:"authors"},
  {id:"a15",cat:"Variety & Scanning",icon:"🌎",tone:"sky",name:"15 Authors",metric:"authors",need:15,unit:"authors"},
  {id:"a30",cat:"Variety & Scanning",icon:"🌏",tone:"coral",name:"30 Authors",metric:"authors",need:30,unit:"authors"},
@@ -702,16 +719,13 @@ function metrics(){
   });
   var maxDay=0; Object.keys(byDay).forEach(function(k){ if(byDay[k]>maxDay) maxDay=byDay[k]; });
   var maxWeek=0; Object.keys(byWeek).forEach(function(k){ if(byWeek[k]>maxWeek) maxWeek=byWeek[k]; });
-  var dayList=Object.keys(days).sort(); var streak=0,best=0,prev=null;
-  dayList.forEach(function(ds){ var cur=new Date(ds+"T12:00:00"); if(prev && (cur-prev)===86400000) streak++; else streak=1; if(streak>best) best=streak; prev=cur; });
   var haulDaysByWeek={}; Object.keys(byDay).forEach(function(k){ if(byDay[k]>=10){ var wk=weekKey(k); haulDaysByWeek[wk]=(haulDaysByWeek[wk]||0)+1; } });
   var doubleHaul=0; Object.keys(haulDaysByWeek).forEach(function(k){ if(haulDaysByWeek[k]>=2) doubleHaul=1; });
   return { total:books.length,
     favs:books.filter(function(x){return x.favorite;}).length,
-    reads:books.filter(function(x){return x.read;}).length,
     authors:Object.keys(authors).length,
     scans:settings.scans||0, maxDay:maxDay, maxWeek:maxWeek,
-    maxStreak:best, distinctWeeks:Object.keys(weeks).length, doubleHaul:doubleHaul };
+    distinctWeeks:Object.keys(weeks).length, doubleHaul:doubleHaul };
 }
 function earnedIds(m){ var out={}; BADGES.forEach(function(bd){ if((m[bd.metric]||0)>=bd.need) out[bd.id]=1; }); return out; }
 
@@ -738,7 +752,7 @@ function render(){
   $("statTotal").textContent=m.total;
   var wk=weekKey(new Date());
   $("statWeek").textContent=books.filter(function(b){ return b.addedAt && weekKey(b.addedAt.slice(0,10))===wk; }).length;
-  $("statFav").textContent=m.favs; $("statRead").textContent=m.reads;
+  $("statFav").textContent=m.favs; $("statAuthors").textContent=m.authors;
   /* star jar */
   var pct=Math.min(100, Math.round(m.total/ Math.max(1,settings.goal) *100));
   $("jarFill").style.height=pct+"%";
@@ -765,7 +779,7 @@ function render(){
   bindOpenButtons($("recentShelf")); bindOpenButtons($("favShelf"));
   var hero=books.find(function(b){return b.id===settings.currentBook;})||sorted[0]||null;
   if(hero){
-    $("nowHero").innerHTML='<div class="hero-now">'+coverHTML(hero,"hero-cover")+'<div style="flex:1;min-width:0"><p class="muted" style="font-weight:800;letter-spacing:.07em;text-transform:uppercase;font-size:12px">Now Reading</p><h3 style="font-size:24px;margin:4px 0">'+esc(hero.title)+'</h3><p style="font-weight:800;margin:0 0 12px">'+esc(hero.author||"")+'</p><div class="row"><button class="btn primary" data-hero="hear" type="button">Hear It</button><button class="btn" data-hero="read" type="button">'+(hero.read?"Read \u2713":"I Read It")+'</button></div></div></div>';
+    $("nowHero").innerHTML='<div class="hero-now">'+coverHTML(hero,"hero-cover")+'<div style="flex:1;min-width:0"><p class="muted" style="font-weight:800;letter-spacing:.07em;text-transform:uppercase;font-size:12px">Now Reading</p><h3 style="font-size:24px;margin:4px 0">'+esc(hero.title)+'</h3><p style="font-weight:800;margin:0 0 12px">'+esc(hero.author||"")+'</p><div class="row"><button class="btn primary" style="white-space:nowrap" data-hero="hear" type="button">Hear It</button><button class="btn" style="white-space:nowrap" data-hero="fav" type="button">'+IC.star+(hero.favorite?" Favorite":" Make Favorite")+'</button></div></div></div>';
   } else {
     $("nowHero").innerHTML='<div class="hero-now"><div class="coverph hero-cover">'+IC.book+'</div><div style="flex:1;min-width:0"><p class="muted" style="font-weight:800;letter-spacing:.07em;text-transform:uppercase;font-size:12px">Now Reading</p><h3 style="font-size:24px;margin:4px 0">Nothing on the shelf yet</h3><p style="font-weight:700" class="muted">Scan Monroe\u2019s first book and it will live here.</p></div></div>';
   }
@@ -773,11 +787,10 @@ function render(){
   var weekBooks=books.filter(function(b){ return b.addedAt && weekKey(b.addedAt.slice(0,10))===wk2; }).slice(0,8);
   $("browseWeek").innerHTML=shelfHTML(weekBooks,"Nothing new this week yet.");
   $("browseFav").innerHTML=shelfHTML(favs,"No favorites yet.");
-  var readBooks=books.filter(function(b){return b.read;}).slice(0,8);
-  $("browseRead").innerHTML=shelfHTML(readBooks,"No books marked read yet.");
   var locked=BADGES.filter(function(bd){ return !(earnedIds(m)[bd.id]); }).slice(0,8);
   $("browseBadges").innerHTML=locked.length? locked.map(function(bd){ var cur=m[bd.metric]||0; return '<button class="shelfcard badge-shelf" data-badges type="button"><span class="ic tone-'+(bd.tone||'gold')+'">'+bd.icon+'</span><div class="t">'+esc(bd.name)+'</div><div class="a">'+cur+' / '+bd.need+' '+esc(bd.unit)+'</div><div class="progress mini"><i style="width:'+Math.round(cur/bd.need*100)+'%"></i></div></button>'; }).join("") : '<p class="muted" style="font-weight:700;padding:6px 2px">Every badge earned.</p>';
-  bindOpenButtons($("browseWeek")); bindOpenButtons($("browseFav")); bindOpenButtons($("browseRead"));
+  bindOpenButtons($("browseWeek")); bindOpenButtons($("browseFav"));
+  renderWant();
   updateNowBar();
   renderLibSearch();
   renderBooks(); renderBadges(m);
@@ -791,7 +804,6 @@ function renderBooks(){
   var list=books.filter(function(b){
     if(q && (b.title+" "+(b.author||"")).toLowerCase().indexOf(q)<0) return false;
     if(f==="fav" && !b.favorite) return false;
-    if(f==="read" && !b.read) return false;
     if(f==="week" && !(b.addedAt && weekKey(b.addedAt.slice(0,10))===wk)) return false;
     return true;
   });
@@ -816,7 +828,7 @@ function renderBooks(){
   if(sort==="title"||sort==="author"){ gorder.sort(function(a,b){ if(a==="#") return 1; if(b==="#") return -1; return a.localeCompare(b); }); }
   else if(sort==="newest"){ gorder.sort(function(a,b){ return b.localeCompare(a); }); }
   else { gorder.sort(function(a,b){ return a.localeCompare(b); }); }
-  function cardHTML(bk){ return '<button class="bookcard" data-open="'+esc(bk.id)+'">'+coverHTML(bk)+'<div class="t">'+esc(bk.title)+'</div><div class="a">'+esc(bk.author||"")+'</div><div class="marks">'+(bk.favorite?IC.star:"")+(bk.read?IC.check:"")+'</div></button>'; }
+  function cardHTML(bk){ return '<button class="bookcard" data-open="'+esc(bk.id)+'">'+coverHTML(bk)+'<div class="t">'+esc(bk.title)+'</div><div class="a">'+esc(bk.author||"")+'</div><div class="marks">'+(bk.favorite?IC.star:"")+'</div></button>'; }
   $("bookGrid").innerHTML=gorder.map(function(k){ return '<h3 class="lib-letter">'+esc(gmap[k].label)+'</h3><div class="bookgrid">'+gmap[k].items.map(cardHTML).join("")+'</div>'; }).join("");
   bindOpenButtons($("bookGrid"));
   $("printMeta").textContent=books.length+" books · Printed "+new Date().toLocaleDateString();
@@ -825,7 +837,7 @@ function bindOpenButtons(root){ root.querySelectorAll("[data-open]").forEach(fun
 document.querySelectorAll("#filterChips .chip").forEach(function(ch){ ch.addEventListener("click",function(){ document.querySelectorAll("#filterChips .chip").forEach(function(c){c.classList.remove("on");}); ch.classList.add("on"); renderBooks(); }); });
 $("bookSearch").addEventListener("input",renderBooks);
 $("sortSel").addEventListener("change",renderBooks);
-var CAT_ICON={"Collected":"\u{1F338}","Big Haul Days":"\u{1F9FA}","Favorites":"\u2764\uFE0F","Books Read":"\u{1F426}","Reading Streaks":"\u2600\uFE0F","Variety & Scanning":"\u{1F98B}"};
+var CAT_ICON={"Collected":"\u{1F338}","Big Haul Days":"\u{1F9FA}","Favorites":"\u2764\uFE0F","Library Weeks":"\u{1F4C5}","Variety & Scanning":"\u{1F98B}"};
 function renderBadges(m){
   m=m||metrics(); var earned=earnedIds(m); var count=Object.keys(earned).length;
   $("badgeSummary").textContent="Monroe has earned "+count+" of "+BADGES.length+" badges.";
@@ -852,8 +864,8 @@ function openDetail(id){
    +(bk.description?'<p style="font-weight:600;line-height:1.55">'+esc(bk.description)+'</p>':"")
    +'<div class="row" style="margin-top:12px"><button class="btn" id="dHear" type="button">'+IC.volume+' Hear the Title</button>'
    +'<button class="btn" id="dFav" type="button">'+IC.star+(bk.favorite?" Favorite":" Make Favorite")+'</button></div>'
-   +'<div class="row" style="margin-top:10px"><button class="btn '+(bk.read?"":"primary")+'" id="dRead" type="button">'+(bk.read?IC.check:IC.bookOpen)+(bk.read?" I Read It":" I Read It")+'</button>'
-   +'<button class="btn ghost" id="dEdit" type="button">'+IC.pencil+' Edit</button></div>'
+   +'<div class="row" style="margin-top:10px"><button class="btn ghost" id="dEdit" type="button">'+IC.pencil+' Edit</button>'
+   +'<button class="btn ghost" id="dCover" type="button">Refresh Cover</button></div>'
    +'<div id="editZone"></div>'
    +'<div class="row" style="margin-top:14px"><button class="btn danger" id="dRemove" type="button">'+IC.trash+' Remove Book</button>'
    +'<button class="btn ghost" id="dClose" type="button">Close</button></div>';
@@ -861,7 +873,11 @@ function openDetail(id){
   $("dClose").addEventListener("click",closeDetail);
   $("dHear").addEventListener("click",function(){ var was=settings.voice; settings.voice=true; speak(bk.title+(bk.author?" by "+bk.author:"")); settings.voice=was; });
   $("dFav").addEventListener("click",function(){ bk.favorite=!bk.favorite; saveBooks(); render(); openDetail(id); toast(bk.favorite?"Added to favorites.":"Removed from favorites."); });
-  $("dRead").addEventListener("click",function(){ bk.read=!bk.read; saveBooks(); render(); openDetail(id); if(bk.read){ cheer("Marked as read."); } });
+  $("dCover").addEventListener("click",function(){
+    if(!bk.isbn){ toast("No ISBN on this book, so there is no cover to fetch."); return; }
+    bk.cover="https://covers.openlibrary.org/b/isbn/"+encodeURIComponent(bk.isbn)+"-L.jpg";
+    saveBooks(); render(); openDetail(id); toast("Cover refreshed — if nothing shows, Open Library has no cover for this ISBN.");
+  });
   $("dRemove").addEventListener("click",function(){ askConfirm("Remove this book?","“"+bk.title+"” will be taken out of Monroe's library on this phone.",function(){ books=books.filter(function(x){return x.id!==id;}); if(settings.currentBook===id){ settings.currentBook=""; saveSettings(); } saveBooks(); closeDetail(); render(); toast("Book removed."); }); });
   $("dEdit").addEventListener("click",function(){
     $("editZone").innerHTML='<label class="flabel">Book name</label><input class="field" id="eTitle" value="'+esc(bk.title)+'"><label class="flabel">Author</label><input class="field" id="eAuthor" value="'+esc(bk.author||"")+'"><div style="height:10px"></div><button class="btn primary" id="eSave" type="button" style="width:100%">Save Changes</button>';
@@ -1024,6 +1040,8 @@ function addBook(data, viaScan){
   var before=earnedIds(metrics());
   var bk={ id:"b"+Date.now()+"_"+Math.random().toString(36).slice(2,7), isbn:data.isbn||"", title:data.title||"Untitled", author:data.author||"", publisher:data.publisher||"", year:data.year||"", pages:data.pages||"", description:data.description||"", cover:data.cover||"", favorite:false, read:false, addedAt:new Date().toISOString() };
   books.push(bk); saveBooks(); settings.currentBook=bk.id; saveSettings();
+  var wi=want.findIndex(function(w){ return normTitle(w.title)===normTitle(bk.title); });
+  if(wi>=0){ want.splice(wi,1); saveWant(); setTimeout(function(){ toast("That was on your want list — found it!"); },900); }
   if(viaScan){ settings.scans=(settings.scans||0)+1; saveSettings(); }
   var after=earnedIds(metrics()); var newBadges=BADGES.filter(function(bd){ return after[bd.id]&&!before[bd.id]; });
   render();
@@ -1333,17 +1351,17 @@ function download(name,content,type){
 function grownMsg(html){ $("grownStatus").innerHTML=html; }
 $("exportTxt").addEventListener("click",function(){
   var lines=["Monroe's Library — "+books.length+" books","Exported "+new Date().toLocaleDateString(),""].
-    concat(books.map(function(b,i){ return (i+1)+". "+b.title+(b.author?" — "+b.author:"")+(b.isbn?" (ISBN "+b.isbn+")":"")+(b.favorite?" (favorite)":"")+(b.read?" (read)":""); }));
+    concat(books.map(function(b,i){ return (i+1)+". "+b.title+(b.author?" — "+b.author:"")+(b.isbn?" (ISBN "+b.isbn+")":"")+(b.favorite?" (favorite)":""); }));
   download("monroes-library.txt",lines.join("\n"),"text/plain"); grownMsg('<div class="notice ok">Book list downloaded (.txt).</div>');
 });
 $("exportCsv").addEventListener("click",function(){
   function q(v){ return '"'+String(v==null?"":v).replace(/"/g,'""')+'"'; }
-  var rows=[["Title","Author","ISBN","Publisher","Year","Pages","Favorite","Read","Date Added"].join(",")].
-    concat(books.map(function(b){ return [q(b.title),q(b.author),q(b.isbn),q(b.publisher),q(b.year),q(b.pages),b.favorite?"Yes":"No",b.read?"Yes":"No",q((b.addedAt||"").slice(0,10))].join(","); }));
+  var rows=[["Title","Author","ISBN","Publisher","Year","Pages","Favorite","Date Added"].join(",")].
+    concat(books.map(function(b){ return [q(b.title),q(b.author),q(b.isbn),q(b.publisher),q(b.year),q(b.pages),b.favorite?"Yes":"No",q((b.addedAt||"").slice(0,10))].join(","); }));
   download("monroes-library.csv",rows.join("\n"),"text/csv"); grownMsg('<div class="notice ok">Spreadsheet downloaded (.csv).</div>');
 });
 $("exportJson").addEventListener("click",function(){
-  download("monroes-library-backup.json",JSON.stringify({app:"monroes-library",version:1,exportedAt:new Date().toISOString(),settings:settings,books:books},null,2),"application/json");
+  download("monroes-library-backup.json",JSON.stringify({app:"monroes-library",version:2,exportedAt:new Date().toISOString(),settings:settings,books:books,want:want},null,2),"application/json");
   grownMsg('<div class="notice ok">Backup downloaded (.json). Send it to the other phone and use Import there to share the library.</div>');
 });
 $("importBtn").addEventListener("click",function(){ $("importFile").click(); });
@@ -1362,7 +1380,8 @@ $("importFile").addEventListener("change",function(){
         books.push({ id:"b"+Date.now()+"_"+Math.random().toString(36).slice(2,7), isbn:raw.isbn||"", title:String(raw.title), author:raw.author||"", publisher:raw.publisher||"", year:raw.year||"", pages:raw.pages||"", description:raw.description||"", cover:raw.cover||"", favorite:!!raw.favorite, read:!!raw.read, addedAt:raw.addedAt||new Date().toISOString() });
         added++;
       });
-      saveBooks(); render();
+      if(Array.isArray(data.want)) data.want.forEach(function(w){ if(w&&w.title && !want.some(function(x){ return normTitle(x.title)===normTitle(w.title); })) want.push({title:String(w.title), author:w.author||""}); });
+      saveBooks(); saveWant(); render();
       grownMsg('<div class="notice ok">Import done: '+added+' book(s) added'+(skipped?", "+skipped+" skipped (already here or unreadable)":"")+'.</div>');
     }catch(e){ grownMsg('<div class="notice err">That file couldn\'t be read. Pick a Monroe\'s Library backup (.json) file.</div>'); }
     $("importFile").value="";
@@ -1374,6 +1393,43 @@ $("clearBtn").addEventListener("click",function(){
   askConfirm("Clear the whole library?","Every book on this phone will be removed. This can't be undone — export a backup first if you want to keep them.",function(){
     books=[]; saveBooks(); render(); grownMsg('<div class="notice ok">Library cleared. Ready for a fresh start!</div>');
   });
+});
+
+/* ============ want list + pick + stat navigation (Nov 2026 rebuild) ============ */
+function wantCardHTML(w,i){
+  return '<div class="wantcard"><div class="wt"><b>'+esc(w.title)+'</b><span>'+esc(w.author||"Author not listed")+'</span></div>'
+    +'<button class="btn small ghost" data-want-del="'+i+'" type="button">Remove</button></div>';
+}
+function renderWant(){
+  var list=$("wantList");
+  if(list) list.innerHTML = want.length ? want.map(wantCardHTML).join("") : '<p class="muted" style="font-weight:700">No books on the want list yet.</p>';
+  var shelf=$("browseWant");
+  if(shelf) shelf.innerHTML = want.length ? want.map(wantCardHTML).join("") : '<p class="muted" style="font-weight:700;padding:6px 2px">No books on the want list yet — add one from Search.</p>';
+  document.querySelectorAll("[data-want-del]").forEach(function(b){
+    b.addEventListener("click",function(){ want.splice(parseInt(b.getAttribute("data-want-del"),10),1); saveWant(); render(); toast("Removed from the want list."); });
+  });
+}
+function setFilter(f){
+  document.querySelectorAll("#filterChips .chip").forEach(function(c){ c.classList.toggle("on", c.getAttribute("data-filter")===f); });
+  renderBooks(); showView("books");
+}
+document.querySelectorAll("[data-stat]").forEach(function(b){
+  b.addEventListener("click",function(){
+    if(b.getAttribute("data-stat")==="authors"){ $("sortSel").value="author"; renderBooks(); showView("books"); return; }
+    setFilter(b.getAttribute("data-stat"));
+  });
+});
+$("pickBtn").addEventListener("click",function(){
+  if(!books.length){ toast("No books yet — scan the first one!"); return; }
+  var pool=books.slice();
+  openDetail(pool[Math.floor(Math.random()*pool.length)].id);
+});
+$("wantAdd").addEventListener("click",function(){
+  var t=$("wantTitle").value.trim(); var a=$("wantAuthor").value.trim();
+  if(!t){ toast("Type the book name first."); return; }
+  if(want.some(function(w){ return normTitle(w.title)===normTitle(t); })){ toast("That one is already on the want list."); return; }
+  want.push({title:t, author:a}); saveWant();
+  $("wantTitle").value=""; $("wantAuthor").value=""; render(); toast("Added to the want list.");
 });
 
 /* init */

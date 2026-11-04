@@ -266,6 +266,15 @@ html[data-theme="dark"] .tabbtn.on{color:var(--gold)}
 .coverph svg{width:36px;height:36px;opacity:.45}
 .resultitem .marks{display:inline-flex;gap:5px;color:#B98A1C}
 .resultitem .marks svg{width:15px;height:15px}
+/* Rebuild Nov 2026 (mirrors index.html) */
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+button.stat{cursor:pointer;font:inherit;text-align:center}
+button.stat:active{transform:translateY(1px)}
+.pickcard{background:var(--leaf-soft);border:1px solid var(--line)}
+.wantcard{display:flex;gap:10px;align-items:center;background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:10px 12px;margin:0 0 8px}
+.wantcard .wt{flex:1;min-width:0}
+.wantcard .wt b{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.wantcard .wt span{font-size:12px;color:var(--muted);font-weight:700}
 </style></head><body>
 <main class="wrap" style="padding-top:22px">
  <h2 class="display" style="font-size:30px">Monroe's Library — Components</h2>
@@ -289,7 +298,11 @@ html[data-theme="dark"] .tabbtn.on{color:var(--gold)}
   <div class="badgegrid"><div class="badge"><span class="ic tone-gold">🌱</span><b>First Book</b><p>Earned</p></div>
   <div class="badge locked"><span class="ic tone-lilac">🦄</span><b>150 Books</b><p>Locked</p></div></div>
   <div style="height:12px"></div>
-  <div class="statgrid"><div class="stat"><b>42</b><span>My Books</span></div><div class="stat"><b>7</b><span>This Week</span></div></div>
+  <div class="statgrid"><button class="stat" type="button"><b>42</b><span>My Books</span></button><div class="stat"><b>7</b><span>This Week</span></div></div>
+  <p class="muted" style="font-weight:700">Stats are buttons: tapping one jumps to the Library with that filter.</p>
+ </div>
+ <div class="card"><h3>Want list item</h3>
+  <div class="wantcard"><div class="wt"><b>Dragons Love Tacos</b><span>Adam Rubin</span></div><button class="btn small ghost" type="button">Remove</button></div>
  </div>
  <p class="muted" style="font-weight:700;text-align:center">Tokens: tokens.json · Components: index.html &lt;style&gt; · API: shadcn/ui variants</p>
 </main></body></html>
