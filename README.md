@@ -168,6 +168,26 @@ check; crop decode to the viewfinder region remains open as item 5.
   exactly viewport width); Safari confirmation needs a real phone
   screenshot. Suite 0 failures; scanner block unchanged.
 
+## Home + Library polish and Sticker Book (Nov 4, 2026, Louie-supplied file, adopted and pushed)
+- Home empty state: before the first book, Home shows only the
+  greeting, the Now Reading card, and the big scan button; stats,
+  shelves, jar, and Next sticker hide until there is something to show.
+- Stats are softly tinted tiles with plain labels; Pick a Book is a
+  slim dashed button; Next sticker shows the actual sticker in a
+  tilted circle and opens the sticker book (click plus keyboard).
+- Favorites shelf and its heading appear only once she has a favorite.
+  Ruled-paper background lines removed.
+- Library and Home shelves: covers sit borderless on the page with a
+  soft shadow, denser grid; A-Z headings are small green pills.
+- Badges view is now My Sticker Book: progress ring hero, one page per
+  category, earned stickers in tilted circles, locked ones as dashed
+  grey silhouettes; tapping a sticker beeps/speaks it or shows its
+  progress. Earning a sticker shows a full-screen win with confetti
+  (haul mode keeps a toast).
+- Verified Nov 4 at phone width (empty Home, Home with books, Library,
+  Stickers) plus suite 0 failures and scanner block unchanged.
+  components.html style re-synced wholesale.
+
 ## Author dedupe by default (Nov 4, 2026, Louie-approved)
 - An author field that is an exact repeat ("Ryan T. Higgins, Ryan T.
   Higgins") collapses to one name. Real multi-author lists

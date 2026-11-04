@@ -304,6 +304,54 @@ button.stat:active{transform:translateY(1px)}
 .wantcard .wt{flex:1;min-width:0}
 .wantcard .wt b{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .wantcard .wt span{font-size:12px;color:var(--muted);font-weight:700}
+
+/* ---------- Sticker Book (badges) ---------- */
+.sk-hero{display:flex;align-items:center;gap:16px;padding:16px 18px;border-radius:var(--radius-lg);color:#22332A;background:linear-gradient(135deg,#FDEFC7,#FDE2E8 55%,#E9E2F7);border:1px solid var(--line);box-shadow:var(--shadow-card);margin:8px 0 18px}
+.sk-hero b{font-family:var(--font-display);font-size:40px;line-height:1;display:block}
+.sk-hero small{display:block;font-weight:800;color:#5B5D50;margin-top:4px;font-size:14px}
+.sk-ring{width:76px;height:76px;flex:none;border-radius:50%;display:grid;place-items:center;background:conic-gradient(var(--terracotta) calc(var(--p)*1%),rgba(255,253,244,.75) 0)}
+.sk-ring i{width:58px;height:58px;border-radius:50%;background:#FFFDF4;display:grid;place-items:center;font-style:normal;font-size:28px}
+.sk-page{margin:0 0 18px;padding:16px 12px 18px;border-radius:var(--radius-lg);background:var(--card);border:1px solid var(--line);box-shadow:var(--shadow-card)}
+.sk-page h3{font-size:21px;margin:0 0 2px 4px}
+.sk-sub{margin:0 0 14px 4px;font-weight:800;font-size:13px;color:var(--muted)}
+.sk-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px 6px}
+.sk-slot{appearance:none;background:none;border:0;padding:0;font:inherit;color:inherit;text-align:center;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.sk-dot{width:min(92px,26vw);aspect-ratio:1;margin:0 auto;border-radius:50%;display:grid;place-items:center;font-size:clamp(34px,10vw,46px);line-height:1;position:relative}
+.sk-slot.got .sk-dot{background:var(--t);border:5px solid #fff;box-shadow:0 0 0 1.5px rgba(34,51,42,.14),0 6px 14px rgba(34,51,42,.22);transform:rotate(var(--r))}
+.sk-slot.got .sk-dot::after{content:"\2726";position:absolute;top:-6px;right:-3px;font-size:17px;color:var(--gold)}
+.sk-slot.got:active .sk-dot{animation:skpop .5s}
+.sk-slot.lock .sk-dot{border:3px dashed var(--line)}
+.sk-slot.lock .sk-dot span{filter:brightness(0);opacity:.1}
+.sk-slot b{display:block;font-family:var(--font-display);font-size:13.5px;margin-top:8px;line-height:1.15}
+.sk-slot em{display:block;font-style:normal;font-size:12px;font-weight:800;color:var(--muted);margin-top:2px}
+.sk-win{position:fixed;inset:0;z-index:90;display:grid;place-items:center;background:rgba(23,63,44,.78);padding:24px;text-align:center;color:#FFFDF4}
+.sk-big{width:190px;height:190px;font-size:96px;margin:0 auto 18px;border-radius:50%;display:grid;place-items:center;background:var(--t);border:10px solid #fff;box-shadow:0 14px 40px rgba(0,0,0,.35);animation:skbig .9s cubic-bezier(.2,1.4,.4,1) both}
+.sk-win h2{font-size:32px}
+.sk-win p{font-weight:800;font-size:20px;margin:8px 0 0}
+.sk-bit{position:fixed;top:-20px;width:11px;height:16px;border-radius:3px;z-index:91;pointer-events:none;animation:skfall linear forwards}
+@keyframes skpop{0%{transform:rotate(var(--r)) scale(1)}40%{transform:rotate(calc(var(--r) + 10deg)) scale(1.22)}100%{transform:rotate(var(--r)) scale(1)}}
+@keyframes skbig{0%{transform:scale(0) rotate(-40deg)}100%{transform:scale(1) rotate(-4deg)}}
+@keyframes skfall{to{transform:translateY(105vh) rotate(720deg)}}
+@media (prefers-reduced-motion:reduce){.sk-big,.sk-slot.got:active .sk-dot{animation:none}.sk-bit{display:none}}
+
+/* ---------- Home + Library polish ---------- */
+body{background-image:none}
+.stat{border-top:0;border-color:transparent}
+.stat span{text-transform:none;letter-spacing:0;font-size:13px}
+.statgrid .stat:nth-child(1){background:var(--brass-soft)}
+.statgrid .stat:nth-child(2){background:var(--leaf-soft)}
+.statgrid .stat:nth-child(3){background:var(--berry-soft)}
+.statgrid .stat:nth-child(4){background:var(--catalog-soft)}
+#view-home.is-empty>:not(h2):not(#owlMsg):not(#nowHero):not(#homeScanBtn){display:none}
+.sk-pick{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;min-height:52px;margin-top:14px;border-radius:var(--radius-lg);border:2px dashed var(--leaf);background:var(--leaf-soft);color:var(--ink);font:800 17px var(--font-body);cursor:pointer}
+.sk-pick:active{transform:translateY(1px)}
+.sk-next{display:flex;gap:16px;align-items:center;cursor:pointer}
+.sk-next h3{font-size:18px}
+.sk-nico{width:64px;height:64px;flex:none;border-radius:50%;display:grid;place-items:center;font-size:32px;background:var(--brass-soft);border:4px solid #fff;box-shadow:0 0 0 1.5px rgba(34,51,42,.14),0 5px 12px rgba(34,51,42,.2);transform:rotate(-5deg)}
+.bookgrid{grid-template-columns:repeat(auto-fill,minmax(104px,1fr));gap:18px 12px}
+.bookcard,.shelfcard:not(.badge-shelf){background:transparent;border:0;border-radius:0;box-shadow:none;padding:0}
+.bookcard>.coverslot,.bookcard>.coverph,.shelfcard:not(.badge-shelf)>.coverslot,.shelfcard:not(.badge-shelf)>.coverph{box-shadow:0 5px 12px rgba(34,51,42,.22)}
+.lib-letter{display:inline-grid;place-items:center;min-width:36px;height:36px;padding:0 12px;border-radius:999px;background:var(--leaf-soft);color:var(--ink);font-size:18px;margin:20px 0 12px}
 </style>
 </head>
 <body>
@@ -334,11 +382,7 @@ button.stat:active{transform:translateY(1px)}
       <button class="stat" data-stat="fav" type="button" aria-label="Show favorites"><b id="statFav">0</b><span>Favorites</span></button>
       <button class="stat" data-stat="authors" type="button" aria-label="Show books grouped by author"><b id="statAuthors">0</b><span>Authors</span></button>
     </div>
-    <div class="card pickcard" style="margin-top:14px">
-      <h3 style="margin-bottom:4px">Can't pick? Let the library choose.</h3>
-      <p class="muted" style="font-weight:700;margin:0 0 12px">Picks any book from the library.</p>
-      <button class="btn primary" id="pickBtn" type="button" style="width:100%">Pick a Book for Me</button>
-    </div>
+    <button class="sk-pick" id="pickBtn" type="button">🎲 Pick a book for me</button>
     <h3 class="shelf-title">Recently Added</h3>
     <div class="shelf" id="recentShelf"></div>
     <h3 class="shelf-title">Favorites</h3>
@@ -356,11 +400,7 @@ button.stat:active{transform:translateY(1px)}
         </div>
       </div>
     </div>
-    <div class="card" id="nextBadgeCard">
-      <h3>Next Badge</h3>
-      <p style="font-weight:800;margin:6px 0" id="nextBadgeText">Add your first book to earn the First Book badge!</p>
-      <div class="progress pink"><i id="nextBadgeBar" style="width:0%"></i></div>
-    </div>
+    <div class="card sk-next" id="nextBadgeCard" role="button" tabindex="0"><div class="sk-nico" id="nextBadgeIcon" aria-hidden="true">⭐</div><div style="flex:1;min-width:0"><h3>Next sticker</h3><p style="font-weight:800;margin:4px 0 8px" id="nextBadgeText">Add your first book to earn a sticker!</p><div class="progress pink"><i id="nextBadgeBar" style="width:0%"></i></div></div></div>
   </section>
 
   <!-- BROWSE -->
@@ -490,7 +530,7 @@ button.stat:active{transform:translateY(1px)}
 
   <!-- BADGES -->
   <section class="view" id="view-badges">
-    <h2 class="pagetitle">Badges</h2>
+    <h2 class="pagetitle">My Sticker Book</h2>
     <p class="muted" style="font-weight:800" id="badgeSummary"></p>
     <div id="badgeSections"></div>
   </section>
@@ -571,7 +611,7 @@ button.stat:active{transform:translateY(1px)}
   <button class="tabbtn" data-view="browse" type="button"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg></span>Browse</button>
   <button class="tabbtn" data-view="search" type="button"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg></span>Search</button>
   <button class="tabbtn" data-view="books" type="button"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg></span>Library</button>
-  <button class="tabbtn" data-view="badges" type="button"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="6"/><path d="M15.5 12.9 17 22l-5-3-5 3 1.5-9.1"/></svg></span>Badges</button>
+  <button class="tabbtn" data-view="badges" type="button"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="6"/><path d="M15.5 12.9 17 22l-5-3-5 3 1.5-9.1"/></svg></span>Stickers</button>
 </div></nav>
 
 <!-- book detail -->
@@ -924,6 +964,7 @@ function renderCoverPanel(){
 }
 function render(){
   var m=metrics();
+  $("view-home").classList.toggle("is-empty",!books.length);
   $("statTotal").textContent=m.total;
   var wk=weekKey(new Date());
   $("statWeek").textContent=books.filter(function(b){ return b.addedAt && weekKey(b.addedAt.slice(0,10))===wk; }).length;
@@ -939,8 +980,8 @@ function render(){
   $("challengeText").textContent=m.total+" of "+settings.goal+" books"+(m.total>=settings.goal?" — goal reached":"");
   /* next badge */
   var next=null; BADGES.forEach(function(bd){ if(!next && (m[bd.metric]||0)<bd.need) next=bd; });
-  if(next){ var cur=m[next.metric]||0; $("nextBadgeText").textContent=(next.icon||"")+" "+next.name+" — "+(next.need-cur)+" more to go."; $("nextBadgeBar").style.width=Math.round(cur/next.need*100)+"%"; }
-  else { $("nextBadgeText").textContent="Every badge earned."; $("nextBadgeBar").style.width="100%"; }
+  if(next){ var cur=m[next.metric]||0; $("nextBadgeIcon").textContent=next.icon; $("nextBadgeIcon").style.background=TONE[next.tone]||TONE.gold; $("nextBadgeText").textContent=next.name+" — "+(next.need-cur)+" more to go."; $("nextBadgeBar").style.width=Math.round(cur/next.need*100)+"%"; }
+  else { $("nextBadgeIcon").textContent="\u{1F451}"; $("nextBadgeText").textContent="Every sticker collected!"; $("nextBadgeBar").style.width="100%"; }
   /* owl message */
   $("owlMsg").textContent= m.total===0 ? "Add your first book to get started." : (m.total>=settings.goal ? "Reading goal complete. "+m.total+" books in the library." : "You have "+m.total+" book"+(m.total===1?"":"s")+" in the library.");
   /* Read Now shelves + hero + Browse shelves + Now Reading bar */
@@ -952,11 +993,12 @@ function render(){
   var favs=books.filter(function(b){return b.favorite;}).slice(0,8);
   $("favShelf").innerHTML=shelfHTML(favs,"No favorites yet \u2014 tap a book, then Make Favorite.");
   bindOpenButtons($("recentShelf")); bindOpenButtons($("favShelf"));
+  $("favShelf").style.display=$("favShelf").previousElementSibling.style.display=favs.length?"":"none";
   var hero=books.find(function(b){return b.id===settings.currentBook;})||sorted[0]||null;
   if(hero){
-    $("nowHero").innerHTML='<div class="hero-now">'+coverHTML(hero,"hero-cover")+'<div style="flex:1;min-width:0"><p class="muted" style="font-weight:800;letter-spacing:.07em;text-transform:uppercase;font-size:12px">Now Reading</p><h3 style="font-size:24px;margin:4px 0">'+esc(hero.title)+'</h3><p style="font-weight:800;margin:0 0 12px">'+esc(hero.author||"")+'</p><div class="row"><button class="btn primary" style="white-space:nowrap" data-hero="hear" type="button">Hear It</button><button class="btn" style="white-space:nowrap" data-hero="fav" type="button">'+IC.star+(hero.favorite?" Favorite":" Make Favorite")+'</button></div></div></div>';
+    $("nowHero").innerHTML='<div class="hero-now">'+coverHTML(hero,"hero-cover")+'<div style="flex:1;min-width:0"><p class="muted" style="font-weight:800;font-size:13px">Now Reading</p><h3 style="font-size:24px;margin:4px 0">'+esc(hero.title)+'</h3><p style="font-weight:800;margin:0 0 12px">'+esc(hero.author||"")+'</p><div class="row"><button class="btn primary" style="white-space:nowrap" data-hero="hear" type="button">Hear It</button><button class="btn" style="white-space:nowrap" data-hero="fav" type="button">'+IC.star+(hero.favorite?" Favorite":" Make Favorite")+'</button></div></div></div>';
   } else {
-    $("nowHero").innerHTML='<div class="hero-now"><div class="coverph hero-cover">'+IC.book+'</div><div style="flex:1;min-width:0"><p class="muted" style="font-weight:800;letter-spacing:.07em;text-transform:uppercase;font-size:12px">Now Reading</p><h3 style="font-size:24px;margin:4px 0">Nothing on the shelf yet</h3><p style="font-weight:700" class="muted">Scan Monroe\u2019s first book and it will live here.</p></div></div>';
+    $("nowHero").innerHTML='<div class="hero-now"><div class="coverph hero-cover">'+IC.book+'</div><div style="flex:1;min-width:0"><p class="muted" style="font-weight:800;font-size:13px">Now Reading</p><h3 style="font-size:24px;margin:4px 0">Nothing on the shelf yet</h3><p style="font-weight:700" class="muted">Scan Monroe\u2019s first book and it will live here.</p></div></div>';
   }
   var wk2=weekKey(new Date());
   var weekBooks=books.filter(function(b){ return b.addedAt && weekKey(b.addedAt.slice(0,10))===wk2; }).slice(0,8);
@@ -1014,17 +1056,44 @@ $("bookSearch").addEventListener("input",renderBooks);
 $("sortSel").addEventListener("change",renderBooks);
 var CAT_ICON={"Collected":"\u{1F338}","Big Haul Days":"\u{1F9FA}","Favorites":"\u2764\uFE0F","Library Weeks":"\u{1F4C5}","Variety & Scanning":"\u{1F98B}"};
 function renderBadges(m){
-  m=m||metrics(); var earned=earnedIds(m); var count=Object.keys(earned).length;
-  $("badgeSummary").textContent="Monroe has earned "+count+" of "+BADGES.length+" badges.";
+  m=m||metrics(); var earned=earnedIds(m); var count=Object.keys(earned).length, total=BADGES.length;
   var cats=[]; BADGES.forEach(function(bd){ if(cats.indexOf(bd.cat)<0) cats.push(bd.cat); });
-  $("badgeSections").innerHTML=cats.map(function(cat){
-    var items=BADGES.filter(function(bd){return bd.cat===cat;}).map(function(bd){
-      var cur=m[bd.metric]||0; var got=!!earned[bd.id]; var left=bd.need-cur;
-      return '<div class="badge'+(got?"":" locked")+'"><div class="ic tone-'+(bd.tone||'gold')+'">'+bd.icon+'</div><b>'+esc(bd.name)+'</b><p>'+(got?"Earned":left+" more to go · "+cur+" / "+bd.need+" "+esc(bd.unit))+'</p>'+(got?"":'<div class="progress mini"><i style="width:'+Math.round(cur/bd.need*100)+'%"></i></div>')+'</div>';
-    }).join("");
-    return '<h3 class="display" style="margin:16px 0 9px;font-size:20px">'+(CAT_ICON[cat]||'')+' '+esc(cat)+'</h3><div class="badgegrid">'+items+'</div>';
+  var html='<div class="sk-hero"><div class="sk-ring" style="--p:'+Math.round(count/total*100)+'"><i>\u2B50</i></div><div><b>'+count+'</b><small>of '+total+' stickers collected</small></div></div>';
+  html+=cats.map(function(cat){
+    var list=BADGES.filter(function(bd){return bd.cat===cat;});
+    var n=list.filter(function(bd){return earned[bd.id];}).length;
+    return '<section class="sk-page"><h3>'+(CAT_ICON[cat]||"")+" "+esc(cat)+'</h3><p class="sk-sub">'+n+' of '+list.length+'</p><div class="sk-grid">'+list.map(function(bd,i){
+      var got=!!earned[bd.id], left=bd.need-(m[bd.metric]||0);
+      return '<button type="button" class="sk-slot '+(got?"got":"lock")+'" data-sk="'+bd.id+'" style="--t:'+(TONE[bd.tone]||TONE.gold)+';--r:'+((i%5)*3-6)+'deg" aria-label="'+esc(bd.name)+(got?", earned":", not yet")+'"><div class="sk-dot"><span>'+bd.icon+'</span></div><b>'+esc(bd.name)+'</b><em>'+(got?"Yours!":"Not yet")+'</em></button>';
+    }).join("")+'</div></section>';
   }).join("");
+  $("badgeSummary").style.display="none";
+  $("badgeSections").innerHTML=html;
 }
+$("badgeSections").addEventListener("click",function(e){
+  var el=e.target.closest("[data-sk]"); if(!el) return;
+  var bd=BADGES.filter(function(x){return x.id===el.getAttribute("data-sk");})[0]; if(!bd) return;
+  var m=metrics();
+  if(earnedIds(m)[bd.id]){ beep(); speak(bd.name); }
+  else toast(bd.name+": "+(m[bd.metric]||0)+" of "+bd.need+" "+bd.unit);
+});
+function celebrate(list){
+  var bd=list[0], more=list.length>1?" + "+(list.length-1)+" more":"";
+  if(typeof haulMode!=="undefined"&&haulMode){ toast("New sticker: "+bd.icon+" "+bd.name+more); return; }
+  var w=document.createElement("div"); w.className="sk-win"; w.setAttribute("role","dialog"); w.setAttribute("aria-label","New sticker");
+  w.style.setProperty("--t",TONE[bd.tone]||TONE.gold);
+  w.innerHTML='<div><div class="sk-big">'+bd.icon+'</div><h2>New sticker!</h2><p>'+esc(bd.name)+more+'</p></div>';
+  document.body.appendChild(w);
+  var cols=["#E2B33C","#BC5A28","#A64757","#2E7D54","#42618C","#B7A6E0"];
+  for(var i=0;i<28;i++){ var s=document.createElement("i"); s.className="sk-bit"; s.style.cssText="left:"+(Math.random()*100)+"%;background:"+cols[i%6]+";animation-duration:"+(2+Math.random()*2)+"s;animation-delay:"+(Math.random()*.6)+"s"; document.body.appendChild(s); setTimeout((function(x){ return function(){ x.remove(); }; })(s),5200); }
+  speak("New sticker! "+bd.name);
+  function close(){ w.remove(); }
+  w.addEventListener("click",close); setTimeout(close,5000);
+}
+var TONE={rose:"#FDE2E8",lilac:"#E9E2F7",sky:"#DDEBF7",mint:"#DDF0E2",gold:"#FDEFC7",coral:"#FDE3D7"};
+try{ if(navigator.storage&&navigator.storage.persist) navigator.storage.persist(); }catch(e){}
+$("nextBadgeCard").addEventListener("click",function(){ showView("badges"); });
+$("nextBadgeCard").addEventListener("keydown",function(e){ if(e.key==="Enter"||e.key===" "){ e.preventDefault(); showView("badges"); } });
 
 /* ============ book detail ============ */
 var detailId=null;
@@ -1226,7 +1295,7 @@ function addBook(data, viaScan){
   if(!data.cover&&!haulMode){ resolveCover(bk).then(function(url){ if(url){ bk.cover=url; saveBooks(); render(); toast("Found a real cover for "+bk.title+"."); } }); }
   if(haulMode){ haulBooks.push(bk); $("haulCount").textContent=haulBooks.length; }
   cheer();
-  if(newBadges.length){ setTimeout(function(){ toast("New badge earned: "+newBadges.map(function(x){return (x.icon||"")+" "+x.name;}).join(", ")+"."); speak("New badge earned. "+newBadges[0].name); },600); }
+  if(newBadges.length){ setTimeout(function(){ celebrate(newBadges); },600); }
   return bk;
 }
 function showConfirm(data){
