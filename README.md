@@ -203,6 +203,32 @@ check; crop decode to the viewfinder region remains open as item 5.
   covers; zero placeholders; suite 0 failures, scanner block
   unchanged.
 
+## Widened cover system: more sources, self-repair (Nov 4, 2026, Louie-directed)
+- Resolver ladder, first validated hit wins: Open Library ISBN cover,
+  then covers from the work's sibling editions (new), then OL search
+  by title+author, title only (new), and title + first author (new),
+  then Google Books by ISBN, title+author, title only (new), and
+  title + first author (new). Multi-author strings no longer poison
+  the search: the title-only and first-author rungs rescue books the
+  full-author query misses.
+- Quality gate, shared by resolver and renderer: prefer short side
+  120px or more; accept a real cover down to 64px before falling back
+  to a generated cover; 1px blanks never count.
+- Self-repair, permanently: when a stored cover fails at render time
+  (thumbnail and full both fail, phone online), the book is flagged.
+  The next auto-check (and the Cover panel button, immediately)
+  re-validates the stored cover first, keeps it if healthy, else
+  finds a replacement; unfindable books retry daily, not every load.
+  Flags for deleted books are pruned.
+- Cover panel tells the truth: real count excludes flagged books, and
+  flagged books list as "cover needs repair" alongside made covers.
+- Verified Nov 4: poisoned-author no-ISBN book rescued by title-only
+  search; work-covers path proven with stubbed edition/work JSON;
+  broken stored cover repaired to a real cover and unflagged;
+  unfindable broken cover kept with a refreshed flag; render
+  failures flag the book; panel counts correct. Suite 0 failures,
+  scanner block unchanged, no CSS change (components style untouched).
+
 ## Author dedupe by default (Nov 4, 2026, Louie-approved)
 - An author field that is an exact repeat ("Ryan T. Higgins, Ryan T.
   Higgins") collapses to one name. Real multi-author lists
