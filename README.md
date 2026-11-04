@@ -156,6 +156,28 @@ before lookup finishes; failed lookup resets the dedupe and a rescan
 runs. Suite 0 failures. Live camera speed still needs a real phone
 check; crop decode to the viewfinder region remains open as item 5.
 
+## Author spill fix (Nov 4, 2026, from Louie's phone screenshot)
+- Long author lines spilled past the card edge and widened the page on
+  Mobile Safari, while Chrome showed perfect ellipses: Safari does not
+  clip nowrap text inside <button> cards the way Chrome does.
+- Fix, applied to Library cards and shelf cards: title and author now
+  sit inside a plain clipping wrapper div, and the card itself has
+  overflow:hidden, so clipping never depends on button internals.
+  Card markup, click behavior, and keyboard focus are unchanged.
+- Verified Nov 4 in Chrome (no regression, cards still 113 wide, page
+  exactly viewport width); Safari confirmation needs a real phone
+  screenshot. Suite 0 failures; scanner block unchanged.
+
+## Author dedupe by default (Nov 4, 2026, Louie-approved)
+- An author field that is an exact repeat ("Ryan T. Higgins, Ryan T.
+  Higgins") collapses to one name. Real multi-author lists
+  ("Laura Gehl, Fred Blunt") are untouched.
+- Applied at load (existing records normalized and saved) and at entry
+  (every new add), so every display, card, detail, bar, and export
+  shows the clean name with no template changes.
+- Verified Nov 4 in a real browser (repeated name shows once, real
+  list untouched); suite checks pass.
+
 ## UX (Apple Music-inspired, Oct 2026)
 - 5-tab bar: Read Now · Browse · Search · Library · Badges. Grown-ups lives
   behind the gear button in the header (with a Back to Read Now button).
