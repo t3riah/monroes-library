@@ -158,19 +158,31 @@ label.flabel{display:block;font-weight:800;font-size:13px;letter-spacing:.07em;t
 .haulbar b{font-family:var(--font-display);font-size:22px}
 /* ---------- books: shelf cards ---------- */
 .bookgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:12px}
-@media(max-width:480px){.bookgrid{grid-template-columns:repeat(3,1fr);gap:9px}}
+@media(max-width:480px){.bookgrid{grid-template-columns:repeat(3,minmax(0,1fr));gap:9px}}
 .bookcard{background:var(--card);border:1px solid var(--line);border-top:5px solid var(--catalog);
   border-radius:var(--radius-sm);padding:9px;text-align:left;width:100%;box-shadow:var(--shadow-card)}
-.bookcard img,.coverph{width:100%;aspect-ratio:2/3;object-fit:cover;border-radius:5px;background:var(--catalog-soft);
+.bookcard img,.coverph{width:100%;aspect-ratio:2/3;object-fit:cover;object-position:center;border-radius:5px;background:var(--catalog-soft);
   display:grid;place-items:center;font-size:34px}
 .bookcard .t{font-weight:800;font-size:14px;line-height:1.25;margin-top:7px;display:-webkit-box;
   -webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
-.bookcard .a{font-size:12px;color:var(--muted);font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bookcard .a{font-size:12px;color:var(--muted);font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0;line-height:1.4;min-height:1.4em}
 
 /* ---------- Library uniformity: one cover system, equal cards ---------- */
-.bookcard{display:flex;flex-direction:column}
-.bookcard img{display:block}
-.bookcard .t{min-height:calc(1.25em * 2)}
+.bookcard{display:flex;flex-direction:column;min-width:0;height:100%}
+.bookcard img{display:block;min-width:0}
+.bookcard .coverph{min-width:0}
+.coverslot{position:relative;display:block;overflow:hidden;background:var(--catalog-soft)}
+.coverslot img.coverbg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center;filter:blur(10px) brightness(.92);transform:scale(1.2)}
+.coverslot img.coverfg{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;object-position:center}
+.coverslot .coverph{position:absolute;inset:0;display:none;place-items:center}
+.coverslot .coverph svg{width:60%;height:60%;max-width:36px;max-height:36px}
+.coverslot.nocover img{display:none}
+.coverslot.nocover .coverph{display:grid}
+.bookcard .coverslot{width:100%;aspect-ratio:2/3;border-radius:5px}
+.shelfcard .coverslot{width:100%;aspect-ratio:2/3;border-radius:8px}
+.resultitem .coverslot{width:46px;height:68px;flex:none;border-radius:6px}
+.nowbar-cover .coverslot{width:34px;height:51px;flex:none;border-radius:8px}
+.bookcard .t{min-height:calc(1.25em * 2);min-width:0;overflow-wrap:anywhere}
 .bookcard .marks{margin-top:auto;padding-top:4px}
 .shelfcard img{display:block}
 .resultitem .coverph{width:46px;height:68px;flex:none;border-radius:6px}
@@ -205,14 +217,14 @@ label.flabel{display:block;font-weight:800;font-size:13px;letter-spacing:.07em;t
 .pagetitle{font-size:34px;font-weight:900;margin:2px 0 4px}
 .shelf-title{font-size:20px;margin:20px 0 9px}
 .shelf{display:flex;gap:12px;overflow-x:auto;padding:2px 2px 14px;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch}
-.shelfcard{flex:0 0 132px;scroll-snap-align:start;text-align:left;background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:8px;box-shadow:var(--shadow-card)}
-.shelfcard img{width:100%;aspect-ratio:2/3;object-fit:cover;border-radius:8px;background:var(--catalog-soft)}
+.shelfcard{flex:0 0 132px;min-width:0;scroll-snap-align:start;text-align:left;background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:8px;box-shadow:var(--shadow-card)}
+.shelfcard img{width:100%;aspect-ratio:2/3;object-fit:cover;object-position:center;border-radius:8px;background:var(--catalog-soft)}
 .shelfcard .coverph{width:100%;aspect-ratio:2/3;border-radius:8px}
-.shelfcard .t{font-weight:800;font-size:14px;line-height:1.25;margin-top:7px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
-.shelfcard .a{font-size:12px;color:var(--muted);font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.shelfcard .t{font-weight:800;font-size:14px;line-height:1.25;margin-top:7px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;min-width:0;overflow-wrap:anywhere}
+.shelfcard .a{font-size:12px;color:var(--muted);font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0;line-height:1.4;min-height:1.4em}
 .shelfcard.badge-shelf .ic{font-size:30px;display:grid;place-items:center;width:56px;height:56px;margin:2px auto 6px;border-radius:50%;border:2px solid var(--accent)}
 .hero-now{display:flex;gap:16px;align-items:flex-start}
-.hero-cover{width:128px;flex:none;aspect-ratio:2/3;object-fit:cover;border-radius:10px;box-shadow:var(--shadow-raised)}
+.hero-cover{width:128px;flex:none;aspect-ratio:2/3;object-fit:cover;object-position:center;border-radius:10px;box-shadow:var(--shadow-raised)}
 .hero-now .coverph{width:128px;flex:none;aspect-ratio:2/3;border-radius:10px}
 .gearbtn{flex:none;width:44px;height:44px;border-radius:50%;background:rgba(255,255,255,.16);color:#FFFDF4;display:grid;place-items:center}
 .gearbtn svg{width:22px;height:22px}
@@ -221,7 +233,7 @@ label.flabel{display:block;font-weight:800;font-size:13px;letter-spacing:.07em;t
 .nowbar-text{min-width:0}
 .nowbar-text b{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .nowbar-text span{display:block;font-size:12px;color:var(--muted);font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.nowbar-cover img,.nowbar-cover .coverph{width:34px;height:51px;object-fit:cover;border-radius:8px;flex:none}
+.nowbar-cover img,.nowbar-cover .coverph{width:34px;height:51px;object-fit:cover;object-position:center;border-radius:8px;flex:none}
 .nowbar-btn{flex:none;min-height:40px;padding:6px 12px;border-radius:999px;background:var(--catalog-soft);font-weight:800}
 .nowbar-btn.primary{background:var(--primary);color:#FFFDF4}
 body.has-nowbar{padding-bottom:calc(var(--tab-h) + 62px + var(--sab) + 14px)}
@@ -242,7 +254,8 @@ html[data-theme="dark"] .tabbtn.on{color:var(--gold)}
 .sheet{background:var(--bg);width:100%;max-width:640px;max-height:92vh;overflow:auto;
   border-radius:20px 20px 0 0;padding:20px 18px calc(20px + var(--sab));border-top:5px solid var(--accent)}
 @media(min-width:700px){.overlay{align-items:center;padding:18px}.sheet{border-radius:20px}}
-.sheet img.detailcover{width:130px;aspect-ratio:2/3;object-fit:cover;border-radius:8px;background:var(--catalog-soft)}
+.sheet .detailcover{width:130px;flex:none;aspect-ratio:2/3;object-fit:cover;object-position:center;
+.confirmcover{width:110px;flex:none;aspect-ratio:2/3;object-fit:cover;object-position:center;border-radius:12px;background:var(--sky-soft)}border-radius:8px;background:var(--catalog-soft)}
 /* ---------- Toast ---------- */
 .toast{position:fixed;left:50%;transform:translateX(-50%) translateY(20px);bottom:calc(var(--tab-h) + var(--sab) + 16px);
   background:var(--ink);color:var(--bg);padding:13px 20px;border-radius:999px;font-weight:800;z-index:120;opacity:0;
@@ -251,7 +264,7 @@ html[data-theme="dark"] .tabbtn.on{color:var(--gold)}
 }
 .resultitem{display:flex;gap:12px;align-items:center;background:var(--card);border:1px solid var(--line);
   border-radius:var(--radius);padding:10px;margin-bottom:9px;width:100%;text-align:left;box-shadow:var(--shadow-card)}
-.resultitem img{width:46px;height:68px;object-fit:cover;border-radius:6px;background:var(--catalog-soft)}
+.resultitem img{width:46px;height:68px;flex:none;object-fit:cover;object-position:center;border-radius:6px;background:var(--catalog-soft)}
 /* ---------- Alert (shadcn Alert as .notice) ---------- */
 .notice{border-radius:var(--radius);padding:12px 14px;font-weight:800;margin:10px 0;border:1px solid var(--line)}
 .notice.warn{background:var(--warn-bg);color:var(--warn-ink);border-color:var(--gold)}
@@ -743,9 +756,13 @@ $("grownBtn").addEventListener("click",function(){ showView("grown"); });
 $("grownBack").addEventListener("click",function(){ showView("home"); });
 
 /* ============ rendering ============ */
-function coverHTML(bk,cls){
-  if(bk.cover) return '<img class="'+(cls||"")+'" src="'+esc(bk.cover)+'" alt="Cover of '+esc(bk.title)+'" loading="lazy" onerror="this.outerHTML=\'<div class=&quot;coverph&quot;></div>\'">';
-  return '<div class="coverph">'+IC.book+'</div>';
+function thumbURL(u){ return /^https:\/\/covers\.openlibrary\.org\/b\/[^/]+\/[^/]+-L\.jpg$/.test(u||"") ? u.replace(/-L\.jpg$/,"-M.jpg") : (u||""); }
+function coverHTML(bk,cls,full){
+  if(bk.cover){
+    var u=full? bk.cover : thumbURL(bk.cover);
+    return '<span class="coverslot '+(cls||"")+'"><img class="coverbg" src="'+esc(u)+'" alt="" aria-hidden="true" loading="lazy"><img class="coverfg" src="'+esc(u)+'" alt="Cover of '+esc(bk.title)+'" loading="lazy" onerror="this.parentNode.classList.add(\'nocover\')"><div class="coverph">'+IC.book+'</div></span>';
+  }
+  return '<div class="coverph '+(cls||"")+'">'+IC.book+'</div>';
 }
 function render(){
   var m=metrics();
@@ -856,7 +873,7 @@ var detailId=null;
 function openDetail(id){
   var bk=books.find(function(x){return x.id===id;}); if(!bk) return; detailId=id; settings.currentBook=id; saveSettings(); updateNowBar();
   $("detailBody").innerHTML=
-   '<div style="display:flex;gap:14px;flex-wrap:wrap"><img class="detailcover" src="'+esc(bk.cover||"")+'" alt="Cover of '+esc(bk.title)+'" onerror="this.style.display=\'none\'">'
+   '<div style="display:flex;gap:14px;flex-wrap:wrap">'+coverHTML(bk,"detailcover",true)
    +'<div style="flex:1;min-width:200px"><h2 class="display" style="font-size:27px">'+esc(bk.title)+'</h2>'
    +'<p style="font-weight:800;margin:5px 0">'+esc(bk.author||"Author not listed")+'</p>'
    +'<p class="muted" style="font-weight:700;margin:3px 0">'+esc([bk.publisher,bk.year].filter(Boolean).join(" · "))+(bk.pages?" · "+esc(bk.pages)+" pages":"")+'</p>'
@@ -1055,7 +1072,7 @@ function showConfirm(data){
   var dup=data.isbn?findByISBN(data.isbn):books.find(function(b){return b.title.toLowerCase()===data.title.toLowerCase();});
   $("confirmCard").style.display="block";
   $("confirmBody").innerHTML=
-    '<div style="display:flex;gap:14px;flex-wrap:wrap"><img style="width:110px;aspect-ratio:2/3;object-fit:cover;border-radius:12px;background:var(--sky-soft)" src="'+esc(data.cover||"")+'" alt="Cover of '+esc(data.title)+'" onerror="this.style.display=\'none\'">'
+    '<div style="display:flex;gap:14px;flex-wrap:wrap">'+coverHTML(data,"confirmcover",true)
     +'<div style="flex:1;min-width:190px"><h3 style="font-size:22px">'+esc(data.title)+'</h3><p style="font-weight:800;margin:4px 0">'+esc(data.author||"Author not listed")+'</p>'
     +'<p class="muted" style="font-weight:700;margin:2px 0">'+(data.source?("Found in "+esc(data.source)):"")+'</p>'
     +'<p class="muted" style="font-weight:700;margin:2px 0">'+esc([data.publisher,data.year].filter(Boolean).join(" · "))+(data.pages?" · "+esc(data.pages)+" pages":"")+'</p>'
@@ -1159,7 +1176,7 @@ $("titleSearch").addEventListener("click",function(){
   $("searchResults").innerHTML='<p class="muted" style="font-weight:800">Searching…</p>';
   searchByTitle(q).then(function(list){
     if(!list.length){ $("searchResults").innerHTML='<p class="muted" style="font-weight:800">No books found with that name — try different words.</p>'; return; }
-    $("searchResults").innerHTML=list.map(function(d,i){ return '<button class="resultitem" data-idx="'+i+'"><img src="'+esc(d.cover||"")+'" alt="" onerror="this.style.visibility=\'hidden\'"><span style="flex:1"><b>'+esc(d.title)+'</b><br><span class="muted">'+esc(d.author||"")+(d.year?" · "+esc(d.year):"")+'</span></span></button>'; }).join("");
+    $("searchResults").innerHTML=list.map(function(d,i){ return '<button class="resultitem" data-idx="'+i+'">'+coverHTML(d)+'<span style="flex:1"><b>'+esc(d.title)+'</b><br><span class="muted">'+esc(d.author||"")+(d.year?" · "+esc(d.year):"")+'</span></span></button>'; }).join("");
     $("searchResults").querySelectorAll("[data-idx]").forEach(function(el){ el.addEventListener("click",function(){ var d=list[Number(el.getAttribute("data-idx"))]; if(haulMode){ if(d.isbn&&findByISBN(d.isbn)){ toast("Already in your library — skipped."); return; } finishHaulAdd(d,false); } else showConfirm(d); }); });
   }).catch(function(){ $("searchResults").innerHTML='<p class="muted" style="font-weight:800">Search didn\'t work — check your internet and try again.</p>'; });
 });
