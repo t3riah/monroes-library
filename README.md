@@ -139,6 +139,23 @@ Verified Nov 4 end to end in a real browser: a known-ISBN coverless book
 gained and saved its real Open Library cover; an unfindable book kept a
 made cover; suite 0 failures; scanner block unchanged.
 
+## Scan quick wins (Nov 4, 2026, Louie-approved; scanner fence now 5a9388b86fe82b93)
+- ZXing preloads when the Search tab opens, so Start Camera never waits
+  on the network on first tap (permission prompt unchanged, it is iOS).
+- Both camera paths cap the stream at 720p ideal: plenty for EAN
+  barcodes, much faster for the JS decoder than full resolution.
+- Any decoded code gets feedback, not just valid ISBNs: bad codes show
+  a plain message and flash the frame red; good codes flash green,
+  beep, buzz, and echo "Found ISBN. Looking it up…" while the lookup
+  runs (the lookup no longer overwrites that echo on the scan path).
+- Every lookup failure clears the scan dedupe, so scanning the same
+  book again right away is not swallowed.
+Verified Nov 4 in a real browser: preload script tag present on Search
+open; invalid code shows message plus red frame; valid ISBN echoes
+before lookup finishes; failed lookup resets the dedupe and a rescan
+runs. Suite 0 failures. Live camera speed still needs a real phone
+check; crop decode to the viewfinder region remains open as item 5.
+
 ## UX (Apple Music-inspired, Oct 2026)
 - 5-tab bar: Read Now · Browse · Search · Library · Badges. Grown-ups lives
   behind the gear button in the header (with a Back to Read Now button).

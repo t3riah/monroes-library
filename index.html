@@ -757,6 +757,7 @@ function showView(name){
   $("view-"+name).classList.add("active");
   document.querySelectorAll(".tabbtn").forEach(function(t){ t.classList.toggle("on", t.getAttribute("data-view")===name); });
   window.scrollTo(0,0);
+  if(name==="search"){ try{ loadZxing().catch(function(){}); }catch(e){} }
   if(name!=="search") stopCamera();
 }
 document.querySelectorAll(".tabbtn").forEach(function(t){ t.addEventListener("click",function(){ showView(t.getAttribute("data-view")); }); });
@@ -1239,16 +1240,17 @@ function finishAdd(data,viaScan){
 }
 function lookupISBN(isbn,viaScan){
   isbn=stripAddon(cleanISBN(isbn));
-  if(!validISBN(isbn)){ setScanStatus('<div class="notice err">That number doesn\'t look like an ISBN yet — check the numbers under the barcode and try again.</div>'); return; }
-  if(!isbnCheckDigitOk(isbn)){ setScanStatus('<div class="notice err">That number doesn\'t add up — the scan probably misread one digit. Scan it again, steady and close, or fix the number in the box and tap Find This Book.</div>'); $("isbnInput").value=isbn; return; }
+  if(!validISBN(isbn)){ lastCode=""; lastCodeAt=0; setScanStatus('<div class="notice err">That number doesn\'t look like an ISBN yet — check the numbers under the barcode and try again.</div>'); return; }
+  if(!isbnCheckDigitOk(isbn)){ lastCode=""; lastCodeAt=0; setScanStatus('<div class="notice err">That number doesn\'t add up — the scan probably misread one digit. Scan it again, steady and close, or fix the number in the box and tap Find This Book.</div>'); $("isbnInput").value=isbn; return; }
   var dup=findByISBN(isbn);
   if(!dup){ var forms=isbnCandidates(isbn); for(var i=0;i<forms.length;i++){ if(forms[i]!==isbn){ dup=findByISBN(forms[i]); if(dup) break; } } }
   if(haulMode && dup){ setScanStatus('<div class="notice warn">Already in your library — skipped "'+esc(dup.title)+'" so there are not two copies.</div>'); return; }
-  setScanStatus('<div class="notice ok">Looking up your book… checking Open Library, then Google Books.</div>');
+  if(!viaScan){ setScanStatus('<div class="notice ok">Looking up your book… checking Open Library, then Google Books.</div>'); }
   fetchByISBN(isbn).then(function(data){
     setScanStatus("");
     if(haulMode){ finishHaulAdd(data,viaScan); } else { showConfirm(data); }
   }).catch(function(err){
+    lastCode=""; lastCodeAt=0;
     if(err&&err.message==="offline"){
       setScanStatus('<div class="notice err">No connection right now — check Wi-Fi and try again. Nothing was lost: the number is still in the box above.</div>');
     } else if(err&&err.message==="ratelimited"){
@@ -1333,12 +1335,25 @@ function errDetail(err){ if(!err) return "unknown error"; var n=err.name||"Error
 function scanErrorHTML(err, friendly){
   return '<div class="notice err">'+esc(friendly||"Barcode scanning couldn\u2019t start on this phone.")+' Typing the ISBN below always works!<br><span style="font-weight:700;font-size:13px">Scanner problem ('+esc(errDetail(err))+') — tell a grown-up exactly what this says if it keeps happening.</span></div>';
 }
+var flashTimer=null;
+function flashFrame(ok){
+  var fr=document.querySelector("#videoBox .frame"); if(!fr) return;
+  if(flashTimer) clearTimeout(flashTimer);
+  fr.style.borderColor=ok?"#2E7D4F":"#D9534A";
+  flashTimer=setTimeout(function(){ fr.style.borderColor=""; },700);
+}
 function onCode(raw){
   var code=stripAddon(cleanISBN(raw)); var now=Date.now();
-  if(!validISBN(code)) return;
   if(code===lastCode && now-lastCodeAt<3500) return;
   lastCode=code; lastCodeAt=now;
+  if(!validISBN(code)){
+    flashFrame(false);
+    setScanStatus('<div class="notice err">That code ('+esc(code||raw)+') is not a book ISBN. Try the barcode on the back cover, or type the ISBN.</div>');
+    return;
+  }
+  flashFrame(true);
   if(navigator.vibrate) navigator.vibrate(120); beep();
+  setScanStatus('<div class="notice ok">Found '+esc(code)+'. Looking it up…</div>');
   lookupISBN(code,true);
 }
 function loadZxing(){
@@ -1371,7 +1386,7 @@ function startCamera(){
       setScanStatus(scanErrorHTML(new Error("getUserMedia is not available in this browser"),"This browser can\u2019t open the camera here. On iPhone, open this page in Safari over the secure (https) link.")); return;
     }
     setScanStatus('<div class="notice ok">Opening the camera. If your phone asks, tap Allow.</div>');
-    navigator.mediaDevices.getUserMedia({ video:{ facingMode:{ ideal:"environment" } }, audio:false })
+    navigator.mediaDevices.getUserMedia({ video:{ facingMode:{ ideal:"environment" }, width:{ ideal:1280 }, height:{ ideal:720 } }, audio:false })
      .then(function(s){
        if(gen!==scanGen){ s.getTracks().forEach(function(t){ t.stop(); }); return; }
        stream=s; videoA.srcObject=s; videoA.setAttribute("playsinline","true"); videoA.muted=true;
@@ -1411,7 +1426,7 @@ function startZXingPath(gen){
       };
       var ret=null;
       if(typeof zxingReader.decodeFromConstraints==="function"){
-        ret=zxingReader.decodeFromConstraints({ audio:false, video:{ facingMode:"environment" } }, video, cb);
+        ret=zxingReader.decodeFromConstraints({ audio:false, video:{ facingMode:"environment", width:{ ideal:1280 }, height:{ ideal:720 } } }, video, cb);
       } else if(typeof zxingReader.decodeFromVideoDevice==="function"){
         ret=zxingReader.decodeFromVideoDevice(null, video, cb);
       } else {
