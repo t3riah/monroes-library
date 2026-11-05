@@ -264,6 +264,47 @@ check; crop decode to the viewfinder region remains open as item 5.
   without one; suite 0 failures, scanner block unchanged, no CSS
   change (components style untouched).
 
+## Lookup "not found" fix (Nov 4, 2026, Louie-directed, built and verified, not yet live)
+- The old message ("Open Library didn't have it, and Google Books is
+  busy right now, wait a bit and tap Find This Book again") is gone.
+  Google Books is not busy, its keyless quota is exhausted
+  persistently, so retrying never helps. A miss now reads: "Not in
+  the catalogs we could reach. Add it by hand below. The ISBN is
+  already filled in, and a book is never blocked by a catalog."
+  Manual add still opens with the ISBN pre-filled, so the flow
+  never dead-ends.
+- Public-library sources tested Nov 4 as replacements, all
+  unusable from a static page: Library of Congress SRU (port 210,
+  no CORS), LoC books API (no ISBN search), Internet Archive
+  (no records for these books), Crossref (0 results), Wikidata
+  (empty), HathiTrust (empty), and the local library catalog
+  (Polaris, a web page, not a queryable API). No free keyless
+  source matches Google Books' breadth. The remaining path to
+  near-zero misses is a Google Books API key restricted to this
+  site's address (Google's documented browser-key pattern, free
+  tier 1000 lookups/day); that needs a Cloud project setup, not
+  yet approved.
+- Lookup fetches now use fetchStep, which times out headers and
+  body together (8s per step). The old fetchTimeout cleared its
+  timer when headers arrived, so a stalled body could hang the
+  lookup forever. All four lookup steps and the author fetches
+  use it, with null guards so a bad response counts as a miss,
+  never as "no connection".
+- Verified Nov 4 (stubbed-network headless run): a genuine miss
+  shows the new message with manual add open and the ISBN
+  pre-filled; a hit still shows the confirm card with title,
+  author, source, and pages. Suite 0 failures, scanner block
+  unchanged, no CSS change.
+- Google Books key, Nov 4 evening (Louie-approved, built, not yet
+  pushed): Cloud project "Monroe's Library" (monroes-library),
+  Books API only, no billing attached. The key is restricted to
+  HTTP referrer https://t3riah.github.io/* and to the Books API
+  only, and the lookup appends it to the Books API call. The key
+  value lives in the page source by design (browser keys are
+  public) but is useless from any other site. Verified by direct
+  call: with the library referrer it returns the book (429 gone);
+  with no referrer it returns 403 blocked.
+
 ## Author dedupe by default (Nov 4, 2026, Louie-approved)
 - An author field that is an exact repeat ("Ryan T. Higgins, Ryan T.
   Higgins") collapses to one name. Real multi-author lists

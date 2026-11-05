@@ -1365,48 +1365,65 @@ function fetchTimeout(url,ms){
       function(e){ clearTimeout(t); throw e; });
   }catch(e){ return Promise.reject(e); }
 }
+function fetchStep(url,ms){
+  return new Promise(function(resolve,reject){
+    var ctl=null, timer=null;
+    try{ ctl=new AbortController(); }catch(e){}
+    if(ctl) timer=setTimeout(function(){ try{ ctl.abort(); }catch(e){} }, ms||8000);
+    function done(fn,v){ if(timer) clearTimeout(timer); fn(v); }
+    fetch(url,ctl?{signal:ctl.signal}:{}).then(function(r){
+      r.json().then(function(j){ done(resolve,{status:r.status, ok:r.ok, data:j}); },
+        function(e){ done(reject,e); });
+    }, function(e){ done(reject,e); });
+  });
+}
 function isNetworkErr(e){ return !!e && (e.name==="TypeError" || e.name==="AbortError" || /failed to fetch|network|abort/i.test(e.message||"")); }
 
 /* ============ multi-source book lookup: Open Library (3 ways) then Google Books ============
    Every step is tried for both ISBN forms. Errors are classified, never lumped together:
    a step that 404s/comes back empty is "notfound"; a step that cannot reach the network
    is "offline". Only if every step fails do we give up, and the caller tells the user
-   WHICH failure it was. Google Books is last because it has historically rate-limited
-   (429) in testing; a 429 is reported as "busy", not "not found". */
+   WHICH failure it was. Google Books is last; its keyless quota is exhausted
+   persistently (429), so a 429 counts as a miss and manual add opens pre-filled.
+   Lookup fetches use fetchStep, which times out headers and body together. */
+/* Google Books browser key: restricted in Cloud Console to HTTP referrer
+   https://t3riah.github.io/* and to the Books API only, so it works solely
+   from this site. Free tier, no billing attached. */
+var GOOGLE_BOOKS_KEY="AIzaSyDjOuzXWydOf6oJkmQZ7lrQPJ6cVqwyhzw";
 function fetchByISBN(isbn){
   isbn=cleanISBN(isbn);
   var forms=isbnCandidates(isbn), sawNetwork=false, sawBusy=false;
   function olEdition(form){
-    return fetchTimeout("https://openlibrary.org/isbn/"+encodeURIComponent(form)+".json",8000)
-      .then(function(r){ if(!r.ok) throw new Error("notfound"); return r.json(); })
-      .then(function(j){
+    return fetchStep("https://openlibrary.org/isbn/"+encodeURIComponent(form)+".json",8000)
+      .then(function(res){ if(!res.ok) throw new Error("notfound"); return res.data; })
+      .then(function(j){ if(!j) throw new Error("notfound");
         var bk={ isbn:form, title:j.title||"Untitled", author:"", publisher:j.publishers?j.publishers[0]:"", year:(j.publish_date||"").replace(/.*?(\d{4}).*/,"$1"), pages:j.number_of_pages||"", description:(typeof j.description==="string"?j.description:(j.description&&j.description.value)||""), cover:olCover(form), source:"Open Library" };
         var keys=(j.authors||[]).slice(0,3).map(function(a){ return a.key; });
         if(!keys.length) return bk;
-        return Promise.all(keys.map(function(k){ return fetchTimeout("https://openlibrary.org"+k+".json",8000).then(function(r){ return r.json(); }).catch(function(){ return null; }); }))
+        return Promise.all(keys.map(function(k){ return fetchStep("https://openlibrary.org"+k+".json",8000).then(function(res){ return res.ok?res.data:null; }).catch(function(){ return null; }); }))
           .then(function(list){ bk.author=list.filter(Boolean).map(function(a){ return a.name; }).filter(Boolean).join(", "); return bk; });
       });
   }
   function olBooksApi(form){
-    return fetchTimeout("https://openlibrary.org/api/books?bibkeys=ISBN:"+encodeURIComponent(form)+"&format=json&jscmd=data",8000)
-      .then(function(r){ return r.json(); })
+    return fetchStep("https://openlibrary.org/api/books?bibkeys=ISBN:"+encodeURIComponent(form)+"&format=json&jscmd=data",8000)
+      .then(function(res){ return res.data; })
       .then(function(j){
-        var d=j["ISBN:"+form]; if(!d||!d.title) throw new Error("notfound");
+        var d=(j||{})["ISBN:"+form]; if(!d||!d.title) throw new Error("notfound");
         var cov=(d.cover&&(d.cover.large||d.cover.medium||d.cover.small))||olCover(form);
         return { isbn:form, title:d.title, author:(d.authors||[]).map(function(a){ return a.name; }).join(", "), publisher:(d.publishers||[]).map(function(p){ return p.name; })[0]||"", year:(d.publish_date||"").replace(/.*?(\d{4}).*/,"$1"), pages:d.number_of_pages||"", description:"", cover:cov, source:"Open Library" };
       });
   }
   function olSearch(form){
-    return fetchTimeout("https://openlibrary.org/search.json?isbn="+encodeURIComponent(form)+"&limit=1",8000)
-      .then(function(r){ return r.json(); })
-      .then(function(j){ if(j.docs&&j.docs.length){ var d=normalizeDoc(j.docs[0]); d.source="Open Library"; return d; } throw new Error("notfound"); });
+    return fetchStep("https://openlibrary.org/search.json?isbn="+encodeURIComponent(form)+"&limit=1",8000)
+      .then(function(res){ return res.data; })
+      .then(function(j){ if(j&&j.docs&&j.docs.length){ var d=normalizeDoc(j.docs[0]); d.source="Open Library"; return d; } throw new Error("notfound"); });
   }
   function googleBooks(form){
-    return fetchTimeout("https://www.googleapis.com/books/v1/volumes?q=isbn:"+encodeURIComponent(form),8000)
-      .then(function(r){ return r.json(); })
+    return fetchStep("https://www.googleapis.com/books/v1/volumes?q=isbn:"+encodeURIComponent(form)+"&key="+GOOGLE_BOOKS_KEY,8000)
+      .then(function(res){ return res.data; })
       .then(function(j){
-        if(j.error&&j.error.code===429) throw new Error("ratelimited");
-        if(!j.totalItems||!j.items||!j.items.length) throw new Error("notfound");
+        if(j&&j.error&&j.error.code===429) throw new Error("ratelimited");
+        if(!j||!j.totalItems||!j.items||!j.items.length) throw new Error("notfound");
         var vi=j.items[0].volumeInfo||{}, ids=vi.industryIdentifiers||[], id13="", id10="";
         ids.forEach(function(x){ if(x.type==="ISBN_13") id13=x.identifier; if(x.type==="ISBN_10") id10=x.identifier; });
         var img=vi.imageLinks||{}, cov=img.large||img.medium||img.small||img.thumbnail||olCover(form);
@@ -1511,7 +1528,7 @@ function lookupISBN(isbn,viaScan){
   var dup=findByISBN(isbn);
   if(!dup){ var forms=isbnCandidates(isbn); for(var i=0;i<forms.length;i++){ if(forms[i]!==isbn){ dup=findByISBN(forms[i]); if(dup) break; } } }
   if(haulMode && dup){ setScanStatus('<div class="notice warn">Already in your library — skipped "'+esc(dup.title)+'" so there are not two copies.</div>'); return; }
-  if(!viaScan){ setScanStatus('<div class="notice ok">Looking up your book… checking Open Library, then Google Books.</div>'); }
+  if(!viaScan){ setScanStatus('<div class="notice ok">Looking up your book...</div>'); }
   fetchByISBN(isbn).then(function(data){
     setScanStatus("");
     if(haulMode){ finishHaulAdd(data,viaScan); } else { showConfirm(data); }
@@ -1520,9 +1537,9 @@ function lookupISBN(isbn,viaScan){
     if(err&&err.message==="offline"){
       setScanStatus('<div class="notice err">No connection right now — check Wi-Fi and try again. Nothing was lost: the number is still in the box above.</div>');
     } else if(err&&err.message==="ratelimited"){
-      setScanStatus('<div class="notice err">Open Library didn\'t have it, and Google Books is busy right now — wait a bit and tap Find This Book again. Or add it by hand below; nothing is ever blocked.</div>'); openManual(isbn);
+      setScanStatus('<div class="notice err">Not in the catalogs we could reach. Add it by hand below. The ISBN is already filled in, and a book is never blocked by a catalog.</div>'); openManual(isbn);
     } else {
-      setScanStatus('<div class="notice err">Not in the catalogs we checked (Open Library + Google Books). Good news: you can still add it by hand below — a book is never blocked by a catalog.</div>'); openManual(isbn);
+      setScanStatus('<div class="notice err">Not in the catalogs we could reach. Add it by hand below. The ISBN is already filled in, and a book is never blocked by a catalog.</div>'); openManual(isbn);
     }
   });
 }
