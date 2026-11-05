@@ -229,6 +229,41 @@ check; crop decode to the viewfinder region remains open as item 5.
   failures flag the book; panel counts correct. Suite 0 failures,
   scanner block unchanged, no CSS change (components style untouched).
 
+## Set cover from URL (Nov 4, 2026, Louie-directed)
+- Some books have no cover in any source the app can reach. Found
+  Nov 4: three books with no Open Library cover anywhere (work,
+  editions, and ISBN lookups all blank) while the Google Books API
+  answers every keyless request with 429 quota-exhausted, so the
+  Google rung cannot even ask. The ladder was not broken; it had
+  exhausted its sources.
+- Grown-ups Cover panel: every made-cover and needs-repair row now
+  has a Set cover button. It prompts for an image URL, validates
+  the image loads at 64px short side or more, stores it, and clears
+  the repair flag. A dead or tiny URL changes nothing. A healthy
+  hand-set cover is kept by the repair loop (re-validation passes),
+  and if it ever breaks again the book re-flags and can be re-set.
+- Verified Nov 4: valid retailer cover URL stored and flag cleared
+  with counts correct; dead URL rejected with cover unchanged;
+  suite 0 failures, scanner block unchanged, components style
+  re-synced (one new `.setcover` rule).
+
+## Books-A-Million cover rungs (Nov 4, 2026, Louie-directed)
+- Way around the dead Google Books API (still 429 quota-exhausted
+  for keyless requests at retest): the Books-A-Million cover CDN
+  serves covers at a deterministic URL built from the ISBN-10, and
+  it loads as a plain image like Open Library covers, so no key,
+  no quota, and no account are needed.
+- Two new resolver rungs, after the Open Library rungs: (1) the
+  book's stored ISBN, converted to ISBN-10 with the existing
+  converter, tried on two CDN mirrors; (2) when the book has no
+  ISBN, its Open Library work (from title search) to that work's
+  editions to their ISBNs to the same CDN URLs. Both validate
+  through the shared 120px-preferred / 64px-minimum gate.
+- Verified Nov 4: all three previously unfindable books resolve
+  to their real retailer covers both with a stored ISBN and
+  without one; suite 0 failures, scanner block unchanged, no CSS
+  change (components style untouched).
+
 ## Author dedupe by default (Nov 4, 2026, Louie-approved)
 - An author field that is an exact repeat ("Ryan T. Higgins, Ryan T.
   Higgins") collapses to one name. Real multi-author lists

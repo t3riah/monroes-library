@@ -344,6 +344,7 @@ body{background-image:none}
 .statgrid .stat:nth-child(4){background:var(--catalog-soft)}
 #view-home.is-empty>:not(h2):not(#owlMsg):not(#nowHero):not(#homeScanBtn){display:none}
 .sk-pick{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;min-height:52px;margin-top:14px;border-radius:var(--radius-lg);border:2px dashed var(--leaf);background:var(--leaf-soft);color:var(--ink);font:800 17px var(--font-body);cursor:pointer}
+.setcover{margin-left:8px;padding:5px 12px;border-radius:999px;border:1.5px solid var(--brass);background:var(--bg);color:var(--leaf);font:700 13px var(--font-body)}
 .sk-pick:active{transform:translateY(1px)}
 .sk-next{display:flex;gap:16px;align-items:center;cursor:pointer}
 .sk-next h3{font-size:18px}
@@ -971,6 +972,48 @@ async function googleCands(q){
     return out;
   }catch(e){ return []; }
 }
+function isbn10Of(isbn){
+  var v=(isbn||'').replace(/[^0-9Xx]/g,'').toUpperCase();
+  if(/^\d{9}[\dX]$/.test(v)) return v;
+  if(/^\d{13}$/.test(v)) return isbn13to10(v);
+  return '';
+}
+function bamURLs(isbn10){
+  if(!/^\d{9}[\dX]$/.test(isbn10||'')) return [];
+  var d=isbn10;
+  var p='https://covers1.booksamillion.com/covers/bam/'+d[0]+'/'+d.slice(1,3)+'/'+d.slice(3,6)+'/'+d.slice(6,9)+'/'+d+'_b.jpg';
+  return [p, p.replace('covers1.','covers4.')];
+}
+async function bamWorkEditions(title,author){
+  try{
+    var sj=await fetchJSON('https://openlibrary.org/search.json?limit=5&title='+encodeURIComponent(title||'')+(author?'&author='+encodeURIComponent(author):''));
+    var out=[];
+    if(!sj||!sj.docs) return out;
+    function pushISBNs(list){
+      (list||[]).forEach(function(x){
+        if(out.length>=8) return;
+        var i10=isbn10Of(x);
+        if(i10) bamURLs(i10).forEach(function(u){ if(out.length<8) out.push(u); });
+      });
+    }
+    for(var i=0;i<sj.docs.length && out.length<8;i++){
+      var doc=sj.docs[i];
+      pushISBNs(doc.isbn);
+      var key=doc.key||'';
+      if(key.indexOf('/works/')!==0) continue;
+      try{
+        var ej=await fetchJSON('https://openlibrary.org'+key+'/editions.json?limit=20');
+        if(!ej||!ej.entries) continue;
+        for(var j=0;j<ej.entries.length && out.length<8;j++){
+          var e=ej.entries[j];
+          pushISBNs(e.isbn_13);
+          pushISBNs(e.isbn_10);
+        }
+      }catch(e){}
+    }
+    return out;
+  }catch(e){ return []; }
+}
 async function resolveCover(bk){
   var small=null, seen={};
   async function checkGroup(list){
@@ -1000,6 +1043,11 @@ async function resolveCover(bk){
       }
     }catch(e){}
   }
+  var i10=isbn10Of(bk.isbn);
+  if(i10){
+    hit=await checkGroup(bamURLs(i10));
+    if(hit) return hit;
+  }
   hit=await checkGroup(await olSearchCands(bk.title,bk.author));
   if(hit) return hit;
   hit=await checkGroup(await olSearchCands(bk.title,''));
@@ -1009,6 +1057,8 @@ async function resolveCover(bk){
     hit=await checkGroup(await olSearchCands(bk.title,fa));
     if(hit) return hit;
   }
+  hit=await checkGroup(await bamWorkEditions(bk.title,bk.author));
+  if(hit) return hit;
   if(bk.isbn){
     hit=await checkGroup(await googleCands('isbn:'+bk.isbn));
     if(hit) return hit;
@@ -1069,9 +1119,30 @@ function renderCoverPanel(){
   var gen=books.filter(function(b){ return !b.cover; });
   cc.textContent=real+" with a real cover · "+gen.length+" with a made cover · "+need.length+" needing repair · "+books.length+" total";
   var html='';
-  gen.forEach(function(b){ html+='<p style="font-weight:700;margin:6px 0">'+esc(b.title)+(b.author?' <span class="muted">by '+esc(b.author)+'</span>':'')+' <span class="muted">— made cover</span></p>'; });
-  need.forEach(function(b){ html+='<p style="font-weight:700;margin:6px 0">'+esc(b.title)+(b.author?' <span class="muted">by '+esc(b.author)+'</span>':'')+' <span class="muted">— cover needs repair</span></p>'; });
+  gen.forEach(function(b){ html+='<p style="font-weight:700;margin:6px 0">'+esc(b.title)+(b.author?' <span class="muted">by '+esc(b.author)+'</span>':'')+' <span class="muted">— made cover</span> <button class="setcover" data-id="'+esc(b.id)+'">Set cover</button></p>'; });
+  need.forEach(function(b){ html+='<p style="font-weight:700;margin:6px 0">'+esc(b.title)+(b.author?' <span class="muted">by '+esc(b.author)+'</span>':'')+' <span class="muted">— cover needs repair</span> <button class="setcover" data-id="'+esc(b.id)+'">Set cover</button></p>'; });
   cl.innerHTML=html||'<p style="font-weight:700">Every book has a real cover.</p>';
+  cl.querySelectorAll('.setcover').forEach(function(btn){ btn.addEventListener('click',function(){ setCoverPrompt(btn.getAttribute('data-id')); }); });
+}
+function setCoverPrompt(id){
+  var bk=null;
+  for(var i=0;i<books.length;i++){ if(books[i].id===id){ bk=books[i]; break; } }
+  if(!bk) return;
+  var url=prompt('Paste a cover image URL for "'+bk.title+'":',bk.cover||'');
+  if(url===null) return;
+  url=(url||'').trim();
+  if(!url) return;
+  imgSize(url).then(function(s){
+    if(s!==null && s>=64){
+      bk.cover=url;
+      var bad=settings.coverBad||{};
+      if(bad[id]) delete bad[id];
+      saveBooks(); saveSettings(); render(); renderCoverPanel();
+      toast('Cover set for '+bk.title+'.');
+    } else {
+      toast('That image did not load or is too small. Cover not changed.');
+    }
+  });
 }
 function render(){
   var m=metrics();
